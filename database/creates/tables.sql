@@ -7,7 +7,7 @@ CREATE TABLE usuarios(
   primer_apellido VARCHAR(50) NOT NULL,
   segundo_apellido VARCHAR(50) NOT NULL,
   correo VARCHAR(200) NOT NULL UNIQUE,
-  contrasena VARCHAR(1024) NOT NULL,
+  clave VARCHAR(1024) NOT NULL,
   segundo_nombre VARCHAR(50),
   telefono VARCHAR(11) UNIQUE,
   fecha_nacimiento DATE,
