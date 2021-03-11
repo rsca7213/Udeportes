@@ -23,10 +23,44 @@
             </v-form>
             <v-card-actions class="mt-4">
               <v-spacer> </v-spacer>
-              <v-btn color="primary" @click="submit()" class="mx-1"> 
-                <v-icon left> mdi-login </v-icon>
-                  Registrar 
-              </v-btn>
+              <v-dialog v-model="modal" persistent max-width="490">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="primary" v-bind="attrs" v-on="on">
+                    <v-icon left> mdi-login </v-icon>
+                    Registrar 
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="headline">
+                    Registrar usuario
+                  </v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <div v-for="dato in datosUsuario" :key="dato.nombre">
+                        <v-list-item v-if="inputs[dato.variable_asociada] != ''">
+                          <v-list-item-content class="py-1">
+                            <v-list-item-title>{{dato.nombre}}</v-list-item-title>
+                            <v-list-item-subtitle>{{inputs[dato.variable_asociada]}}</v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </div>
+                    </v-list>
+                    <p class="subtitle-1 px-4 my-0">Por favor introduce una contraseña temporal para el usuario</p>
+                    <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
+                    prepend-icon="mdi-key" type="password" class="px-4" 
+                    validate-on-blur v-model="inputs.clave"> </v-text-field>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red" dark @click="modal = false">
+                      Cancelar
+                    </v-btn>
+                    <v-btn color="secondary" @click="submit()">
+                      Aceptar
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -63,7 +97,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           rol: "",
           telefono: "",
           fecha_nacimiento: "",
-          correo: ""
+          correo: "",
+          clave: ""
         },
         roles: [
           {
@@ -75,6 +110,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         ],
         menu: false,
         fecha: null,
+        modal: false
       }
     },
     watch: {
@@ -104,6 +140,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
 
       // submit del form
       async submit() {
+        this.modal = false;
         //if(this.$refs.form.validate()) {
           //this.mensajeError = '';
           //this.formCargando = true;
