@@ -5,9 +5,9 @@ const cors = require('cors');
 
 // Configuración inicial del servidor
 const app = express();
-app.use(cors({ origin: `${process.env.CLIENT_LINK}` , credentials :  true }));
 app.use(express.json());
 dotenv.config();
+app.use(cors({ origin: process.env.CLIENT_LINK, credentials :  true }));
 
 // Inicializar enrutador de express
 const routerAuth = require('./routes/routerAuth.js');
