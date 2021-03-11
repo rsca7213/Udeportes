@@ -25,7 +25,7 @@
             <v-card-actions class="mt-4">
               <v-spacer> </v-spacer>
               <OlvidarDialog class="d-none d-sm-flex"/>
-              <v-btn color="primary" @click="submit()" class="mx-1" :loading="formCargando" type="submit"> 
+              <v-btn color="primary" :disabled="!credencialesValidas" @click="submit()" class="mx-1" :loading="formCargando" type="submit"> 
                 <v-icon left> mdi-login </v-icon>
                 Iniciar Sesión 
               </v-btn>
@@ -60,6 +60,7 @@ export default {
     return {
       cargando: true,
       formCargando: false,
+      credencialesValidas: false,
       inputs: {
         correo: '',
         clave: ''
@@ -75,6 +76,40 @@ export default {
         v => v && v.length <= 256 || 'La contraseña debe contener como máximo 256 caracteres.'
       ]
     }
+  },
+  watch: {
+    //Cuando cambia el email se llama esta funcion automaticamente
+    emailYclave: function () {
+
+      //variable de control para saber si se cumplen las reglas de validacion
+      let revisar = false;
+      
+      //se revisa si se cumplen las reglas del email
+      this.reglasCorreo.forEach(emailValidator => {
+        if(emailValidator(this.inputs.correo) !== true){
+          this.credencialesValidas = false;
+          revisar = true;
+        }        
+      });
+
+      //se revisa si se cumplen las reglas de la clave
+      this.reglasClave.forEach(claveValidator => {
+        if(claveValidator(this.inputs.clave) !== true){
+          this.credencialesValidas = false;
+          revisar = true;
+        }        
+      });
+
+      if(revisar === false){
+        this.credencialesValidas = true;
+      }
+    },
+  },
+
+  computed: {
+    emailYclave() {
+      return `${this.inputs.correo}|${this.inputs.clave}`;
+    },
   },
 
   methods: {
