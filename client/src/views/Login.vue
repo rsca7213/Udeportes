@@ -58,14 +58,20 @@ export default {
 
   data() {
     return {
+      // se muestra el componente Cargador si cargando es true
       cargando: true,
+      // el boton del form se coloca en loading si formCargando es true
       formCargando: false,
+      // desactiva el boton si las credenciales no son validas
       credencialesValidas: false,
+      // v-models del form
       inputs: {
         correo: '',
         clave: ''
       },
+      // mensaje de error al hacer submit y recibir errores del servidor
       mensajeError: '',
+      // reglas de validacion del form
       reglasCorreo: [
         v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres',
         v => v && v.length <= 256 || 'El correo electrónico debe contener como máximo 256 caracteres',
@@ -113,10 +119,14 @@ export default {
   },
 
   methods: {
+    // submit del form
     async submit() {
       if(this.$refs.form.validate()) {
         this.mensajeError = '';
         this.formCargando = true;
+        // se solicita al servidor el login con un POST, enviando las credenciales, si se recibe
+        // un 200 se redirecciona al Inicio ya que todo salio bien, sino se muestra un mensaje
+        // de error que especifica que sucedio
         await axios
           .post(`${server_url}/auth/login`, this.inputs, { withCredentials: true })
           .then((res) => {
@@ -133,6 +143,8 @@ export default {
     }
   },
 
+  // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
+  // en caso positivo, se redirecciona a Inicio, sino se muestra el componente para iniciar sesión
   async mounted() {
     await axios
       .get(`${server_url}/auth/login`, { withCredentials: true })

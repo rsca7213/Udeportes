@@ -30,6 +30,8 @@ export default {
   },
 
   methods: {
+    // solicitud POST que le pide al servidor que destruya el token, en caso de respuesta 200
+    // se redirecciona a Login
     async logout() {
       await axios
       .post(`${server_url}/auth/logout`, {}, { withCredentials: true })
@@ -40,6 +42,8 @@ export default {
     }
   },
 
+  // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
+  // en caso negativo se redirecciona a Login, en caso positivo se muestra el componente de Inicio
   async mounted() {
     await axios
       .get(`${server_url}/auth/login`, { withCredentials: true })

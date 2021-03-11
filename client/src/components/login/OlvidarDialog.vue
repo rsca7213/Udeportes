@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Snackbar -->
     <v-btn text small class="blue--text text--lighten-1" @click="display = !display"> ¿Olvidaste tu contraseña? </v-btn>
     <v-snackbar v-model="display" timeout="4000" shaped transition="scroll-y-reverse-transition" multi-line> 
       ¡Para recuperar tus datos de inicio de sesión, ponte en contacto con el administrador del sitio!
