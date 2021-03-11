@@ -26,16 +26,7 @@ export default {
   },
 
   methods: {
-    // solicitud POST que le pide al servidor que destruya el token, en caso de respuesta 200
-    // se redirecciona a Login
-    async logout() {
-      await axios
-      .post(`${server_url}/auth/logout`, {}, { withCredentials: true })
-      .then((res) => {
-        if (res.status === 200) this.$router.push('/login');
-      })
-      .catch(() => {});
-    }
+    
   },
 
   // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión

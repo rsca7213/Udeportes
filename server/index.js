@@ -16,6 +16,8 @@ const routerConfig = require('./routes/routerConfig.js');
 app.use('/init', routerConfig);
 const routerCreacionUsuarios = require('./routes/routerCreacionUsuarios.js');
 app.use('/creacion', routerCreacionUsuarios);
+const routerPerfil = require('./routes/routerPerfil.js');
+app.use('/perfil', routerPerfil);
 
 // Para producción
 /*

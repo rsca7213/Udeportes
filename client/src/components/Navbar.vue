@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="rutasConNav.includes(ruta.path)">
+  <nav v-if="rutasConNav.includes(ruta.path) && usuario.nombre">
 
     <v-navigation-drawer v-model="menu" app color="primary">
       <v-container>
@@ -68,15 +68,19 @@ export default {
 
   name: 'Navbar',
 
+  // ruta actual de la app
   props: ["ruta"],
 
   data() {
     return {
+      // abrir o cerrar sidebar
       menu: false,
+      // datos del usuario actualmente iniciado sesión
       usuario: {
         nombre: null,
         apellido: null
       },
+      // items del menu desplegable de la derecha
       itemsPerfil: [
         {
           nombre: 'Editar Perfil',
@@ -91,6 +95,7 @@ export default {
           funcion: 'logout'
         }
       ],
+      // items del sidebar
       itemsSidebar: [
         {
           nombre: 'Deportes',
@@ -130,11 +135,14 @@ export default {
         },
 
       ],
+      // rutas que deberian tener sidebar (agregar rutas aqui)
       rutasConNav: [ '/' ]
     }
   },
 
   methods: {
+    // accion de la barra desplegable de la derecha, si la accion es cerrar sesión se hace su
+    // request respectivo al servidor, si es editar perfil se enruta a la vista respectiva
     async accionPerfil(item) {
       if(item.funcion === 'logout') {
         await axios
@@ -149,10 +157,12 @@ export default {
       }
     }
   },
-
+  // en mounted se chequea que la ruta deba tener sidebar, si es el caso se buscan los datos del usuario
+  // haciendo su respectivo request
   async mounted() {
-    await axios
-      .get(`${server_url}/perfil`, { withCredentials: true })
+    if (this.rutasConNav.includes(this.ruta.path)) {
+      await axios
+      .get(`${server_url}/perfil?data=nombre`, { withCredentials: true })
       .then((res) => {
         if (res.status === 200) 
           this.usuario = {
@@ -161,6 +171,7 @@ export default {
           };
       })
       .catch(() => {});
+    }
   }
 }
 </script>
