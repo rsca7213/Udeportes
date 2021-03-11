@@ -1,10 +1,6 @@
 <template>
   <div class="inicio">
     <Cargador v-if="cargando" />
-    <div v-else>
-      <span> You made it </span>
-      <v-btn color="secondary" @click="logout()"> Cerrar sesión </v-btn>
-    </div>
   </div>
 </template>
 

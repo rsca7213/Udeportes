@@ -1,0 +1,172 @@
+<template>
+  <nav v-if="rutasConNav.includes(ruta.path)">
+
+    <v-navigation-drawer v-model="menu" app color="primary">
+      <v-container>
+        <v-row class="pt-2 pl-2 pb-2">
+          <v-img src="../assets/logo-blanco.png" alt="logo" max-width="40"> </v-img>
+          <span class="white--text text-button ml-3 mt-1"> Menú Principal </span>
+        </v-row>
+        <v-divider class="mt-5 white--text white"> </v-divider>
+        <v-list nav dark>
+          <v-list-item v-for="item in itemsSidebar" :key="item.ruta" router :to="item.ruta">
+            <v-list-item-icon> <v-icon v-text="item.icono"> </v-icon> </v-list-item-icon>
+            <v-list-item-title> {{ item.nombre }} </v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-divider class="white--text white"> </v-divider>
+        <v-list nav dark>
+          <v-list-group no-action prepend-icon="mdi-account-circle" color="white">
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title v-if="!usuario.nombre"> Usuario </v-list-item-title>
+                <v-list-item-title v-else v-text="`${usuario.nombre} ${usuario.apellido}`" class="text-capitalize"> </v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item v-for="item in itemsPerfil" :key="item.nombre" class="primary--text pl-8" @click="accionPerfil(item)">
+              <v-list-item-icon> <v-icon v-text="item.icono"> </v-icon> </v-list-item-icon>
+              <v-list-item-title> {{ item.nombre }} </v-list-item-title>
+            </v-list-item>
+          </v-list-group>
+        </v-list>
+      </v-container>
+    </v-navigation-drawer>
+
+    <v-app-bar app class="primary" dark> 
+      <v-app-bar-nav-icon @click.stop="menu = !menu" class="white--text"></v-app-bar-nav-icon>
+      <v-app-bar-title class="text-capitalize white--text titulo">
+        <span class="titulo"> Udeportes </span>
+      </v-app-bar-title>
+      <v-spacer></v-spacer>
+      <v-menu offset-y transition="slide-y-transition" rounded="lg">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" depressed outlined dark> 
+            <v-icon left> mdi-account-circle </v-icon>
+            <span v-if="!usuario.nombre" class="d-none d-sm-block text-capitalize"> Usuario </span>
+            <span v-else v-text="`${usuario.nombre} ${usuario.apellido}`" class="text-capitalize d-none d-sm-block"> </span>
+            <v-icon> mdi-chevron-down </v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-for="item in itemsPerfil" :key="item.nombre" class="primary--text" @click="accionPerfil(item)">
+            <v-list-item-icon> <v-icon v-text="item.icono"> </v-icon> </v-list-item-icon>
+            <v-list-item-title> {{ item.nombre }} </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
+  
+  </nav>
+</template>
+
+<script>
+
+import axios from 'axios';
+const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+
+export default {
+
+  name: 'Navbar',
+
+  props: ["ruta"],
+
+  data() {
+    return {
+      menu: false,
+      usuario: {
+        nombre: null,
+        apellido: null
+      },
+      itemsPerfil: [
+        {
+          nombre: 'Editar Perfil',
+          ruta: '/p',
+          icono: 'mdi-account-edit',
+          function: null
+        },
+        {
+          nombre: 'Cerrar Sesión',
+          ruta: null,
+          icono: 'mdi-logout',
+          funcion: 'logout'
+        }
+      ],
+      itemsSidebar: [
+        {
+          nombre: 'Deportes',
+          ruta: '/a',
+          icono: 'mdi-basketball',
+          admin: true,
+        },
+        {
+          nombre: 'Entrenadores',
+          ruta: '/b',
+          icono: 'mdi-whistle',
+          admin: true
+        },
+        {
+          nombre: 'Atletas',
+          ruta: '/c',
+          icono: 'mdi-weight-lifter',
+          admin: true
+        },
+        {
+          nombre: 'Competencias',
+          ruta: '/d',
+          icono: 'mdi-trophy',
+          admin: true
+        },
+        {
+          nombre: 'Entrenamientos',
+          ruta: '/e',
+          icono: 'mdi-clipboard-text',
+          admin: true
+        },
+        {
+          nombre: 'Reportes',
+          ruta: '/f',
+          icono: 'mdi-pdf-box',
+          admin: true
+        },
+
+      ],
+      rutasConNav: [ '/' ]
+    }
+  },
+
+  methods: {
+    async accionPerfil(item) {
+      if(item.funcion === 'logout') {
+        await axios
+        .post(`${server_url}/auth/logout`, {}, { withCredentials: true })
+        .then((res) => {
+          if (res.status === 200) this.$router.push('/login');
+        })
+        .catch(() => {});
+      }
+      else {
+        this.$router.push(item.ruta);
+      }
+    }
+  },
+
+  async mounted() {
+    await axios
+      .get(`${server_url}/perfil`, { withCredentials: true })
+      .then((res) => {
+        if (res.status === 200) 
+          this.usuario = {
+            nombre: res.data.primer_nombre,
+            apellido: res.data.primer_apellido
+          };
+      })
+      .catch(() => {});
+  }
+}
+</script>
+
+<style>
+  .titulo, .v-app-bar-title__placeholder, .v-app-bar-title__content {
+    text-overflow: clip !important;
+  }
+</style>
