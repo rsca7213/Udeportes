@@ -5,13 +5,13 @@ const cors = require('cors');
 
 // Configuración inicial del servidor
 const app = express();
-app.use(cors({ origin: 'localhost' , credentials :  true }));
+app.use(cors({ origin: 'http://localhost:8080' , credentials :  true }));
 app.use(express.json());
 dotenv.config();
 
 // Inicializar enrutador de express
-const router = require('./routes/router.js');
-app.use('/api', router);
+const routerAuth = require('./routes/routerAuth.js');
+app.use('/auth', routerAuth);
 
 // Para producción
 /*
