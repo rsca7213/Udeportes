@@ -6,7 +6,7 @@
 import registro from '../components/RegistroUsuarios/registro';
 
 export default {
-  name: 'Login',
+  name: 'Prueba',
   components: {
     registro
   },
