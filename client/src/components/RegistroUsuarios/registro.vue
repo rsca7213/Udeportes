@@ -5,8 +5,8 @@
         <v-col> </v-col>
         <v-col cols="12" xl="4" lg="6" md="7" sm="10"> 
           <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
-            <v-card-title class="grey--text text--darken-2"> Registro de usuarios </v-card-title>
-            <v-card-subtitle class="grey--text text--darken-2 subtitle-1"> Los campos que contienen un <span class="red--text">"*"</span> son obligatorios </v-card-subtitle>
+            <v-card-title class="grey--text text--darken-2 d-flex justify-center justify-sm-start"> Registro de usuarios </v-card-title>
+            <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
             <v-form ref="form" class="px-4">
               <v-virtual-scroll :items="datosUsuario" :item-height="70" height="420">
                 <template v-slot:default="{ item }">
@@ -22,11 +22,10 @@
                 </template>
               </v-virtual-scroll>
             </v-form>
-            <v-card-actions class="mt-4">
-              <v-spacer> </v-spacer>
+            <v-card-actions class="mt-4 d-flex justify-center justify-sm-end">
               <v-dialog v-model="modal" persistent max-width="490">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="primary" v-bind="attrs" v-on="on" :disabled="!credencialesValidas">
+                  <v-btn color="primary" v-bind="attrs" v-on="on" :disabled="!credencialesValidas" :loading="formCargando">
                     <v-icon left> mdi-login </v-icon>
                     Registrar 
                   </v-btn>
@@ -51,12 +50,11 @@
                     prepend-icon="mdi-key" type="password" class="px-4" 
                     validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
                   </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
+                  <v-card-actions class="d-flex justify-center justify-sm-end">
                     <v-btn color="red" dark @click="modal = false">
                       Cancelar
                     </v-btn>
-                    <v-btn color="secondary" @click="submit()" :disabled="!claveValida">
+                    <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
                       Aceptar
                     </v-btn>
                   </v-card-actions>
@@ -64,6 +62,14 @@
               </v-dialog>
             </v-card-actions>
           </v-card>
+          <v-snackbar v-model="display_creacion_dialog" timeout="4000" shaped transition="scroll-y-reverse-transition" multi-line> 
+            <span class="secondary--text">Usuario creado exitosamente!</span> 
+            <template v-slot:action="{ attrs }">
+              <v-btn color="white" text v-bind="attrs" @click="display_creacion_dialog = false">
+                Cerrar
+              </v-btn>
+            </template>
+          </v-snackbar>
         </v-col>
         <v-col> </v-col>
       </v-row>
@@ -78,6 +84,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
     name: 'registro',
     data() {
       return {
+        //informacion de todos los campos de texto del formulario
         datosUsuario: [
           {nombre: 'Cédula', requerido:true , longitud: 8, icono: 'mdi-card-account-details', variable_asociada: 'cedula', validacion: 'reglasCedula'},
           {nombre: 'Primer Nombre', requerido:true, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'primer_nombre', validacion: 'reglasNombre'},
@@ -89,6 +96,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           {nombre: 'Fecha de Nacimiento', longitud: 10, icono: 'mdi-calendar', variable_asociada: 'fecha_nacimiento', validacion: 'reglasFecha'},
           {nombre: 'Correo',  requerido:true, longitud: 256, icono: 'mdi-email', variable_asociada: 'correo', validacion: 'reglasCorreo'}
         ],
+        //datos del usuario a insertar
         inputs: {
           cedula: "",
           primer_nombre: "",
@@ -109,10 +117,21 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             nombre: 'Entrenador', valor: 'e'
           },
         ],
+        // el boton del form se coloca en loading si formCargando es true
+        formCargando: false,
+        // mensaje de error al hacer submit y recibir errores del servidor
+        mensajeError: '',
+        //variable que se encarga de mostrar el menu de la fecha
         menu: false,
+        //valor inicial de la fecha
         fecha: null,
+        //variable que se encarga de mostrar el modal con el resumen de los datos del usuario a crear
         modal: false,
+        //variable que se encarga de mostrar el dialogue en caso de que se cree el usuario con exito
+        display_creacion_dialog: false,
+        //variable de control para saber si todos los datos del usuario a crear son validos
         credencialesValidas: false,
+        //variable que permite activar el boton de crear usuario cuando la clave es válida
         claveValida: false,
         reglas: {
           reglasCorreo: [
@@ -127,6 +146,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           reglasCedula: [
             v => !!v || 'Este campo es obligatorio',
             v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
+            v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
           ],
           reglasNombre: [
             v => !!v || 'Este campo es obligatorio',
@@ -136,7 +156,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             v => v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
           ],
           reglasTelefono: [
-            v => v.length <= 13 || 'El teléfono debe tener 13 caracteres.',
+            v => ((v && v.length == 13) || !v) || 'El teléfono debe tener 13 caracteres.',
+            v => ((v && (/^[+]\d{1,12}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
           ],
           reglasFecha: [
             v => v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
@@ -276,17 +297,20 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       // submit del form
       async submit() {
         this.modal = false;
-        //if(this.$refs.form.validate()) {
-          //this.mensajeError = '';
-          //this.formCargando = true;
-          // se solicita al servidor el login con un POST, enviando las credenciales, si se recibe
+        if(this.$refs.form.validate()) {
+          this.mensajeError = '';
+          this.formCargando = true;
+          // se solicita al servidor la creacion del usuario con un POST, enviando los datos del usuario, si se recibe
           // un 200 se redirecciona al Inicio ya que todo salio bien, sino se muestra un mensaje
           // de error que especifica que sucedio
           await axios
             .post(`${server_url}/creacion/usuario`, this.inputs, { withCredentials: true })
             .then((res) => {
-              if (res.status === 200) this.$router.push('/');
-              console.log("ola");
+              if (res.status === 200) {
+                this.formCargando = false;
+                this.display_creacion_dialog= true;      
+                //this.$router.push('/');
+                }
             })
             .catch((error) => {
               console.log("bye");
@@ -296,7 +320,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
                 ? 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'
                 : 'Correo electrónico o contraseña incorrecta.';
             });
-        //}
+        }
       }
     },
   }

@@ -17,6 +17,7 @@ function  validar(reglas, valor) {
 
 const reglasCedula = [
   v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
+  v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
 ];
 
 const reglasNombre = [
@@ -36,7 +37,20 @@ const reglasCorreo = [
 const reglasClave = [
   v => v && v.length >= 8 || 'La contraseña debe contener como mínimo 8 caracteres.',
   v => v && v.length <= 128 || 'La constraseña debe contener como máximo 128 caracteres.' 
-]
+];
+
+const reglasTelefono = [
+  v => ((v && v.length == 13) || !v) || 'El teléfono debe tener 13 caracteres.',
+  v => ((v && (/^[+]\d{1,12}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
+];
+
+const reglasFecha = [
+  v => v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
+];
+
+const reglasRol = [
+  v => ['a', 'e'].includes(v) || 'El rol es obligatorio',
+];
 
 let validador = {
   /* Objeto exportable que contendra los metodos de validación */
@@ -44,7 +58,10 @@ let validador = {
   validarNombre: (nombre) => validar(reglasNombre, nombre),
   validarSegundoNombre: (s_nombre) => validar(reglasSegundoNombre, s_nombre),
   validarCorreo: (correo) => validar(reglasCorreo, correo),
-  validarClave: (clave) => validar(reglasClave, clave)
+  validarClave: (clave) => validar(reglasClave, clave),
+  validarTelefono: (telefono) => validar(reglasTelefono, telefono),
+  validarFecha: (fecha) => validar(reglasFecha, fecha),
+  validarRol: (rol) => validar(reglasRol, rol)
 };
 
 module.exports = validador;
