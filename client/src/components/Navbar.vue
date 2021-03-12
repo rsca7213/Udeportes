@@ -99,6 +99,12 @@ export default {
       // items del sidebar
       itemsSidebar: [
         {
+          nombre: 'Inicio',
+          ruta: '/',
+          icono: 'mdi-home',
+          admin: false
+        },
+        {
           nombre: 'Deportes',
           ruta: '/a',
           icono: 'mdi-basketball',
