@@ -87,7 +87,7 @@ export default {
           nombre: 'Editar Perfil',
           ruta: '/p',
           icono: 'mdi-account-edit',
-          function: null
+          funcion: null
         },
         {
           nombre: 'Cerrar Sesión',
@@ -170,10 +170,8 @@ export default {
         if (res.status === 200) this.usuario.admin = true;
       })
       .catch((err) => {
-        // si el usuario no ha iniciado sesión
-        if (err.response.status === 401) this.$router.push('/login');
         // si el usuario ha iniciado sesión pero no es admin
-        else if (err.response.status === 403) this.usuario.admin = false;
+        if (err.response.status === 403) this.usuario.admin = false;
       })
 
       await axios
