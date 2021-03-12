@@ -1,7 +1,7 @@
 <template>
   <div class="indigo">
     <v-container>
-      <v-row align="center" style="height: 100vh">
+      <v-row class="mt-12" align="start">
         <v-col> </v-col>
         <v-col cols="12" xl="4" lg="6" md="7" sm="10"> 
           <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
@@ -312,7 +312,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           // un 200 se redirecciona al Inicio ya que todo salio bien, sino se muestra un mensaje
           // de error que especifica que sucedio
           await axios
-            .post(`${server_url}/creacion/usuario`, this.inputs, { withCredentials: true })
+            .post(`${server_url}/entrenadores/insertar`, this.inputs, { withCredentials: true })
             .then((res) => {
               if (res.data.codigo === 200) {
                  //ciclo que se encarga de limpiar todos los campos del formulario

@@ -20,9 +20,9 @@ const routes = [
     component: () => import('../views/Init.vue')
   },
   {
-    path: '/prueba',
-    name: 'Prueba',
-    component: () => import('../views/Prueba.vue')
+    path: '/entrenadores',
+    name: 'Entrenadores',
+    component: () => import('../views/Entrenadores.vue')
   },
   {
       path: '/:catchAll(.*)',

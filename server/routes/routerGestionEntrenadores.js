@@ -1,8 +1,9 @@
 /*Se importa el router de express*/
 const router = require('express').Router();
-const creacion = require('../controllers/creacion');
+const creacion = require('../controllers/gestionEntrenadores');
 
-router.route('/usuario').post(async(req, res) => {
+//ruta encargada de insertar entrenadores
+router.route('/insertar').post(async(req, res) => {
   try{
     let result = await creacion.insertar_usuarios(req.body);
     res.send(result);
