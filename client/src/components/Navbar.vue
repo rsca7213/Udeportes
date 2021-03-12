@@ -9,7 +9,8 @@
         </v-row>
         <v-divider class="mt-5 white--text white"> </v-divider>
         <v-list nav dark>
-          <v-list-item v-for="item in itemsSidebar" :key="item.ruta" router :to="item.ruta">
+          <v-list-item v-for="item in usuario.admin ? itemsSidebar : itemsSidebar.filter(item => !item.admin)" 
+          :key="item.ruta" router :to="item.ruta">
             <v-list-item-icon> <v-icon v-text="item.icono"> </v-icon> </v-list-item-icon>
             <v-list-item-title> {{ item.nombre }} </v-list-item-title>
           </v-list-item>
@@ -77,7 +78,8 @@ export default {
       // datos del usuario actualmente iniciado sesión
       usuario: {
         nombre: null,
-        apellido: null
+        apellido: null,
+        admin: false
       },
       // items del menu desplegable de la derecha
       itemsPerfil: [
@@ -112,25 +114,25 @@ export default {
           nombre: 'Atletas',
           ruta: '/c',
           icono: 'mdi-weight-lifter',
-          admin: true
+          admin: false
         },
         {
           nombre: 'Competencias',
           ruta: '/d',
           icono: 'mdi-trophy',
-          admin: true
+          admin: false
         },
         {
           nombre: 'Entrenamientos',
           ruta: '/e',
           icono: 'mdi-clipboard-text',
-          admin: true
+          admin: false
         },
         {
           nombre: 'Reportes',
           ruta: '/f',
           icono: 'mdi-pdf-box',
-          admin: true
+          admin: false
         },
 
       ]
@@ -146,7 +148,7 @@ export default {
         .post(`${server_url}/auth/logout`, {}, { withCredentials: true })
         .then((res) => {
           if (res.status === 200) {
-            this.usuario = { nombre: null, apellido: null }
+            this.usuario = { nombre: null, apellido: null, admin: null }
             this.$router.push('/login');
           }
         })
@@ -157,24 +159,36 @@ export default {
       }
     }
   },
-  // en mounted se chequea que la ruta deba tener sidebar, si es el caso se buscan los datos del usuario
-  // haciendo su respectivo request
+  // en mounted se revisa si el usuario esta iniciado y es admin, utilizando la ruta GET /auth/admin
+  // y luego de haber comprobado estos datos, se solicitan sus datos de nombre y apellido para rellenar
+  // el sidebar
   async mounted() {
+      await axios
+      .get(`${server_url}/auth/admin`, { withCredentials: true })
+      .then((res) => {
+        // si el usuario es admin y ha iniciado sesión
+        if (res.status === 200) this.usuario.admin = true;
+      })
+      .catch((err) => {
+        // si el usuario no ha iniciado sesión
+        if (err.response.status === 401) this.$router.push('/login');
+        // si el usuario ha iniciado sesión pero no es admin
+        else if (err.response.status === 403) this.usuario.admin = false;
+      })
+
       await axios
       .get(`${server_url}/perfil?data=nombre`, { withCredentials: true })
       .then((res) => {
         if (res.status === 200) 
           this.usuario = {
             nombre: res.data.primer_nombre,
-            apellido: res.data.primer_apellido
+            apellido: res.data.primer_apellido,
+            admin: this.usuario.admin
           };
       })
       .catch(() => {});
     }
   }
-  // Se revisa cada vez que se cambia de ruta si es necesario buscar los datos de perfil 
-  // (mas q todo cuando se hace el cambio login -> home)
-
 </script>
 
 <style>

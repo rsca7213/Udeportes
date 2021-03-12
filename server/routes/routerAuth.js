@@ -3,6 +3,7 @@ const router = require('express').Router();
 const auth = require('../controllers/auth');
 const mw_token = require('../middleware/token');
 const mw_config = require('../middleware/config');
+const mw_rol = require('../middleware/rol');
 
 router.route('/login')
   /*
@@ -56,7 +57,19 @@ router.route('/logout')
       if (process.env.NODE_ENV === 'development') console.error(error);
       res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
     }
-  })
+  });
+
+router.route('/admin')
+  /*
+    Ruta GET utilizada para verificar que el usuario es admin, mw_token se encarga de verificar que el usuario
+    ha iniciado sesión (devolviendo un 401 si no estuviera logeado) y mw_role se encarga de verificar que el usuario
+    sea admin, devolviendo un 403 si no es admin. Si el usuario esta iniciado y es admin, los middlewares llamaran a 
+    next() y se llegara al res.sendStatus(200) de esta ruta, por lo cual si en el cliente se recibe un 200 al llamar
+    a esta ruta se sabe que el usuario es admin y ha iniciado sesión
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    res.sendStatus(200);
+  });
   
 
 module.exports = router;
