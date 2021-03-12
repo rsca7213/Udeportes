@@ -13,7 +13,10 @@ async function verifyConfig (req, res, next) {
     let check = await bd.query('SELECT COUNT(*) FROM usuarios');
     check = check.rows;
     /* no existen usuarios --> se envia 428 */
-    if (!check.length || check[0].count === 0 || check[0].count === '0') res.status(428).send('config');
+    if (!check.length || check[0].count === 0 || check[0].count === '0') {
+      res.clearCookie('JWT');
+      res.status(428).send('config');
+    }
     /* existen usuarios --> no se requiere config */
     else next();
 

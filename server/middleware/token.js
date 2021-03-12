@@ -20,12 +20,16 @@ async function verifyToken (req, res, next) {
     /* Verificamos que el usuario con la cedula exista en la base de datos */
     let check = await bd.query('SELECT COUNT(u.correo) FROM usuarios u WHERE u.cedula=$1', [user.cedula]);
     check = check.rows;
-    if (check.length === 0) return res.status(401).send('user-no-encontrado');
+    if (check.length === 0) { 
+      res.clearCookie('JWT');
+      return res.status(401).send('user-no-encontrado');
+    }
     /* Si todo esta bien, llamamos a next() */
     next();
   }
   catch {
     /* Si el token fue manipulado o no es valido */
+    res.clearCookie('JWT');
     return res.status(401).send('auth-invalida');
   }
 }
