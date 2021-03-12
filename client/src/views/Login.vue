@@ -153,8 +153,8 @@ export default {
       })
       .catch((error) => {
         if (error.response.status === 428) this.$router.push('/init');
+        else this.cargando = false;
       });
-      this.cargando = false;
   }
 
 }

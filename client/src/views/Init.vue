@@ -158,11 +158,9 @@ export default {
         await axios
             .get(`${server_url}/auth/login`, { withCredentials: true })
             .then((res) => {
-                console.log(res.status);
                 if (res.status === 200) this.$router.push('/');
             })
             .catch((error) => {
-                console.log(error.response.status);
                 if (error.response.status === 428) this.cargando = false;
                 else this.$router.push('/login');
             });
