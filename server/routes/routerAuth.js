@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const auth = require('../controllers/auth');
 const mw_token = require('../middleware/token');
+const mw_config = require('../middleware/config');
 
 router.route('/login')
   /*
@@ -9,7 +10,11 @@ router.route('/login')
     verificado a traves del middleware de token, en caso de exito se envia un codigo 200,
     en caso contrario un codigo 401
   */
-  .get(mw_token, async (req, res) => {
+  .get(mw_config, mw_token, async (req, res) => {
+    if (req.body.config) {
+      res.status(200).send('config');
+    }
+
     let codigo = req.body.cedula_auth ? 200 : 401;
     res.sendStatus(codigo);
   })

@@ -15,6 +15,18 @@ function  validar(reglas, valor) {
 
 /***** Reglas de validación ******/
 
+const reglasCedula = [
+  v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
+];
+
+const reglasNombre = [
+  v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
+];
+
+const reglasSegundoNombre = [
+  v => v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
+];
+
 const reglasCorreo = [
   v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres.',
   v => v && v.length <= 256 || 'El correo electrónico debe contener como máximo 256 caracteres.',
@@ -28,6 +40,9 @@ const reglasClave = [
 
 let validador = {
   /* Objeto exportable que contendra los metodos de validación */
+  validarCedula: (cedula) => validar(reglasCedula, cedula),
+  validarNombre: (nombre) => validar(reglasNombre, nombre),
+  validarSegundoNombre: (s_nombre) => validar(reglasSegundoNombre, s_nombre),
   validarCorreo: (correo) => validar(reglasCorreo, correo),
   validarClave: (clave) => validar(reglasClave, clave)
 };

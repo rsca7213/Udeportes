@@ -5,7 +5,15 @@ const validador = require('./validador');
 
 // Función que compara las credenciales introducidas con las guardadas en la base de datos
 async function init (params) {
-    let check = validador.validarCorreo(params.correo);
+    let check = validador.validarCedula(params.cedula);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(params.primer_nombre);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(params.primer_apellido);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(params.segundo_apellido);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarSegundoNombre(params.segundo_nombre);
     if (!check.estado) return { codigo: 422, texto: check.texto }
     check = validador.validarClave(params.clave);
     if (!check.estado) return { codigo: 422, texto: check.texto }

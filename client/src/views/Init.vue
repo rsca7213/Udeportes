@@ -8,23 +8,24 @@
                     <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
                         <v-card-title class="grey--text text--darken-2"> Datos del Administrador </v-card-title>
                         <v-form ref="form" @submit.prevent="submit()" class="px-4">
-                            <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad"
-                            type="text" :rules="reglasCedula" validate-on-blur v-model="inputs.cedula"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Nombre"
-                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.primer_nombre"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Nombre" 
-                            type="text" :rules="reglasSegundoNombre" validate-on-blur v-model="inputs.segundo_nombre"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Apellido" 
-                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.primer_apellido"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Apellido" 
-                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.segundo_apellido"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="256" label="Correo Electrónico" 
+                            <v-text-field name="cedula" clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
+                            type="text" :rules="reglasCedula" validate-on-blur v-model="inputs.cedula" prepend-icon="mdi-card-account-details"> </v-text-field>
+                            <v-text-field name="primer_nombre" clear-icon="mdi-close" clearable counter="50" label="Primer Nombre *"
+                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.primer_nombre" prepend-icon="mdi-account-edit-outline"> </v-text-field>
+                            <v-text-field name="segundo_nombre" clear-icon="mdi-close" clearable counter="50" label="Segundo Nombre" 
+                            type="text" :rules="reglasSegundoNombre" validate-on-blur v-model="inputs.segundo_nombre" prepend-icon="mdi-account-edit-outline"> </v-text-field>
+                            <v-text-field name="primer_apellido" clear-icon="mdi-close" clearable counter="50" label="Primer Apellido *" 
+                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.primer_apellido" prepend-icon="mdi-account-edit-outline"> </v-text-field>
+                            <v-text-field name="segundo_apellido" clear-icon="mdi-close" clearable counter="50" label="Segundo Apellido *" 
+                            type="text" :rules="reglasNombre" validate-on-blur v-model="inputs.segundo_apellido" prepend-icon="mdi-account-edit-outline"> </v-text-field>
+                            <v-text-field name="correo" clear-icon="mdi-close" clearable counter="256" label="Correo Electrónico *" 
                             prepend-icon="mdi-email" type="text" :rules="reglasCorreo" 
                             validate-on-blur v-model="inputs.correo"> </v-text-field>
-                            <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
+                            <v-text-field name="clave" clear-icon="mdi-close" clearable counter="128" label="Contraseña *" 
                             prepend-icon="mdi-key" type="password" :rules="reglasClave" class="mt-4" 
                             validate-on-blur v-model="inputs.clave"> </v-text-field>
                             <v-card-actions class="mt-4">
+                                <v-card-text class="red--text">Requerido(*)</v-card-text>
                                 <v-spacer> </v-spacer>
                                 <v-btn color="primary" class="mx-1" :loading="formCargando" type="submit"> 
                                     <v-icon left> mdi-login </v-icon>
@@ -35,6 +36,19 @@
                     </v-card>
                 </v-col>
             </v-row> 
+            <v-dialog v-model="dialog" max-width="400">
+                <v-card>
+                    <v-card-title>
+                        Bienvenido
+                        <v-spacer />
+                        <v-btn icon @click="dialog=false"><v-icon> mdi-close </v-icon></v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                        Te damos la bienvenida a Udeportes. 
+                        Para iniciar ingresa los datos del Administrador del sistema.
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-container>
     </div>
 </template>
@@ -54,6 +68,7 @@ export default {
             alert:{show: false, message: ''},
             cargando: true,
             formCargando: false,
+            dialog: true,
             inputs: {
                 cedula: '',
                 primer_nombre: '',
