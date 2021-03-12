@@ -3,6 +3,8 @@ import Vuetify from 'vuetify/lib/framework';
 
 Vue.use(Vuetify);
 
+import es from 'vuetify/lib/locale/es';
+
 export default new Vuetify({
   theme: {
     themes: {
@@ -13,5 +15,10 @@ export default new Vuetify({
         error: '#F83E70'
       }
     }
+  },
+
+  lang: {
+    locales: { es },
+    current: 'es',
   }
 });
