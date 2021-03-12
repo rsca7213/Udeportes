@@ -85,7 +85,6 @@ import Cargador from '../components/Cargador';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 
 export default {
-    
 
     name: 'Init',
 
@@ -112,6 +111,7 @@ export default {
             reglasCedula: [
                 v => !!v || 'Este campo es obligatorio',
                 v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
+                v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
             ],
             reglasNombre: [
                 v => !!v || 'Este campo es obligatorio',
