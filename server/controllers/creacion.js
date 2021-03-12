@@ -44,16 +44,42 @@ async function insertar_usuarios(datos_usuario){
 
     // si el usuario no existe, se verifica que no exista ese telefono
     if (!usuario.length) {
-      //si el telefono no es nulo se busca en la base de datos para verificar que ya no exista ese telefono
-      if(datos_usuario.telefono != null){
-        let telefono_usuario = await bd.query(
-          'SELECT u.telefono FROM usuarios u WHERE u.telefono = $1',
-          [datos_usuario.telefono]
-        );
-        telefono_usuario = telefono_usuario.rows;
 
-        //si no hay ningún usuario con ese télefono se procede a insertar al usuario
-        if(!telefono_usuario.length){
+      // buscamos en la base de datos la cedula del usuario para verificar que no exista un usuario
+      //con la misma cedula
+      let usuario_cedula = await bd.query(
+        'SELECT u.cedula FROM usuarios u WHERE u.cedula = $1',
+        [datos_usuario.cedula]
+      );
+      usuario_cedula = usuario_cedula.rows;
+
+      // si no hay ningun usuario con esa cedula
+      if (!usuario_cedula.length) {
+
+        //si el telefono no es nulo se busca en la base de datos para verificar que ya no exista ese telefono
+        if(datos_usuario.telefono != null){
+          let telefono_usuario = await bd.query(
+            'SELECT u.telefono FROM usuarios u WHERE u.telefono = $1',
+            [datos_usuario.telefono]
+          );
+          telefono_usuario = telefono_usuario.rows;
+
+          //si no hay ningún usuario con ese télefono se procede a insertar al usuario
+          if(!telefono_usuario.length){
+            let salt = bcrypt.genSaltSync(10);
+            let hash_clave = bcrypt.hashSync(datos_usuario.clave, salt);
+            await bd.query('INSERT INTO usuarios VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            [datos_usuario.cedula, datos_usuario.rol, datos_usuario.primer_nombre, datos_usuario.primer_apellido,
+            datos_usuario.segundo_apellido, datos_usuario.correo, hash_clave, datos_usuario.segundo_nombre,
+            datos_usuario.telefono, datos_usuario.fecha_nacimiento]
+            );
+            return { codigo: 200, texto: 'Usuario creado exitosamente'}
+          }
+          else{
+            return { codigo: 401, texto: 'El teléfono ya existe.'};
+          }
+        }
+        else{
           let salt = bcrypt.genSaltSync(10);
           let hash_clave = bcrypt.hashSync(datos_usuario.clave, salt);
           await bd.query('INSERT INTO usuarios VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
@@ -63,22 +89,11 @@ async function insertar_usuarios(datos_usuario){
           );
           return { codigo: 200, texto: 'Usuario creado exitosamente'}
         }
-        else{
-          return { codigo: 401, texto: 'El teléfono ya existe.'};
-        }
       }
+      // en caso contraio, se envia un mensaje de error
       else{
-        let salt = bcrypt.genSaltSync(10);
-        let hash_clave = bcrypt.hashSync(datos_usuario.clave, salt);
-        await bd.query('INSERT INTO usuarios VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-        [datos_usuario.cedula, datos_usuario.rol, datos_usuario.primer_nombre, datos_usuario.primer_apellido,
-        datos_usuario.segundo_apellido, datos_usuario.correo, hash_clave, datos_usuario.segundo_nombre,
-        datos_usuario.telefono, datos_usuario.fecha_nacimiento]
-        );
-        return { codigo: 200, texto: 'Usuario creado exitosamente'}
+        return { codigo: 401, texto: 'La cédula ya se encuentra registrada.'};
       }
-      
-      
     }
     // en caso contrario, se envia un mensaje de error
     else {

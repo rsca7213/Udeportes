@@ -7,15 +7,23 @@
           <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="grey--text text--darken-2 d-flex justify-center justify-sm-start"> Registro de usuarios </v-card-title>
             <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
+            <v-row v-if="mensajeError" class="pl-4">
+              <v-col class="error--text"> 
+                <div class="ml-4">
+                  <v-icon color="error"> mdi-alert </v-icon>
+                  <span v-text="mensajeError" class="ml-1"> </span>
+                </div>
+              </v-col>
+            </v-row>
             <v-form ref="form" class="px-4">
               <v-virtual-scroll :items="datosUsuario" :item-height="70" height="420">
                 <template v-slot:default="{ item }">
-                  <v-text-field :name="item.nombre=='Cédula'? 'Cedula':item.nombre" v-model="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" 
-                  :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]"> </v-text-field>     
-                  <v-select v-else-if="item.nombre == 'Rol'" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
+                  <v-text-field :name="item.variable_asociada" v-model="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" 
+                  :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
+                  <v-select v-else-if="item.nombre == 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
                   <v-menu v-else-if="item.nombre == 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-text-field name="Fecha" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]"></v-text-field>
+                      <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]"></v-text-field>
                     </template>
                     <v-date-picker color="primary" ref="picker" v-model="fecha" no-title scrollable @change="guardar" locale="es-419"></v-date-picker>
                   </v-menu>
@@ -92,7 +100,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           {nombre: 'Primer Apellido', requerido:true, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'primer_apellido', validacion: 'reglasNombre'},
           {nombre: 'Segundo Apellido', requerido:true, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'segundo_apellido', validacion: 'reglasNombre'},
           {nombre: 'Rol', requerido:true,icono: 'mdi-account-tie', variable_asociada: 'rol', validacion: 'reglasRol'},
-          {nombre: 'Teléfono', requerido:false, longitud: 13, icono: 'mdi-cellphone', variable_asociada: 'telefono', validacion: 'reglasTelefono'},
+          {nombre: 'Teléfono', requerido:false, longitud: 13, icono: 'mdi-cellphone', variable_asociada: 'telefono', validacion: 'reglasTelefono', placeholder: '+584141234567'},
           {nombre: 'Fecha de Nacimiento', longitud: 10, icono: 'mdi-calendar', variable_asociada: 'fecha_nacimiento', validacion: 'reglasFecha'},
           {nombre: 'Correo',  requerido:true, longitud: 256, icono: 'mdi-email', variable_asociada: 'correo', validacion: 'reglasCorreo'}
         ],
@@ -306,14 +314,21 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           await axios
             .post(`${server_url}/creacion/usuario`, this.inputs, { withCredentials: true })
             .then((res) => {
-              if (res.status === 200) {
-                this.formCargando = false;
+              if (res.data.codigo === 200) {
                 this.display_creacion_dialog= true;      
                 //this.$router.push('/');
-                }
+              }
+              else{
+                this.mensajeError = res.data.texto;
+              }
+              this.formCargando = false;
+
+              //ciclo que se encarga de limpiar todos los campos del formulario
+              Object.keys(this.inputs).forEach(key => {
+                this.inputs[key] = "";
+              });
             })
             .catch((error) => {
-              console.log("bye");
               this.formCargando = false;
               this.$refs.form.reset();
               this.mensajeError = error.response.status === 500

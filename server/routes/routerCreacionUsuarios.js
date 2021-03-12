@@ -4,8 +4,8 @@ const creacion = require('../controllers/creacion');
 
 router.route('/usuario').post(async(req, res) => {
   try{
-    await creacion.insertar_usuarios(req.body);
-    res.sendStatus(200);
+    let result = await creacion.insertar_usuarios(req.body);
+    res.send(result);
   }
   catch(error){
     if (process.env.NODE_ENV === 'development') console.error(error);
