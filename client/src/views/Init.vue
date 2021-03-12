@@ -164,7 +164,7 @@ export default {
             .catch((error) => {
                 console.log(error.response.status);
                 if (error.response.status === 428) this.cargando = false;
-                else { console.log('hola'); this.$router.push('/login'); }
+                else this.$router.push('/login');
             });
          
     }
