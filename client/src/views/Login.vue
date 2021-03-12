@@ -17,10 +17,10 @@
             <v-form ref="form" class="px-4">
               <v-text-field clear-icon="mdi-close" clearable counter="256" label="Correo Electrónico" 
               prepend-icon="mdi-email" type="text" :rules="reglasCorreo" 
-              validate-on-blur v-model="inputs.correo"> </v-text-field>
+              validate-on-blur v-model="inputs.correo" name="correo"> </v-text-field>
               <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
               prepend-icon="mdi-key" type="password" :rules="reglasClave" class="mt-4" 
-              validate-on-blur v-model="inputs.clave"> </v-text-field>
+              validate-on-blur v-model="inputs.clave" name="clave"> </v-text-field>
             </v-form>
             <v-card-actions class="mt-4">
               <v-spacer> </v-spacer>
@@ -151,7 +151,9 @@ export default {
       .then((res) => {
         if (res.status === 200) this.$router.push('/');
       })
-      .catch(() => {});
+      .catch((error) => {
+        if (error.response.status === 428) this.$router.push('/init');
+      });
       this.cargando = false;
   }
 

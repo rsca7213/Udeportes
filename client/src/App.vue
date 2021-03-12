@@ -1,6 +1,6 @@
 <template>
   <v-app id="app"> 
-    <Navbar :ruta="this.$router.currentRoute" />
+    <Navbar v-if="this.rutasConNav.includes(this.$route.path)" />
     <v-main class="grey lighten-4">
       <router-view> </router-view>
     </v-main>
@@ -16,6 +16,13 @@ export default {
 
   components: {
     Navbar
+  },
+
+  data() {
+    return {
+      // rutas que deberian tener sidebar (agregar rutas aqui)
+      rutasConNav: [ '/' ]
+    }
   }
 }
 </script>

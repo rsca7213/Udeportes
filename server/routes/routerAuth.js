@@ -9,12 +9,12 @@ router.route('/login')
     Ruta GET utilizada para verificar si el usuario se encuentra actualmente iniciado en el sistema,
     verificado a traves del middleware de token, en caso de exito se envia un codigo 200,
     en caso contrario un codigo 401
+
+    Inicialmente se llamara a mw_config para determinar si se requiere de configuración inicial, en caso verdadero
+    se devolvera un codigo HTTP 428 (Precondicion requerida) por parte de este y no se ejecutara mas nada 
+    (el front end se encargara de enviar al usuario a la pagina de config respectiva al recibir dicho codigo)
   */
   .get(mw_config, mw_token, async (req, res) => {
-    if (req.body.config) {
-      res.status(200).send('config');
-    }
-
     let codigo = req.body.cedula_auth ? 200 : 401;
     res.sendStatus(codigo);
   })

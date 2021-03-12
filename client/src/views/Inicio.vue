@@ -37,8 +37,9 @@ export default {
       .then((res) => {
         if (res.status === 200) this.cargando = false;
       })
-      .catch(() => {
-        this.$router.push('/login');
+      .catch((error) => {
+        if (error.response.status === 428) this.$router.push('/init');
+        else this.$router.push('/login');
       });
   }
 }

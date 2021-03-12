@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="rutasConNav.includes(ruta.path) && usuario.nombre">
+  <nav v-if="usuario.nombre">
 
     <v-navigation-drawer v-model="menu" app color="primary">
       <v-container>
@@ -68,13 +68,12 @@ export default {
 
   name: 'Navbar',
 
-  // ruta actual de la app
-  props: ["ruta"],
-
   data() {
     return {
       // abrir o cerrar sidebar
       menu: false,
+      // ruta actual
+      ruta: window.location.pathname,
       // datos del usuario actualmente iniciado sesión
       usuario: {
         nombre: null,
@@ -134,9 +133,7 @@ export default {
           admin: true
         },
 
-      ],
-      // rutas que deberian tener sidebar (agregar rutas aqui)
-      rutasConNav: [ '/' ]
+      ]
     }
   },
 
@@ -148,7 +145,10 @@ export default {
         await axios
         .post(`${server_url}/auth/logout`, {}, { withCredentials: true })
         .then((res) => {
-          if (res.status === 200) this.$router.push('/login');
+          if (res.status === 200) {
+            this.usuario = { nombre: null, apellido: null }
+            this.$router.push('/login');
+          }
         })
         .catch(() => {});
       }
@@ -160,7 +160,6 @@ export default {
   // en mounted se chequea que la ruta deba tener sidebar, si es el caso se buscan los datos del usuario
   // haciendo su respectivo request
   async mounted() {
-    if (this.rutasConNav.includes(this.ruta.path)) {
       await axios
       .get(`${server_url}/perfil?data=nombre`, { withCredentials: true })
       .then((res) => {
@@ -173,7 +172,9 @@ export default {
       .catch(() => {});
     }
   }
-}
+  // Se revisa cada vez que se cambia de ruta si es necesario buscar los datos de perfil 
+  // (mas q todo cuando se hace el cambio login -> home)
+
 </script>
 
 <style>
