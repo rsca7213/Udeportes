@@ -315,25 +315,21 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             .post(`${server_url}/creacion/usuario`, this.inputs, { withCredentials: true })
             .then((res) => {
               if (res.data.codigo === 200) {
-                this.display_creacion_dialog= true;      
+                 //ciclo que se encarga de limpiar todos los campos del formulario
+                Object.keys(this.inputs).forEach(key => {
+                  this.inputs[key] = "";
+                });
+                this.display_creacion_dialog= true;    
                 //this.$router.push('/');
               }
               else{
                 this.mensajeError = res.data.texto;
               }
               this.formCargando = false;
-
-              //ciclo que se encarga de limpiar todos los campos del formulario
-              Object.keys(this.inputs).forEach(key => {
-                this.inputs[key] = "";
-              });
             })
-            .catch((error) => {
+            .catch(() => {
               this.formCargando = false;
-              this.$refs.form.reset();
-              this.mensajeError = error.response.status === 500
-                ? 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'
-                : 'Correo electrónico o contraseña incorrecta.';
+              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
             });
         }
       }
