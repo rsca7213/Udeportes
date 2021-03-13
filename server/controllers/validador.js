@@ -16,11 +16,13 @@ function  validar(reglas, valor) {
 /***** Reglas de validación ******/
 
 const reglasCedula = [
+  v => !!v || 'La cedula de identidad es obligatoria',
   v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
   v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
 ];
 
 const reglasNombre = [
+  v => !!v || 'Este campo es obligatorio',
   v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
 ];
 
@@ -45,12 +47,48 @@ const reglasTelefono = [
 ];
 
 const reglasFecha = [
+  v => (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/).test(v) || 'Debe ser una fecha valida dd/mm/yyyy',
   v => v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
 ];
+
+const reglasFechaObligatoria = [
+  v => !!v || 'La fecha es obligatoria.',
+  v => v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/).test(v) || 'Debe ser una fecha valida dd/mm/yyyy',
+  v => v && v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
+]
 
 const reglasRol = [
   v => ['a', 'e'].includes(v) || 'El rol es obligatorio',
 ];
+
+const reglasGenero = [
+  v => v && ['m', 'f'].includes(v) || 'El genero es obligatorio'
+];
+
+const reglasEducacionAtleta = [
+  // El valor "v"  tiene la siguiente forma: v = { id: Number, etapa: Number }
+  v => !v.id || v.id === '0' || typeof(parseInt(v.id)) === typeof(1) || 'La educación no es valida',
+  v => !v.id || v.id === '0' || v.id > 0  || 'La educación no es valida',
+  v => !v.id || v.id === '0' || typeof(v.etapa) === 'number' || 'La etapa debe ser un número',
+  v => !v.id || v.id === '0' || v.etapa > 0 || 'La etapa debe ser mayor o igual a 1',
+  v => !v.id || v.id === '0' || v.etapa < 100 || 'La etapa debe ser menor o igual a 99'
+];
+
+const reglasCorreoOpcional = [
+  v => !v || v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres.',
+  v => !v || v.length <= 256 || 'El correo electrónico debe contener como máximo 256 caracteres.',
+  v => !v || (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v)) || 'Debe ser un correo electrónico valido.'
+];
+
+const reglasBeca = [
+  // El valor "v" tiene la siguiente forma: v = { nombre: String, porcentaje: String }
+  v => !v.nombre || v.nombre.length === 0 || v.nombre.length <= 200 || 'El  nombre de la beca debe contener como máximo 200 caracteres',
+  v => !v.nombre || v.nombre.length === 0 || typeof(v.porcentaje) === 'number' || 'El porcentaje de la beca debe ser un número',
+  v => !v.nombre || v.nombre.length === 0 || v.porcentaje >= 0 || 'El porcentaje de la beca debe ser mayor o igual a 0',
+  v => !v.nombre || v.nombre.length === 0 || v.porcentaje <= 100 || 'El porcentaje de la beca debe ser menor o igual a 100'
+];
+
+
 
 let validador = {
   /* Objeto exportable que contendra los metodos de validación */
@@ -61,7 +99,14 @@ let validador = {
   validarClave: (clave) => validar(reglasClave, clave),
   validarTelefono: (telefono) => validar(reglasTelefono, telefono),
   validarFecha: (fecha) => validar(reglasFecha, fecha),
-  validarRol: (rol) => validar(reglasRol, rol)
+  validarRol: (rol) => validar(reglasRol, rol),
+  validarGenero: (genero) => validar(reglasGenero, genero),
+  // validarEducacionAtleta requiere de un objeto del tipo educacion = { id: Number, etapa: Number }
+  validarEducacionAtleta: (educacion) => validar(reglasEducacionAtleta, educacion),
+  validarCorreoOpcional: (correo) => validar(reglasCorreoOpcional, correo),
+  // validarBeca requiere de un objeto del tipo beca = { nombre: String, porcentaje: Number }
+  validarBeca: (beca) => validar(reglasBeca, beca),
+  validarFechaObligatoria: (fecha) => validar(reglasFechaObligatoria, fecha)
 };
 
 module.exports = validador;
