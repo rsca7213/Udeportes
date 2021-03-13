@@ -1,11 +1,10 @@
 <template>
-  <div class="indigo">
+  <div class="">
     <v-container>
-      <v-row class="mt-12" align="start">
-        <v-col> </v-col>
-        <v-col cols="12" xl="4" lg="6" md="7" sm="10"> 
-          <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
-            <v-card-title class="grey--text text--darken-2 d-flex justify-center justify-sm-start"> Registro de usuarios </v-card-title>
+      <v-row class="" align="start">
+        <v-col cols="12 px-0 py-0"> 
+          <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" rounded="md">
+            <v-card-title class="grey--text text--darken-2 d-flex justify-center justify-sm-start"> {{mensaje_form}} </v-card-title>
             <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
             <v-row v-if="mensajeError" class="pl-4">
               <v-col class="error--text"> 
@@ -18,7 +17,7 @@
             <v-form ref="form" class="px-4">
               <v-virtual-scroll :items="datosUsuario" :item-height="70" height="420">
                 <template v-slot:default="{ item }">
-                  <v-text-field :name="item.variable_asociada" v-model="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" 
+                  <v-text-field :name="item.variable_asociada" v-model="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :readonly="((item.variable_asociada =='cedula') &&(usuario[item.variable_asocidada]!=''))? true:false"
                   :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
                   <v-select v-else-if="item.nombre == 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
                   <v-menu v-else-if="item.nombre == 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
@@ -33,9 +32,16 @@
             <v-card-actions class="mt-4 d-flex justify-center justify-sm-end">
               <v-dialog v-model="modal" persistent max-width="490">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="primary" v-bind="attrs" v-on="on" :disabled="!credencialesValidas" :loading="formCargando">
+                  <v-btn class="mr-2" color="red" dark @click="cerrarForm()">
+                      Cancelar
+                  </v-btn>
+                  <v-btn v-if="!usuario.cedula" color="primary" v-bind="attrs" v-on="on" :disabled="!credencialesValidas" :loading="formCargando">
                     <v-icon left> mdi-login </v-icon>
-                    Registrar 
+                    Registrar
+                  </v-btn>
+                  <v-btn v-else color="primary" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
+                    <v-icon left> mdi-login </v-icon>
+                    Editar
                   </v-btn>
                 </template>
                 <v-card>
@@ -71,7 +77,7 @@
             </v-card-actions>
           </v-card>
           <v-snackbar v-model="display_creacion_dialog" timeout="4000" shaped transition="scroll-y-reverse-transition" multi-line> 
-            <span class="secondary--text">Usuario creado exitosamente!</span> 
+            <span class="secondary--text">{{mensajeExito}}</span> 
             <template v-slot:action="{ attrs }">
               <v-btn color="white" text v-bind="attrs" @click="display_creacion_dialog = false">
                 Cerrar
@@ -79,7 +85,6 @@
             </template>
           </v-snackbar>
         </v-col>
-        <v-col> </v-col>
       </v-row>
     </v-container>
   </div>
@@ -90,6 +95,10 @@ import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
   export default {
     name: 'registro',
+    props: {
+      usuario: {},
+      mensaje_form : String,
+    },
     data() {
       return {
         //informacion de todos los campos de texto del formulario
@@ -106,16 +115,16 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         ],
         //datos del usuario a insertar
         inputs: {
-          cedula: "",
-          primer_nombre: "",
-          segundo_nombre: "",
-          primer_apellido: "",
-          segundo_apellido: "",
-          rol: "",
-          telefono: "",
-          fecha_nacimiento: "",
-          correo: "",
-          clave: ""
+          cedula: '',
+          primer_nombre: '',
+          segundo_nombre: '',
+          primer_apellido: '',
+          segundo_apellido: '',
+          rol: '',
+          telefono: '',
+          fecha_nacimiento: '',
+          correo: '',
+          clave: ''
         },
         roles: [
           {
@@ -129,6 +138,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         formCargando: false,
         // mensaje de error al hacer submit y recibir errores del servidor
         mensajeError: '',
+        //mensaje de éxito para cuando se crea un usuario o se edita un usuario
+        mensajeExito: '',
         //variable que se encarga de mostrar el menu de la fecha
         menu: false,
         //valor inicial de la fecha
@@ -141,6 +152,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         credencialesValidas: false,
         //variable que permite activar el boton de crear usuario cuando la clave es válida
         claveValida: false,
+        //editado:
+        editado: true,
         reglas: {
           reglasCorreo: [
             v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres',
@@ -275,6 +288,20 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         if(revisar === false){
           this.claveValida = true;
         }
+      },
+      //Watcher que actualiza los datos del formulario para editar un usuario luego de la primera vez
+      prop_usuario: function(){
+        if(this.usuario.cedula){
+          this.inputs.cedula = this.usuario.cedula;
+          this.inputs.primer_nombre = this.usuario.primer_nombre;
+          this.inputs.segundo_nombre = this.usuario.segundo_nombre;
+          this.inputs.primer_apellido = this.usuario.primer_apellido;
+          this.inputs.segundo_apellido = this.usuario.segundo_apellido;
+          this.inputs.correo = this.usuario.correo;
+          this.inputs.telefono = this.usuario.telefono;
+          this.inputs.rol = this.usuario.rol==='Entrenador'? 'e':'a';
+          this.inputs.fecha_nacimiento = this.usuario.fecha_nacimiento;
+        }
       }
     },
     computed: {
@@ -288,6 +315,38 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       datos_clave() {
         return `${this.inputs.clave}`;
       },
+      //para poder actualizar los datos del usuario a editar y mostrarlos en el form, luego de la primera vez
+      prop_usuario(){
+        return this.usuario;
+      }
+    },
+    //asigna los datos del usuario a editar para mostrarlos en el form, luego de la primera vez
+    /*updated () {
+      if(this.usuario.cedula){
+        this.inputs.cedula = this.usuario.cedula;
+        this.inputs.primer_nombre = this.usuario.primer_nombre;
+        this.inputs.segundo_nombre = this.usuario.segundo_nombre;
+        this.inputs.primer_apellido = this.usuario.primer_apellido;
+        this.inputs.segundo_apellido = this.usuario.segundo_apellido;
+        this.inputs.correo = this.usuario.correo;
+        this.inputs.telefono = this.usuario.telefono;
+        this.inputs.rol = this.usuario.rol==='Entrenador'? 'e':'a';
+        this.inputs.fecha_nacimiento = this.usuario.fecha_nacimiento;
+      }
+    },*/
+    //asigna los datos del usuario a editar para mostrarlos en el form la primera vez
+    mounted(){
+      if(this.usuario.cedula){
+        this.inputs.cedula = this.usuario.cedula;
+        this.inputs.primer_nombre = this.usuario.primer_nombre;
+        this.inputs.segundo_nombre = this.usuario.segundo_nombre;
+        this.inputs.primer_apellido = this.usuario.primer_apellido;
+        this.inputs.segundo_apellido = this.usuario.segundo_apellido;
+        this.inputs.correo = this.usuario.correo;
+        this.inputs.telefono = this.usuario.telefono;
+        this.inputs.rol = this.usuario.rol==='Entrenador'? 'e':'a';
+        this.inputs.fecha_nacimiento = this.usuario.fecha_nacimiento;
+      }
     },
       
     methods: {
@@ -301,26 +360,67 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         const [year, mes, dia] = fecha.split('-')
         return `${dia}/${mes}/${year}`
       },
+      //funcion encargada de decirle al componente entrenadores que se debe cerrar el modal que
+      //contiene el form de registro de usuarios
+      cerrarForm(){
+        //ciclo que se encarga de limpiar todos los campos del formulario
+        this.$refs.form.resetValidation();
+        Object.keys(this.inputs).forEach(key => {
+          this.inputs[key] = "";
+        });
+        this.$emit('cerrarForm');
+      },
 
-      // submit del form
+      // submit del form para insertar nuevos usuarios
       async submit() {
         this.modal = false;
         if(this.$refs.form.validate()) {
           this.mensajeError = '';
           this.formCargando = true;
           // se solicita al servidor la creacion del usuario con un POST, enviando los datos del usuario, si se recibe
-          // un 200 se redirecciona al Inicio ya que todo salio bien, sino se muestra un mensaje
-          // de error que especifica que sucedio
+          // un 200 se redirecciona se muestra un mensaje de éxito ya que todo salio bien, sino se muestra un mensaje
+          // de error que especifica que sucedió
           await axios
             .post(`${server_url}/entrenadores/insertar`, this.inputs, { withCredentials: true })
             .then((res) => {
               if (res.data.codigo === 200) {
-                 //ciclo que se encarga de limpiar todos los campos del formulario
+                //ciclo que se encarga de limpiar todos los campos del formulario
                 Object.keys(this.inputs).forEach(key => {
-                  this.inputs[key] = "";
+                  this.inputs[key] = '';
                 });
-                this.display_creacion_dialog= true;    
-                //this.$router.push('/');
+                this.mensajeExito = 'Usuario creado exitosamente!'
+                this.display_creacion_dialog= true;
+              }
+              else{
+                this.mensajeError = res.data.texto;
+              }
+              this.formCargando = false;
+            })
+            .catch(() => {
+              this.formCargando = false;
+              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+            });
+        }
+      },
+      //metodo para editar usuarios
+      async editarUsuario(){
+        this.modal = false;
+        if(this.$refs.form.validate()) {
+          this.mensajeError = '';
+          this.formCargando = true;
+          // se solicita al servidor la edicion del usuario con un POST, enviando los datos del usuario, si se recibe
+          // un 200 se muestra un mensaje de éxito ya que todo salio bien, sino se muestra un mensaje
+          // de error que especifica que sucedio
+          await axios
+            .post(`${server_url}/entrenadores/editar`, this.inputs, { withCredentials: true })
+            .then((res) => {
+              if (res.status === 200) {
+                //ciclo que se encarga de limpiar todos los campos del formulario
+                Object.keys(this.inputs).forEach(key => {
+                  this.inputs[key] = '';
+                });
+                this.mensajeExito = 'Usuario editado exitosamente!'
+                this.display_creacion_dialog= true;
               }
               else{
                 this.mensajeError = res.data.texto;

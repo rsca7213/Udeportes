@@ -14,7 +14,7 @@ const routerAuth = require('./routes/routerAuth.js');
 app.use('/auth', routerAuth);
 const routerConfig = require('./routes/routerConfig.js');
 app.use('/init', routerConfig);
-const routerCreacionUsuarios = require('./routes/routerGestionEntrenadores.js');
+const routerCreacionUsuarios = require('./routes/routerEntrenadores.js');
 app.use('/entrenadores', routerCreacionUsuarios);
 const routerPerfil = require('./routes/routerPerfil.js');
 app.use('/perfil', routerPerfil);

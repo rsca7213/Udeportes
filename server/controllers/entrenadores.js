@@ -1,10 +1,10 @@
-// Importamos Bcrypt, Instanciamos la conexión a la BD 
+// Importamos Bcrypt, Instanciamos la conexión a la BD , e importamos el validador de los datos del usuario
 const bcrypt = require('bcrypt');
 const bd = require('../conexion');
 const validador = require('./validador');
 
 //funcion para insertar usuarios
-async function insertar_usuarios(datos_usuario){
+async function insertar_usuario(datos_usuario){
 
   datos_usuario.correo = datos_usuario.correo.toLowerCase();
   // Validamos la informacion del usuario
@@ -92,6 +92,9 @@ async function insertar_usuarios(datos_usuario){
   }
 }
 
+
+//funcion encargada de insertar los datos del usuario, es llamada luego de realizar todas
+//las validaciones y verificaciones respectivas
 async function insertar(datos_usuario){
   try{
     let salt = bcrypt.genSaltSync(10);
@@ -109,6 +112,53 @@ async function insertar(datos_usuario){
   }
 }
 
+//funcion que obtiene todos los usuarios registrados en la base de datos
+async function listar_usuarios(){
+  try {
+    let usuarios = await bd.query(
+      `SELECT u.cedula, u.primer_nombre, u.segundo_nombre, u.primer_apellido,
+       u.segundo_apellido, u.rol, u.correo, u.fecha_nacimiento, u.telefono FROM usuarios u`
+    );
+    usuarios = usuarios.rows;
+
+    if(usuarios.length){
+      return { codigo: 200, usuarios}
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+}
+
+async function editar_usuario(datos_usuario){
+  console.log('2', datos_usuario);
+  try {
+    let usuarios = await bd.query(
+      `SELECT u.cedula, u.correo, u.telefono FROM usuarios u WHERE u.correo = $1 OR u.telefono = $2`,
+      [datos_usuario.correo, datos_usuario.telefono]
+    );
+    usuarios = usuarios.rows;
+    usuarios.forEach(usuario =>{
+      if(usuario['cedula'] !== datos_usuario.cedula){
+        if(usuario['correo'] == datos_usuario.correo){
+          console.log('El correo indicado ya se encuentra en uso.');
+        }
+        else{
+          console.log('El teléfono indicado ya se encuentra en uso.');
+        }
+      }
+      else{
+        console.log('se puede insertar');
+      }
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+}
+
 module.exports = {
-  insertar_usuarios
+  insertar_usuario,
+  listar_usuarios,
+  editar_usuario
 }

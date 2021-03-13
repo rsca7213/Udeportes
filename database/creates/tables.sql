@@ -112,7 +112,7 @@ CREATE TABLE atletas(
   genero CHAR(1) NOT NULL,
   fecha_nacimiento DATE NOT NULL,
   id_educacion NUMERIC(4, 0),
-  segundo_nombre VARCHAR(50) NOT NULL,
+  segundo_nombre VARCHAR(50),
   correo VARCHAR(256) UNIQUE,
   telefono VARCHAR(13) UNIQUE,
   nombre_beca VARCHAR(200),
