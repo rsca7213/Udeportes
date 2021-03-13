@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       // rutas que deberian tener sidebar (agregar rutas aqui)
-      rutasConNav: [ 'Inicio', 'Entrenadores' ]
+      rutasConNav: [ 'Inicio', 'Entrenadores', 'Atletas' ]
     }
   }
 }

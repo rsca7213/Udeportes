@@ -118,7 +118,7 @@ export default {
         },
         {
           nombre: 'Atletas',
-          ruta: '/c',
+          ruta: '/atletas',
           icono: 'mdi-weight-lifter',
           admin: false
         },

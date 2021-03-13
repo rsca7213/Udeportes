@@ -30,9 +30,9 @@ const routes = [
     component: () => import('../views/Atletas.vue')
   },
   {
-      path: '/:catchAll(.*)',
-      name: '404',
-      component: () => import('../views/404')
+    path: '/:catchAll(.*)',
+    name: '404',
+    component: () => import('../views/404')
   }
 ]
 
