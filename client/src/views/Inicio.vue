@@ -38,8 +38,13 @@ export default {
         if (res.status === 200) this.cargando = false;
       })
       .catch((error) => {
-        if (error.response.status === 428) this.$router.push('/init');
-        else this.$router.push('/login');
+        try {
+          if (error.response.status === 428) this.$router.push('/init');
+          else this.$router.push('/login');
+        }
+        catch {
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
       });
   }
 }

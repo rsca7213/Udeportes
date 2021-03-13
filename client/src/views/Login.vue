@@ -1,5 +1,4 @@
 <template>
-
   <div class="login">
     <v-container v-if="!cargando">
       <v-row align="center" style="height: 100vh">
@@ -152,8 +151,13 @@ export default {
         if (res.status === 200) this.$router.push('/');
       })
       .catch((error) => {
-        if (error.response.status === 428) this.$router.push('/init');
-        else this.cargando = false;
+        try {
+          if (error.response.status === 428) this.$router.push('/init');
+          else this.cargando = false;
+        }
+        catch {
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
       });
   }
 

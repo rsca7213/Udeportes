@@ -169,7 +169,7 @@ export default {
   // y luego de haber comprobado estos datos, se solicitan sus datos de nombre y apellido para rellenar
   // el sidebar
   async mounted() {
-      await axios
+      if (await axios
       .get(`${server_url}/auth/admin`, { withCredentials: true })
       .then((res) => {
         // si el usuario es admin y ha iniciado sesión
@@ -181,21 +181,21 @@ export default {
           if (err.response.status === 403) this.usuario.admin = false;
         }
         catch { 
-          window.location.reload(); 
+          console.warn('Warning: No response status was found, is the server running? ');
+          return false; 
         }
-      })
-
-      await axios
-      .get(`${server_url}/perfil?data=nombre`, { withCredentials: true })
-      .then((res) => {
-        if (res.status === 200) 
-          this.usuario = {
-            nombre: res.data.primer_nombre,
-            apellido: res.data.primer_apellido,
-            admin: this.usuario.admin
-          };
-      })
-      .catch(() => {});
+      }))
+        await axios
+        .get(`${server_url}/perfil?data=nombre`, { withCredentials: true })
+        .then((res) => {
+          if (res.status === 200) 
+            this.usuario = {
+              nombre: res.data.primer_nombre,
+              apellido: res.data.primer_apellido,
+              admin: this.usuario.admin
+            };
+        })
+        .catch(() => {});
     }
   }
 </script>

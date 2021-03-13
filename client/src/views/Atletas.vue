@@ -45,14 +45,19 @@ export default {
         }
       })
       .catch((err) => {
-        // no hay config inicial
-        if (err.response.status === 428) this.$router.push('/init');
-        // usuario no ha iniciado sesión
-        else if (err.response.status === 401) this.$router.push('/login');
-        // si el usuario ha iniciado sesión pero no es admin
-        else {
-          this.usuarioAdmin = false;
-          this.cargando = false;
+        try {
+          // no hay config inicial
+          if (err.response.status === 428) this.$router.push('/init');
+          // usuario no ha iniciado sesión
+          else if (err.response.status === 401) this.$router.push('/login');
+          // si el usuario ha iniciado sesión pero no es admin
+          else {
+            this.usuarioAdmin = false;
+            this.cargando = false;
+          }
+        }
+        catch { 
+          console.warn('Warning: No response status was found, is the server running? ');
         }
       })
   }
