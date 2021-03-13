@@ -11,9 +11,6 @@
 
 import Navbar from './components/Navbar';
 
-sessionStorage.setItem('SERVER_PORT', '5000/api');
-sessionStorage.setItem('SERVER_URL', 'http://localhost');
-
 export default {
   name: 'App',
 

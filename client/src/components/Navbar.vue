@@ -177,7 +177,12 @@ export default {
       })
       .catch((err) => {
         // si el usuario ha iniciado sesión pero no es admin
-        if (err.response.status === 403) this.usuario.admin = false;
+        try {
+          if (err.response.status === 403) this.usuario.admin = false;
+        }
+        catch { 
+          window.location.reload(); 
+        }
       })
 
       await axios
