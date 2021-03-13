@@ -173,12 +173,18 @@ export default {
       .get(`${server_url}/auth/admin`, { withCredentials: true })
       .then((res) => {
         // si el usuario es admin y ha iniciado sesión
-        if (res.status === 200) this.usuario.admin = true;
+        if (res.status === 200) {
+          this.usuario.admin = true;
+          return true;
+        }
       })
       .catch((err) => {
         // si el usuario ha iniciado sesión pero no es admin
         try {
-          if (err.response.status === 403) this.usuario.admin = false;
+          if (err.response.status === 403)  {
+            this.usuario.admin = false;
+            return true;
+          }
         }
         catch { 
           console.warn('Warning: No response status was found, is the server running? ');
@@ -195,7 +201,7 @@ export default {
               admin: this.usuario.admin
             };
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }
 </script>
