@@ -24,6 +24,11 @@
           </v-btn>
         </v-col>
       </v-row>
+      <v-row class="d-flex d-md-none">
+        <v-col class="text-center">
+          <RegistrarAtletas />
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12"> 
           <v-data-table :headers="atributosTabla" :items="itemsTabla" :search="inputs.busquedaAtleta" 

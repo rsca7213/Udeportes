@@ -35,12 +35,12 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
               prepend-icon="mdi-card-account-details" type="text" :rules="reglas.cedula"
               validate-on-blur v-model="inputs.cedula" name="cedula"> </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="13" label="Teléfono"
               prepend-icon="mdi-cellphone" type="text" :rules="reglas.telefono"
               validate-on-blur v-model="inputs.telefono" name="telefono"
@@ -48,38 +48,38 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Nombre *"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido"
               validate-on-blur v-model="inputs.primer_nombre" name="primer_nombre"> </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Nombre" 
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.segundo_nombre" 
               validate-on-blur v-model="inputs.segundo_nombre" name="segundo_nombre"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Apellido *"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido"
               validate-on-blur v-model="inputs.primer_apellido" name="primer_apellido"> </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Apellido *" 
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido" 
               validate-on-blur v-model="inputs.segundo_apellido" name="segundo_apellido"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-radio-group v-model="inputs.genero" row prepend-icon="mdi-human-male-female" 
               name="genero" mandatory label="*">
                 <v-radio label="Masculino" value="m"> </v-radio>
                 <v-radio label="Femenino" value="f"> </v-radio>
               </v-radio-group>
             </v-col>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-menu ref="menuFechas" v-model="menuFechas" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -94,26 +94,28 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
-              <v-select v-model.number="inputs.id_educacion" label="Educación" prepend-icon="mdi-school"
-              clear-icon="mdi-close" clearable name="educacion" :rules="reglas.id_educacion"
-              validate-on-blur :loading="educacionCargando" :items="itemsEducacion" :disabled="educacionCargando">
+            <v-col cols="12" sm="6">
+              <v-select v-model="inputs.id_educacion" label="Educación" prepend-icon="mdi-school"
+              clear-icon="mdi-close" name="educacion" clearable
+              :loading="educacionCargando" :items="itemsEducacion" :disabled="educacionCargando">
               </v-select>
             </v-col>
-            <v-col>
-              <v-text-field clear-icon="mdi-close" clearable label="Etapa" :disabled="!inputs.id_educacion"
+            <v-col cols="12" sm="6">
+              <v-text-field clear-icon="mdi-close" clearable 
+              :label="`Etapa (${inputs.id_educacion ? itemsEducacion.filter(item => item.value == inputs.id_educacion)[0].etapa : 'Periodo'})`" 
+              :disabled="!inputs.id_educacion"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.numero_etapa"
               validate-on-blur v-model.number="inputs.numero_etapa" name="numero_etapa"
               :error-messages="validacion.numero_etapa"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Nombre de Beca"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_beca"
               validate-on-blur v-model="inputs.nombre_beca" name="nombre_beca"> </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Porcentaje (%)" :disabled="!inputs.nombre_beca"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.porcentaje_beca"
               validate-on-blur v-model.number="inputs.porcentaje_beca" name="porcentaje_beca"
@@ -138,6 +140,11 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
+const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+
 export default {
   name: 'RegistrarAtletas',
 
@@ -183,9 +190,6 @@ export default {
         ],
         segundo_nombre: [
           v => v === null || v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
-        ],
-        id_educacion: [
-          v => v === null || v === 0 || v > 0 || 'Selecciona una educación'
         ],
         correo: [
           v => v === null || v.length === 0 || v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres',
@@ -280,6 +284,20 @@ export default {
     }
 
     
+  },
+
+  async mounted() {
+    await axios.get(`${server_url}/educaciones`, { withCredentials: true })
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data != 'Vacio') 
+            Array.from(res.data).forEach(item => this.itemsEducacion.push({ text: item.nombre, value: item.id, etapa: item.etapa }));
+          this.educacionCargando = false;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 </script>

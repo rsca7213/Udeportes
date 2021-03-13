@@ -5,7 +5,7 @@ import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false
 
-sessionStorage.setItem('SERVER_PORT', '5000');
+sessionStorage.setItem('SERVER_PORT', '5000/api');
 sessionStorage.setItem('SERVER_URL', 'http://localhost');
 
 new Vue({

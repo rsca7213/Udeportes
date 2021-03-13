@@ -8,16 +8,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 dotenv.config();
+console.log(process.env.CLIENT_LINK);
 app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
 // Inicializar enrutador de express
 const routerAuth = require('./routes/routerAuth.js');
-app.use('/auth', routerAuth);
+app.use('/api/auth', routerAuth);
 const routerConfig = require('./routes/routerConfig.js');
-app.use('/init', routerConfig);
+app.use('/api/init', routerConfig);
 const routerCreacionUsuarios = require('./routes/routerEntrenadores.js');
-app.use('/entrenadores', routerCreacionUsuarios);
+app.use('/api/entrenadores', routerCreacionUsuarios);
 const routerPerfil = require('./routes/routerPerfil.js');
-app.use('/perfil', routerPerfil);
+app.use('/api/perfil', routerPerfil);
+const routerAtletas = require('./routes/routerAtletas.js');
+app.use('/api/atletas', routerAtletas);
+const routerEducaciones = require('./routes/routerEducaciones.js');
+app.use('/api/educaciones', routerEducaciones);
 
 // Para producción
 /*

@@ -1,5 +1,5 @@
 /* instanciamos al router de express y al modulo de atletas */
 const router = require('express').Router();
-const atleta = require('../controllers/atleta');
+const atletas = require('../controllers/atletas');
 
 module.exports = router;
