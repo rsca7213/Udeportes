@@ -112,7 +112,7 @@ export default {
         },
         {
           nombre: 'Entrenadores',
-          ruta: '/prueba',
+          ruta: '/entrenadores',
           icono: 'mdi-whistle',
           admin: true
         },

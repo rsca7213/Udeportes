@@ -47,7 +47,7 @@ const reglasTelefono = [
 ];
 
 const reglasFecha = [
-  v => (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/).test(v) || 'Debe ser una fecha valida dd/mm/yyyy',
+  v => (!v||(v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/)).test(v)) || 'Debe ser una fecha valida dd/mm/yyyy',
   v => v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
 ];
 
