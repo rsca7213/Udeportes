@@ -28,8 +28,7 @@ export default {
 
   data() {
     return {
-      cargando: true,
-      usuarioAdmin: false
+      cargando: true
     }
   },
 
@@ -40,7 +39,6 @@ export default {
       .then((res) => {
         // si el usuario es admin y ha iniciado sesión
         if (res.status === 200) {
-          this.usuarioAdmin = true;
           this.cargando = false;
         }
       })
@@ -52,8 +50,7 @@ export default {
           else if (err.response.status === 401) this.$router.push('/login');
           // si el usuario ha iniciado sesión pero no es admin
           else {
-            this.usuarioAdmin = false;
-            this.cargando = false;
+            this.$router.push('/');
           }
         }
         catch { 

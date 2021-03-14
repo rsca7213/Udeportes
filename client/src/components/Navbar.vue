@@ -120,7 +120,7 @@ export default {
           nombre: 'Atletas',
           ruta: '/atletas',
           icono: 'mdi-weight-lifter',
-          admin: false
+          admin: true
         },
         {
           nombre: 'Competencias',

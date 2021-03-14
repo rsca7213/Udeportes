@@ -7,12 +7,12 @@
       <v-row align="center">
         <v-col cols="12">
           <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
-          prepend-icon="mdi-magnify" type="text" v-model="inputs.busqueda" name="busqueda"> </v-text-field>
+          prepend-icon="mdi-magnify" type="text" v-model="busquedaAtleta" name="busqueda"> </v-text-field>
         </v-col>
       </v-row>
       <v-row class="d-none d-md-flex">
         <v-col cols="12" class="text-right">
-          <RegistrarAtletas />
+          <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
           
           <v-btn color="indigo" dark class="ml-3"> 
             <v-icon left> mdi-chart-arc </v-icon>
@@ -26,21 +26,22 @@
       </v-row>
       <v-row class="d-flex d-md-none">
         <v-col class="text-center">
-          <RegistrarAtletas />
+          <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12"> 
-          <v-data-table :headers="atributosTabla" :items="itemsTabla" :search="inputs.busquedaAtleta" 
+          <v-data-table :headers="atributosTabla" :items="itemsTabla" :search="busquedaAtleta" 
           no-data-text="No hay atletas registrados en el sistema."
           no-results-text="No hay resultados para esta busqueda."
           loading-text="Cargando datos..."
           locale="es-VE"
           fixed-header
-          mobile-breakpoint="sm">
-            <template v-slot:[`item.acciones`]>
+          :loading="tablaCargando"
+          >
+            <template v-slot:item.acciones="{ item }">
               <v-icon dense color="primary"> mdi-eye </v-icon>
-              <v-icon dense color="primary"> mdi-pencil </v-icon>
+              <EditarAtleta :cedula="item.cedula" @atletaEditado="obtenerAtletas()" />
               <v-icon dense color="error"> mdi-delete </v-icon>
             </template>
           </v-data-table>
@@ -52,20 +53,28 @@
 
 <script>
 
+import axios from 'axios';
+
+const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+
 import RegistrarAtletas from './RegistrarAtletas';
+import EditarAtleta from './EditarAtleta';
 
 export default {
   name: 'TablaAtletas',
 
   components: {
-    RegistrarAtletas
+    RegistrarAtletas,
+    EditarAtleta
   }, 
 
   data() {
     return {
-      inputs: {
-        busquedaAtleta: ''
-      },
+      // manejadores de UI
+      tablaCargando: true,
+      // input de busqueda de la tabla
+      busquedaAtleta: '',
+      // headers de la tabla
       atributosTabla: [
         {
           text: 'Nro. Cedula',
@@ -112,7 +121,7 @@ export default {
           align: 'start',
           sortable: true,
           filterable: true,
-          value: 'educacion_etapa',
+          value: 'educacion',
           class: 'primary--text font-weight-bold'
         },
         {
@@ -125,23 +134,44 @@ export default {
           width: '95'
         },
       ],
-      itemsTabla: [
-        {
-          cedula: 26967602,
-          nombre_completo: 'Ricardo Antonio Salvatorelli Capobianco',
-          genero: 'Masculino',
-          edad: '21 Años',
-          correo: 'rsca4321@gmail.com',
-          telefono: '+584141737600',
-          educacion_etapa: 'Ingeniería Informática (8vo Semestre)',
-          beca_porc: 'FAB (30%)'
+      // filas de la tabla (rellenados con la funcion obtenerAtletas)
+      itemsTabla: []
+    }
+  },
+
+  methods: {
+    /*
+      Funcion que hace un request GET para obtener los datos basicos de todos
+      los atletas del sistema para colocarlos en la tabla
+      Se llama en mounted y cuando los componentes CRUD emiten eventos
+    */
+    async obtenerAtletas() {
+      this.tablaCargando = true;
+      // request GET
+      await axios.get(`${server_url}/atletas`, { withCredentials: true })
+      .then((res) => {
+        // Si el codigo es de exito se rellena la tabla
+        if (res.status === 200) {
+          this.itemsTabla = res.data;
         }
-      ]
+      })
+
+      .catch((error) => {
+        try {
+          // Error por parte del servidor
+          console.log(error.response.status);
+        }
+        catch {
+          // Servidor inalcanzable
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
+      });
+      this.tablaCargando = false;
     }
   },
 
   mounted() {
-
+    this.obtenerAtletas();
   }
 
 }

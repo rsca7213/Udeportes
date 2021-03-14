@@ -6,6 +6,14 @@ const mw_rol = require('../middleware/rol');
 
 router.route('/')
   /*
+    Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
+    y los retorna con un codigo 200 en formato Array[] o retorna un error con un codigo 500
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await atletas.obtenerAtletas();
+    res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
+  })
+  /*
     Ruta POST que registrara un atleta haciendo uso del modulo de atletas siempre
     y cuando los datos sean validos, no haya problemas UNIQUE, el usuario este iniciado
     sesión y sea administrador.
@@ -15,6 +23,29 @@ router.route('/')
   .post(mw_token, mw_rol, async (req, res) => {
     let data = await atletas.registrarAtleta(req.body);
     res.status(data.codigo).send(data.texto || 'Atleta registrado');
+  });
+
+router.route('/:cedula')
+  /*
+    Ruta GET que tiene dos opciones, data = basica (retornando los datos del atleta)
+    o data = completa (retornando los datos del atleta, numero de competencias, torneos, equipos y entrenamientos)
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    if (req.query.data === 'basica') {
+      let data = await atletas.obtenerDatosBasicosAtleta(req.params.cedula);
+      res.status(data.codigo).send(data.codigo === 200 ? data.atleta : data.texto);
+    }
+    else {
+      res.status(400).send('Data debe ser basica o completa');
+    }
+  })
+  /*
+    Ruta PUT que actualiza los datos de un atleta con la cedula especificada en los params
+    siempre y cuando no hay otro usuario con datos UNIQUE iguales y los datos sean validos
+  */
+  .put(mw_token, mw_rol, async (req, res) => {
+    let data = await atletas.editarAtleta(req.params.cedula, req.body);
+    res.status(data.codigo).send(data.codigo === 200 ? 'Atleta editado correctamente' : data.texto);
   });
 
 module.exports = router;

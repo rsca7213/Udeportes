@@ -2,23 +2,28 @@
 <span>
   <v-dialog v-model="dialog" class="text-center" max-width="900">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark v-bind="attrs" v-on="on"> 
-        <v-icon left> mdi-plus-circle </v-icon>
-        Registrar atleta
-      </v-btn>
+      <v-icon dense color="primary" dark v-bind="attrs" v-on="on"> mdi-pencil </v-icon>
     </template>
-    <v-card rounded="md">
-      <v-card-title>
-        Registrar Atleta
+    <v-card rounded="md" :loading="dataCargando">
+      <v-container v-if="dataCargando"> 
+        <v-row>
+          <v-col class="text-center grey--text text--darken-2"> 
+            Cargando...
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-card-title v-if="!dataCargando">
+        Editar Atleta
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
-      <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
+      <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"
+      v-if="!dataCargando"> 
         <span>Los campos que contienen un 
           <span class="red--text">"*"</span> 
         son obligatorios</span> 
       </v-card-subtitle>
-      <v-form ref="form" v-model="datosValidos">
+      <v-form ref="form" v-model="datosValidos" v-if="!dataCargando">
         <v-container class="px-md-4">
           <v-row v-if="mensajeError">
             <v-col class="error--text"> 
@@ -125,22 +130,22 @@
           </v-row>
       </v-container>
       </v-form>
-      <v-card-actions> 
+      <v-card-actions v-if="!dataCargando"> 
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
           Cancelar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
-          <v-icon left> mdi-check-circle </v-icon>
-          Registrar
+          <v-icon left> mdi-pencil </v-icon>
+          Editar
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
   <v-snackbar v-model="snackbar" timeout="3000" shaped top>
       <v-icon left color="secondary"> mdi-check-circle </v-icon>
-      <span class="success--text"> ¡El atleta fue registrado con éxito! </span>
+      <span class="success--text"> ¡El atleta fue editado con éxito! </span>
       <template v-slot:action="{ attrs }">
         <v-btn color=¨white¨ text v-bind="attrs" @click="snackbar = false"> Cerrar </v-btn>
       </template>
@@ -154,12 +159,15 @@ import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 
 export default {
-  name: 'RegistrarAtletas',
+  name: 'EditarAtletas',
+
+  props: ['cedula'],
 
   data() {
     return {
       // UI handlers
       dialog: false,
+      dataCargando: true,
       menuFechas: false,
       educacionCargando: true,
       snackbar: false,
@@ -236,9 +244,13 @@ export default {
   },
 
   watch: {
-    dialog () {
-      if (!this.dialog) this.clearDialog();
-    }, 
+    // cuandos e abre el dialogo, se buscan los datos para rellenar el form
+    async dialog () {
+      if (this.dialog) {
+        await this.getData();
+        this.$refs.form.resetValidation();
+      }
+    },
 
     // Watcher que cambia el formato de la fecha 'yyyy-mm-dd' a dd/mm/yyyy'
     fechaSelec () {
@@ -289,16 +301,76 @@ export default {
       return `${dia}/${mes}/${year}`
     },
 
+    // Obtiene los datos de educacion del sistema y los datos del atleta a editar para colocarlos en el form
+    async getData () {
+
+      await axios.get(`${server_url}/educaciones`, { withCredentials: true })
+      .then((res) => {
+        // Exito 200 (se hizo el select query, puede haber o no haber datos, indicado por "Vacio")
+        if (res.status === 200) {
+          // si hay datps se colocan en itemsEducacion
+          if (res.data != 'Vacio') 
+            Array.from(res.data).forEach(item => this.itemsEducacion.push({ text: item.nombre, value: item.id, etapa: item.etapa }));
+          // Maneja el atributo loading del select box
+          this.educacionCargando = false;
+        }
+      })
+
+      .catch((error) => {
+        try {
+          // Error por parte del servidor
+          console.log(error.response.status);
+        }
+        catch {
+          // Servidor inalcanzable
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
+      });
+      // Busca los datos del atleta para colocarlos en el form
+      await axios.get(`${server_url}/atletas/${this.cedula}?data=basica`, {  withCredentials: true })
+      .then((res) => {
+        // Exito 200 (Se obtuvieron los datos del atleta)
+        if (res.status === 200) {
+          this.inputs = {
+            cedula: res.data.cedula,
+            primer_nombre: res.data.primer_nombre,
+            segundo_nombre: res.data.segundo_nombre,
+            primer_apellido: res.data.primer_apellido,
+            segundo_apellido: res.data.segundo_apellido,
+            genero: res.data.genero,
+            fecha_nacimiento: res.data.fecha_nacimiento,
+            id_educacion: res.data.id_educacion,
+            correo: res.data.correo,
+            telefono: res.data.telefono,
+            nombre_beca: res.data.nombre_beca,
+            porcentaje_beca: res.data.porcentaje_beca ? parseInt(res.data.porcentaje_beca) : null,
+            numero_etapa: res.data.numero_etapa ? parseInt(res.data.numero_etapa) : null
+          };
+          this.dataCargando = false;
+        }
+      })
+      .catch((error) => {
+        try {
+          // Error por parte del servidor
+          console.log(error.response.status);
+        }
+        catch {
+          // Servidor inalcanzable
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
+      })
+    },
+
     /*
-      Funcion que hace la solicitud POST al servidor para registrar a un atleta,
+      Funcion que hace la solicitud PUT al servidor para editar al atleta,
       en caso de 200 (exito) se cierra el dialog, se reinicia todo y se despliega un snackbar de exito,
       en caso de error (bien sea 400 unicidad o 500 error generico) se coloca el mensaje de error en la UI
     */
     async sendData () {
       // maneja el atributo loading del boton
       this.formEnviando = true;
-      // request POST
-      await axios.post(`${server_url}/atletas`, this.inputs, { withCredentials: true })
+      // request PUT
+      await axios.put(`${server_url}/atletas/${this.cedula}`, this.inputs, { withCredentials: true })
         .then((res) => {
           // Exito 200
           if (res.status === 200) this.clearDialog(true);
@@ -326,6 +398,7 @@ export default {
     clearDialog(success = false) {
       this.dialog = false;
       this.mensajeError = '';
+      this.datosValidos = true;
       this.$refs.form.reset();
       this.validacion = {
         porcentaje_beca: '',
@@ -334,7 +407,7 @@ export default {
       };
       if (success) {
         this.snackbar = true;
-        this.$emit('atletaRegistrado');
+        this.$emit('atletaEditado');
       }
     },
 
@@ -354,34 +427,6 @@ export default {
     }
 
     
-  },
-
-  /*
-    En mounted, se rellena el select box de educaciones, si hay datos se colocan en itemsEducacion
-  */
-  async mounted() {
-    await axios.get(`${server_url}/educaciones`, { withCredentials: true })
-      .then((res) => {
-        // Exito 200 (se hizo el select query, puede haber o no haber datos, indicado por "Vacio")
-        if (res.status === 200) {
-          // si hay datps se colocan en itemsEducacion
-          if (res.data != 'Vacio') 
-            Array.from(res.data).forEach(item => this.itemsEducacion.push({ text: item.nombre, value: item.id, etapa: item.etapa }));
-          // Maneja el atributo loading del select box
-          this.educacionCargando = false;
-        }
-      })
-
-      .catch((error) => {
-        try {
-          // Error por parte del servidor
-          console.log(error.response.status);
-        }
-        catch {
-          // Servidor inalcanzable
-          console.warn('Warning: No response status was found, is the server running? ');
-        }
-      });
   }
 }
 </script>
