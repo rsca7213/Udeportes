@@ -30,6 +30,11 @@ const routes = [
     component: () => import('../views/Atletas.vue')
   },
   {
+    path: '/deportes',
+    name: 'Deportes',
+    component: () => import('../views/Deportes.vue')
+  },
+  {
     path: '/:catchAll(.*)',
     name: '404',
     component: () => import('../views/404')

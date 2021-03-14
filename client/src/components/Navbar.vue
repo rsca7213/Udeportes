@@ -106,7 +106,7 @@ export default {
         },
         {
           nombre: 'Deportes',
-          ruta: '/a',
+          ruta: '/deportes',
           icono: 'mdi-basketball',
           admin: true,
         },
