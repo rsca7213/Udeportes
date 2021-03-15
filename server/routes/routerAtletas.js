@@ -46,6 +46,14 @@ router.route('/:cedula')
   .put(mw_token, mw_rol, async (req, res) => {
     let data = await atletas.editarAtleta(req.params.cedula, req.body);
     res.status(data.codigo).send(data.codigo === 200 ? 'Atleta editado correctamente' : data.texto);
+  })
+  /*
+    Ruta DELETE que elimina a un atleta del sistema con la cedula especificada junto con los registros
+    en tablas que contengan datos del atleta, siempre y cuando exista el atleta y la cedula sea valida
+  */
+ .delete(mw_token, mw_rol, async (req, res) => {
+    let data = await atletas.eliminarAtleta(req.params.cedula);
+    res.status(data.codigo).send(data.texto);
   });
 
 module.exports = router;

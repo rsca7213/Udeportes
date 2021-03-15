@@ -262,9 +262,43 @@ async function editarAtleta (cedula, atleta) {
   }
 }
 
+/*
+  Funcion que elimina a un atleta de la base de datos con la cedula especificada,
+  Adicionalmente la funcion tambien eliminar los registros del atleta en todas las tablas
+  que le hagan referencia. Las tablas de las que se eliminara son las siguientes:
+  Atletas, Rendimientos, Inscripciones, Participaciones.
+  La funcion retornara los siguientes codigos: 200 Exito, 404 Atleta no existe, 500 Error inesperado
+*/
+async function eliminarAtleta (cedula) {
+  try {
+    // validamos la cedula
+    let check = validador.validarCedula(cedula);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    // validamos la existencia del atleta en el sistema
+    let query = await bd.query(`SELECT EXISTS (SELECT u.cedula FROM usuarios u WHERE u.cedula = $1) AS "existe"`, [cedula]);
+    if (!query.rowCount)
+      return { codigo: 404, texto: 'Este atleta no esta registrado en el sistema.' }
+    // Si la cedula es valida y el atleta existe
+    else {
+      // Eliminamos de las tablas correspondientes y retornamos un codigo 200 de exito
+      await bd.query(`DELETE FROM participaciones WHERE cedula_atleta = $1`, [cedula]);
+      await bd.query(`DELETE FROM inscripciones WHERE cedula_atleta = $1`, [cedula]);
+      await bd.query(`DELETE FROM rendimientos WHERE cedula_atleta = $1`, [cedula]);
+      await bd.query(`DELETE FROM atletas WHERE cedula = $1`, [cedula]);
+
+      return { codigo: 200, texto: 'Atleta eliminado satisfactoriamente.' }
+    }
+  }
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentelo de nuevo.'}; 
+  }
+}
+
 module.exports = {
   obtenerAtletas,
   registrarAtleta,
   obtenerDatosBasicosAtleta,
-  editarAtleta
+  editarAtleta,
+  eliminarAtleta
 }

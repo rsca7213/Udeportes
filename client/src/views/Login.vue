@@ -7,10 +7,12 @@
           <v-img src="../assets/logo-text.png" contain max-width="240" class="mb-3"> </v-img>
           <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="grey--text text--darken-2"> Inicio de Sesión </v-card-title>
-            <v-row v-if="mensajeError" class="pl-4">
+            <v-row v-if="mensajeError">
               <v-col class="error--text"> 
-                <v-icon color="error"> mdi-alert </v-icon>
-                <span v-text="mensajeError" class="ml-1"> </span>
+                <v-alert text color="error" dense v-if="mensajeError">
+                  <v-icon color="error"> mdi-alert </v-icon>
+                  <span v-text="mensajeError" class="ml-1"> </span>
+                </v-alert>
               </v-col>
             </v-row>
             <v-form ref="form" class="px-4">

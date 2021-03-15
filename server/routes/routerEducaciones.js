@@ -18,6 +18,35 @@ router.route('/')
       else res.send(data.educaciones);
     }
     else res.sendStatus(data.codigo);
+  })
+  /*
+    Ruta POST que creara una educacion en el sistema siempre y cuando los datos
+    sean validos
+    Ruta protegida por MW_TOKEN y MW_ROL
+  */
+  .post(mw_token, mw_rol, async (req, res) => {
+    let data = await educaciones.crearEducacion(req.body);
+    res.status(data.codigo).send(data.texto);
+  });
+
+router.route('/:id')
+  /*
+    Ruta PUT que editara los datos de una educacion del sistema siempre
+    y cuando esta exista y los datos sean validos
+    Ruta protegida por MW_TOKEN y MW_ROL
+  */
+  .put(mw_token, mw_rol, async (req, res) => {
+    let data = await educaciones.editarEducacion(req.params.id, req.body);
+    res.status(data.codigo).send(data.texto);
+  })
+  /*
+    Ruta DELETE que eliminara los datos de una educacion del sistema siempre
+    y cuando esta exista
+    Ruta protegida por MW_TOKEN y MW_ROL
+  */
+  .delete(mw_token, mw_rol, async (req, res) => {
+    let data = await educaciones.eliminarEducacion(req.params.id);
+    res.status(data.codigo).send(data.texto);
   });
 
 module.exports = router;

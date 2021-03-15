@@ -14,19 +14,19 @@
         <v-col cols="12" class="text-right">
           <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
           
-          <v-btn color="indigo" dark class="ml-3"> 
+          <v-btn color="indigo" dark class="mx-3"> 
             <v-icon left> mdi-chart-arc </v-icon>
             Atletas por Educación
           </v-btn>
-          <v-btn color="indigo" dark class="ml-3"> 
-            <v-icon left> mdi-school </v-icon>
-            Gestionar Niveles Educativos
-          </v-btn>
+          <EducacionesDialog @educacionEvent="obtenerAtletas()"/>
         </v-col>
       </v-row>
       <v-row class="d-flex d-md-none">
-        <v-col class="text-center">
+        <v-col class="text-center" cols="12">
           <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
+        </v-col>
+        <v-col class="text-center" cols="12">
+          <EducacionesDialog @educacionEvent="obtenerAtletas()" />
         </v-col>
       </v-row>
       <v-row>
@@ -42,7 +42,7 @@
             <template v-slot:item.acciones="{ item }">
               <v-icon dense color="primary"> mdi-eye </v-icon>
               <EditarAtleta :cedula="item.cedula" @atletaEditado="obtenerAtletas()" />
-              <v-icon dense color="error"> mdi-delete </v-icon>
+              <EliminarAtleta :cedula="item.cedula" :nombre_completo="item.nombre_completo" @atletaEliminado="obtenerAtletas()" />
             </template>
           </v-data-table>
         </v-col>
@@ -59,13 +59,17 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
 
 import RegistrarAtletas from './RegistrarAtletas';
 import EditarAtleta from './EditarAtleta';
+import EliminarAtleta from './EliminarAtleta';
+import EducacionesDialog from '../Educaciones/EducacionesDialog';
 
 export default {
   name: 'TablaAtletas',
 
   components: {
     RegistrarAtletas,
-    EditarAtleta
+    EditarAtleta,
+    EliminarAtleta,
+    EducacionesDialog
   }, 
 
   data() {
@@ -78,7 +82,7 @@ export default {
       atributosTabla: [
         {
           text: 'Nro. Cedula',
-          align: 'center',
+          align: 'start',
           sortable: true,
           filterable: true,
           value: 'cedula',
@@ -94,7 +98,7 @@ export default {
         },
         {
           text: 'Genero',
-          align: 'center',
+          align: 'start',
           sortable: true,
           filterable: true,
           value: 'genero',
@@ -102,7 +106,7 @@ export default {
         },
         {
           text: 'Edad',
-          align: 'center',
+          align: 'start',
           sortable: true,
           filterable: true,
           value: 'edad',
@@ -126,7 +130,7 @@ export default {
         },
         {
           text: 'Acciones',
-          align: 'center',
+          align: 'start',
           sortable: false,
           filterable: false,
           value: 'acciones',

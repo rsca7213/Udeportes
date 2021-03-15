@@ -82,11 +82,24 @@ const reglasCorreoOpcional = [
 
 const reglasBeca = [
   // El valor "v" tiene la siguiente forma: v = { nombre: String, porcentaje: String }
-  v => !v.nombre || v.nombre.length === 0 || v.nombre.length <= 200 || 'El  nombre de la beca debe contener como máximo 200 caracteres',
+  v => !v.nombre || v.nombre.length === 0 || v.nombre.length <= 200 || 'El nombre de la beca debe contener como máximo 200 caracteres',
   v => !v.nombre || v.nombre.length === 0 || typeof(v.porcentaje) === 'number' || 'El porcentaje de la beca debe ser un número',
   v => !v.nombre || v.nombre.length === 0 || v.porcentaje >= 0 || 'El porcentaje de la beca debe ser mayor o igual a 0',
   v => !v.nombre || v.nombre.length === 0 || v.porcentaje <= 100 || 'El porcentaje de la beca debe ser menor o igual a 100'
 ];
+
+const reglasNombreEducacion = [
+  v => !!v || 'El nombre es obligatorio',
+  v => v && v.length <= 200 || 'El nombre debe contener como máximo 200 caracteres',
+];
+
+const reglasEtapaEducacion = [
+  v => v && ['m', 't', 's', 'a'].includes(v) || 'El tipo de etapa o periodo es obligatorio'
+];
+
+const reglasId = [
+  v => v && typeof(v) === typeof(1) || 'La id no es un numero'
+]
 
 
 
@@ -106,7 +119,10 @@ let validador = {
   validarCorreoOpcional: (correo) => validar(reglasCorreoOpcional, correo),
   // validarBeca requiere de un objeto del tipo beca = { nombre: String, porcentaje: Number }
   validarBeca: (beca) => validar(reglasBeca, beca),
-  validarFechaObligatoria: (fecha) => validar(reglasFechaObligatoria, fecha)
+  validarFechaObligatoria: (fecha) => validar(reglasFechaObligatoria, fecha),
+  validarNombreEducacion: (nombre) => validar(reglasNombreEducacion, nombre),
+  validarEtapaEducacion: (etapa) => validar(reglasEtapaEducacion, etapa),
+  validarId: (id) => validar(reglasId, id)
 };
 
 module.exports = validador;

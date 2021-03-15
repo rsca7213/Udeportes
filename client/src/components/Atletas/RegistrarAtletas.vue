@@ -21,11 +21,11 @@
       <v-form ref="form" v-model="datosValidos">
         <v-container class="px-md-4">
           <v-row v-if="mensajeError">
-            <v-col class="error--text"> 
-              <div class="ml-0">
+            <v-col class="py-0 my-0"> 
+              <v-alert text color="error" dense>
                 <v-icon color="error"> mdi-alert </v-icon>
                 <span v-text="mensajeError" class="ml-1"> </span>
-              </div>
+              </v-alert>
             </v-col>
           </v-row>
           <v-row>
