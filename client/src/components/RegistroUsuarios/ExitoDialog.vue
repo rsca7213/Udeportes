@@ -6,7 +6,7 @@
       <v-icon v-else left color="red"> mdi-alert-circle </v-icon>
       <span :class="(props_exito_dialog.estatus_operacion)? 'secondary--text':'red--text'">{{props_exito_dialog.mensaje_operacion}}</span> 
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs">
+        <v-btn color="white" text v-bind="attrs" @click="display = false">
           Cerrar
         </v-btn>
       </template>

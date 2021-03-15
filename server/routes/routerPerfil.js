@@ -23,6 +23,10 @@ router.route('/')
       else
         res.status(data.codigo).send(data.texto);
     }
+    else if (req.query.data === 'cedula') {
+      let data = req.body.cedula_auth;
+      res.send(data);
+    }
 
   });
 

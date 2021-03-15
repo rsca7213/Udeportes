@@ -4,25 +4,28 @@
       <v-row class="" align="start">
         <v-col cols="12 px-0 py-0"> 
           <v-card rounded="md">
-            <v-card-title class="pl-8">
+            <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
               {{mensaje_form}}
               <v-spacer> </v-spacer>
               <v-btn icon @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})"><v-icon> mdi-close </v-icon></v-btn>
             </v-card-title>
-            <v-card-subtitle class="pb-0 pl-8 grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
-            <div v-if="mensajeError" class="">
-              <v-col class="error--text px-4"> 
-                <div class="ml-4">
-                  <v-icon color="error"> mdi-alert </v-icon>
-                  <span v-text="mensajeError" class="ml-1"> </span>
-                </div>
-              </v-col>
-            </div>
-            <v-form ref="form">
+            <div v-show="!confirmar_registro">
+              <v-card-subtitle class="pb-0 pt-3 pl-8 grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
+              <div v-if="mensajeError" class="">
+                <v-col class="error--text px-4"> 
+                  <div class="ml-4">
+                    <v-alert text color="error" dense>
+                      <v-icon color="error"> mdi-alert </v-icon>
+                      <span v-text="mensajeError" class="ml-1"> </span>
+                    </v-alert>
+                  </div>
+                </v-col>
+              </div>
+              <v-form ref="form">
                 <v-container class="px-md-4">
                   <v-row class="px-0">
                     <v-col cols=12 :sm="(item.nombre === 'Correo')? 12:6" v-for="item in datosUsuario" :key="item.cedula">
-                      <v-text-field :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :readonly="((item.variable_asociada =='cedula')&&(usuario.cedula)!=undefined)? true:false"
+                      <v-text-field :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre"
                       :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
                       <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
                       <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
@@ -32,60 +35,52 @@
                         <v-date-picker color="primary" ref="picker" v-model="fecha" no-title scrollable @change="guardar" locale="es-419"></v-date-picker>
                       </v-menu>
                     </v-col>
-                </v-row>
+                  </v-row>
                 </v-container>
-            </v-form>
-            <v-card-actions class="mt-4 d-flex justify-center justify-sm-end flex-column flex-sm-row">
-              <v-dialog v-model="modal" persistent max-width="490">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn class="mr-2 mb-2" color="red" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
-                      <v-icon left> mdi-close </v-icon>
-                      Cancelar
-                  </v-btn>
-                  <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" v-bind="attrs" v-on="on" :disabled="!credencialesValidas" :loading="formCargando">
-                    <v-icon left> mdi-check-circle </v-icon>
-                    Registrar
-                  </v-btn>
-                  <v-btn v-else color="secondary" class="mr-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
-                    <v-icon left> mdi-check-circle </v-icon>
-                    Editar
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title class="headline pl-9">
-                    Registrar usuario
-                  </v-card-title>
-                  <v-card-text>
-                    <v-list>
-                      <div v-for="dato in datosUsuario" :key="dato.nombre">
-                        <v-list-item v-if="inputs[dato.variable_asociada] != ''">
-                          <v-list-item-content class="py-1">
-                            <v-list-item-title>{{dato.nombre}}</v-list-item-title>
-                            <v-list-item-subtitle>{{(dato.variable_asociada == 'rol')? ((inputs[dato.variable_asociada] == 'a')? 'Administrador':'Entrenador'): inputs[dato.variable_asociada]}}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </div>
-                    </v-list>
-                    <p class="subtitle-1 px-4 my-0">Por favor introduce una contraseña para el usuario.</p>
-                    <v-form ref="form_clave">
-                      <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
-                      prepend-icon="mdi-key" type="password" class="px-4" 
-                      validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
-                    </v-form>
-                  </v-card-text>
-                  <v-card-actions class="d-flex justify-center justify-sm-end">
-                    <v-btn color="red" dark @click="cerrarConfirmacion()">
-                      <v-icon left> mdi-close </v-icon>
-                      Cancelar
-                    </v-btn>
-                    <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
-                      <v-icon left> mdi-check-circle </v-icon>
-                      Aceptar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-card-actions>
+              </v-form>
+              <v-card-actions class="mt-4 d-flex justify-center justify-sm-end flex-column flex-sm-row">
+                <v-btn class="mr-2 mb-2" color="red" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
+                    <v-icon left> mdi-close </v-icon>
+                    Cancelar
+                </v-btn>
+                <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
+                  <v-icon left> mdi-check-circle </v-icon>
+                  Registrar
+                </v-btn>
+                <v-btn v-else color="secondary" class="mr-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
+                  <v-icon left> mdi-check-circle </v-icon>
+                  Editar
+                </v-btn>
+              </v-card-actions>
+            </div>
+            <div v-show="confirmar_registro">
+              <v-card-text class="pb-0 pt-4 text-subtitle-1">
+                <v-container>
+                  <v-row class="px-1">
+                    <v-col  cols=12 sm=6 lg=4 class="py-1" v-for="dato in datosUsuario" :key="dato.nombre" v-show="inputs[dato.variable_asociada] != ''">
+                      <b><span class="my-0 grey--text text--darken-2">{{dato.nombre+": "}}</span></b>
+                      <span class="my-0 grey--text text--darken-2">{{(dato.variable_asociada == 'rol')? ((inputs[dato.variable_asociada] == 'a')? 'Administrador':'Entrenador'): inputs[dato.variable_asociada]}}</span>  
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <p class="subtitle-1 px-4 mb-0 mt-5">Por favor introduce una contraseña para el usuario.</p>
+                <v-form ref="form_clave">
+                  <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
+                  prepend-icon="mdi-key" type="password" class="px-4" 
+                  validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
+                </v-form>
+              </v-card-text>
+              <v-card-actions class="d-flex justify-center justify-sm-end mt-2">
+                <v-btn color="red" dark @click="confirmar_registro = false">
+                  <v-icon left> mdi-close </v-icon>
+                  Regresar
+                </v-btn>
+                <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
+                  <v-icon left> mdi-check-circle </v-icon>
+                  Aceptar
+                </v-btn>
+              </v-card-actions>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -101,6 +96,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
     props: {
       usuario: {},
       mensaje_form : String,
+      cedula_usuario : String
     },
     data() {
       return {
@@ -137,7 +133,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             nombre: 'Entrenador', valor: 'e'
           },
         ],
-        // el boton del form se coloca en loading si formCargando es true
+        // el botón del form se coloca en loading si formCargando es true
         formCargando: false,
         // mensaje de error al hacer submit y recibir errores del servidor
         mensajeError: '',
@@ -149,12 +145,12 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         fecha: null,
         //variable que se encarga de mostrar el modal con el resumen de los datos del usuario a crear
         modal: false,
-        //variable que se encarga de mostrar el dialogue en caso de que se cree el usuario con exito
-        //display_creacion_dialog: false,
         //variable de control para saber si todos los datos del usuario a crear son validos
         credencialesValidas: false,
         //variable que permite activar el boton de crear usuario cuando la clave es válida
         claveValida: false,
+        //variable para mostrar la confirmación del registro en el mismo dialog donde se muestra el form de registro
+        confirmar_registro: false,
         //editado:
         editado: true,
         reglas: {
@@ -308,7 +304,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       }
     },
     computed: {
-      //metodo que retorna los datos que serán observados por el watcher(datos)
+      //método que retorna los datos que serán observados por el watcher(datos)
       datos() {
         return `${this.inputs.cedula}|${this.inputs.primer_nombre}|${this.inputs.segundo_nombre}|
         ${this.inputs.primer_apellido}|${this.inputs.segundo_apellido}|${this.inputs.rol}|
@@ -318,25 +314,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       datos_clave() {
         return `${this.inputs.clave}`;
       },
-      //para poder actualizar los datos del usuario a editar y mostrarlos en el form, luego de la primera vez
-      /*prop_usuario(){
-        return this.usuario;
-      }*/
     },
-    //asigna los datos del usuario a editar para mostrarlos en el form, luego de la primera vez
-    /*updated () {
-      if(this.usuario.cedula){
-        this.inputs.cedula = this.usuario.cedula;
-        this.inputs.primer_nombre = this.usuario.primer_nombre;
-        this.inputs.segundo_nombre = this.usuario.segundo_nombre;
-        this.inputs.primer_apellido = this.usuario.primer_apellido;
-        this.inputs.segundo_apellido = this.usuario.segundo_apellido;
-        this.inputs.correo = this.usuario.correo;
-        this.inputs.telefono = this.usuario.telefono;
-        this.inputs.rol = this.usuario.rol==='Entrenador'? 'e':'a';
-        this.inputs.fecha_nacimiento = this.usuario.fecha_nacimiento;
-      }
-    },*/
     //asigna los datos del usuario a editar para mostrarlos en el form la primera vez
     mounted(){
       if(this.usuario.cedula){
@@ -350,9 +328,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         this.inputs.rol = this.usuario.rol==='Entrenador'? 'e':'a';
         this.inputs.fecha_nacimiento = this.usuario.fecha_nacimiento;
       }
-      console.log(this.usuario.cedula);
     },
-      
     methods: {
       //funcion encargada de guardar la fecha (cierra el calendario luego de elegida la fecha)
       guardar (fecha) {
@@ -370,17 +346,34 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         en caso de que exista
       */
       // :estatus_operacion (true = exitosa, false = fallida)
-      // :mensaje_operacion (mensaje a mostrar segundo el tipo de operacion y su estatus)
+      // :mensaje_operacion (mensaje a mostrar segun el tipo de operación y su estatus)
       cerrarForm({estatus_operacion, mensaje_operacion}){
-        //ciclo que se encarga de limpiar todos los campos del formulario
+        
+        //se reinicia la validación y se quita el mensaje de error en caso de que exista
         this.$refs.form.resetValidation();
+        this.mensajeError = '';
+
+        //se oculta el modal de confirmar registro para que se muestre de primero el formulario
+        this.confirmar_registro = false;
+
+        //ciclo que se encarga de limpiar todos los campos del formulario
         Object.keys(this.inputs).forEach(key => {
           this.inputs[key] = "";
         });
 
         this.$emit('cerrarForm', {estatus_operacion, mensaje_operacion});
       },
-
+      //se encarga de mostrar el formulario de confirmación de registro
+      mostrarConfirmacion(){
+        this.$refs.form_clave.resetValidation();
+        this.confirmar_registro = !this.confirmar_registro;
+      },
+      // función encargada de cerrar el modal de confirmacion de inserción
+      cerrarConfirmacion(){
+        this.modal = false;
+        this.$refs.form_clave.resetValidation();
+        this.inputs.clave='';
+      },
       // submit del form para insertar nuevos usuarios
       async submit() {
         this.modal = false;
@@ -393,7 +386,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             de error que especifica que sucedió
           */
           await axios
-            .post(`${server_url}/entrenadores/insertar`, this.inputs, { withCredentials: true })
+            .post(`${server_url}/entrenadores/`, this.inputs, { withCredentials: true })
             .then((res) => {
               if (res.data.codigo === 200) {
                 //ciclo que se encarga de limpiar todos los campos del formulario
@@ -403,20 +396,23 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
                 this.mensajeExito = 'Usuario creado exitosamente!'
                 //this.display_creacion_dialog= true;
                 this.formCargando = false;
+                //para cerrar el modal
+                this.confirmar_registro = false;
                 this.cerrarForm({estatus_operacion: true, mensaje_operacion: this.mensajeExito});
               }
               else{
                 this.inputs.clave='';
+                //se oculta el dialog de confirmar y se muestra el formulario con el mensaje de error
+                this.confirmar_registro = false;
                 this.mensajeError = res.data.texto;
                 this.formCargando = false;
-                //this.cerrarForm({estatus_operacion: false, mensaje_operacion: this.mensajeError});
               }
-              //this.formCargando = false;
             })
             .catch(() => {
               this.formCargando = false;
-              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-              //this.cerrarForm({estatus_operacion: false, mensaje_operacion: this.mensajeError});
+              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.';
+              //se oculta el dialog de confirmar y se muestra el formulario con el mensaje de error
+              this.confirmar_registro = false;
             });
         }
       },
@@ -426,42 +422,35 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         if(this.$refs.form.validate()) {
           this.mensajeError = '';
           this.formCargando = true;
-          // se solicita al servidor la edicion del usuario con un POST, enviando los datos del usuario, si se recibe
-          // un 200 se muestra un mensaje de éxito ya que todo salio bien, sino se muestra un mensaje
-          // de error que especifica que sucedio
+          /*
+            se solicita al servidor la ediciónn del usuario con un PUT, enviando los datos del usuario, si se recibe
+            un 200 se muestra un mensaje de éxito ya que todo la operación fue exitosa, sino se muestra un mensaje
+            de error que específica que sucedió
+          */
           await axios
-            .post(`${server_url}/entrenadores/editar`, this.inputs, { withCredentials: true })
+            .put(`${server_url}/entrenadores/${this.cedula_usuario}`, this.inputs, { withCredentials: true })
             .then((res) => {
-              if (res.status === 200) {
+              if (res.data.codigo === 200) {
                 //ciclo que se encarga de limpiar todos los campos del formulario
                 Object.keys(this.inputs).forEach(key => {
                   this.inputs[key] = '';
                 });
                 this.formCargando = false;
-                this.mensajeExito = 'Usuario editado exitosamente!'
-                //this.display_creacion_dialog= true;
+                this.mensajeExito = 'Usuario editado exitosamente!';
                 this.cerrarForm({estatus_operacion: true, mensaje_operacion: this.mensajeExito});
               }
               else{
                 this.formCargando = false;
                 this.mensajeError = res.data.texto;
-                //this.cerrarForm({estatus_operacion: false, mensaje_operacion: this.mensajeError});
               }
               
             })
             .catch(() => {
               this.formCargando = false;
-              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-              //this.cerrarForm({estatus_operacion: false, mensaje_operacion: this.mensajeError});
+              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.';
             });
         }
       },
-      // función encargada de cerrar el modal de confirmacion de inserción
-      cerrarConfirmacion(){
-        this.modal = false;
-        this.$refs.form_clave.resetValidation();
-        this.inputs.clave='';
-      }
     },
   }
 </script>
