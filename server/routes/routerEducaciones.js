@@ -49,4 +49,16 @@ router.route('/:id')
     res.status(data.codigo).send(data.texto);
   });
 
+router.route('/atletas')
+  /*
+    Ruta GET que generara una lista de atletas por cada educacion en el sistema,
+    retornando educaciones = [nombre: String, atletas: []]
+    donde atleta = {nombre_completo: String, edad: Number, genero: String}
+    Ruta protegida por MW_TOKEN y MW_ROL
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await educaciones.atletasPorEducacion();
+    res.status(data.codigo).send(data.codigo === 200 ? data.data : data.texto);
+  });
+
 module.exports = router;

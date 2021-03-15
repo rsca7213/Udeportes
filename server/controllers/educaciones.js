@@ -1,6 +1,7 @@
 /* instanciamos la conexión a la bd */
 const bd = require('../conexion');
 const validador = require('./validador');
+const helper_edad = require('../helpers/edad');
 
 /*
   Funcion que obtiene las educaciones actualmente registradas en el sistema,
@@ -126,7 +127,7 @@ async function eliminarEducacion (id) {
     if (!verify.rows[0].existe) return { codigo: 404, texto: 'Esta educación no existe.' };
 
     // Si los datos son validos y la educacion existe (quitamos la educacion de los atletas que la tengan y la eliminamos)
-    await bd.query(`UPDATE atletas SET id_educacion = NULL WHERE id_educacion = $1`, [id]);
+    await bd.query(`UPDATE atletas SET id_educacion = NULL, numero_etapa = NULL WHERE id_educacion = $1`, [id]);
     await bd.query(`DELETE FROM educaciones WHERE id = $1`, [id]);
 
     return { codigo: 200, texto: 'Educación eliminada con exito.' };
@@ -139,9 +140,68 @@ async function eliminarEducacion (id) {
   }
 }
 
+/*
+  Funcion que genera una lista de atletas por educacion en el sistema
+*/
+async function atletasPorEducacion () {
+  try {
+    // Buscamos la id y nombre de todas las educaciones del sistema
+    let educaciones = await bd.query(`SELECT e.id, e.nombre FROM educaciones e`);
+    educaciones = educaciones.rows;
+
+    // Para cada una de las educaciones
+    educaciones = await Promise.all(educaciones.map(async (educacion) => {
+      try {
+        // Buscamos los atletas de la educacion
+        let atletas = await bd.query(
+          `SELECT a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, 
+          a.genero, TO_CHAR(a.fecha_nacimiento, 'dd/mm/yyyy') AS fecha_nacimiento
+          FROM atletas a WHERE a.id_educacion = $1`,
+          [educacion.id]
+        );
+        // Para cada atleta extraemos su nombre completo, genero y edad
+        atletas = atletas.rows.map(atleta => {
+          let nombres = [
+            atleta.primer_nombre,
+            atleta.segundo_nombre || '',
+            atleta.primer_apellido,
+            atleta.segundo_apellido
+          ];
+          return {
+            nombre_completo: nombres.join(' ').replace(/ +/g, " "),
+            genero: atleta.genero === 'm' ? 'Masculino' : 'Femenino',
+            edad: `${helper_edad(atleta.fecha_nacimiento)} ${helper_edad(atleta.fecha_nacimiento) === 1 ? 'Año' : 'Años'}`
+          }
+        });
+
+        // Devolvemos la educacion con su nombre y atletas
+        return {
+          nombre: educacion.nombre,
+          atletas: atletas
+        }
+      }
+      catch (error) { 
+        if (process.env.NODE_ENV === 'development') console.error(error);
+      }
+    }));
+
+    // Si todo sale bien enviamos los datos
+    return {
+      codigo: 200,
+      data: educaciones
+    }
+  }
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+}
+
 module.exports = {
   obtenerEducaciones,
   crearEducacion,
   editarEducacion,
-  eliminarEducacion
+  eliminarEducacion,
+  atletasPorEducacion
 }

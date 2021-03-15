@@ -13,17 +13,16 @@
       <v-row class="d-none d-md-flex">
         <v-col cols="12" class="text-right">
           <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
-          
-          <v-btn color="indigo" dark class="mx-3"> 
-            <v-icon left> mdi-chart-arc </v-icon>
-            Atletas por Educación
-          </v-btn>
+          <AtletasPorEducacion />
           <EducacionesDialog @educacionEvent="obtenerAtletas()"/>
         </v-col>
       </v-row>
       <v-row class="d-flex d-md-none">
         <v-col class="text-center" cols="12">
           <RegistrarAtletas @atletaRegistrado="obtenerAtletas()" />
+        </v-col>
+        <v-col class="text-center" cols="12">
+          <AtletasPorEducacion />
         </v-col>
         <v-col class="text-center" cols="12">
           <EducacionesDialog @educacionEvent="obtenerAtletas()" />
@@ -61,6 +60,7 @@ import RegistrarAtletas from './RegistrarAtletas';
 import EditarAtleta from './EditarAtleta';
 import EliminarAtleta from './EliminarAtleta';
 import EducacionesDialog from '../Educaciones/EducacionesDialog';
+import AtletasPorEducacion from '../Educaciones/AtletasPorEducacion';
 
 export default {
   name: 'TablaAtletas',
@@ -69,7 +69,8 @@ export default {
     RegistrarAtletas,
     EditarAtleta,
     EliminarAtleta,
-    EducacionesDialog
+    EducacionesDialog,
+    AtletasPorEducacion
   }, 
 
   data() {
