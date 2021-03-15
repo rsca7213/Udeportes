@@ -23,6 +23,8 @@ const routerAtletas = require('./routes/routerAtletas.js');
 app.use('/api/atletas', routerAtletas);
 const routerEducaciones = require('./routes/routerEducaciones.js');
 app.use('/api/educaciones', routerEducaciones);
+const routerDeportes = require('./routes/routerDeportes.js');
+app.use('/api/deportes', routerDeportes);
 
 // Para producción
 /*
