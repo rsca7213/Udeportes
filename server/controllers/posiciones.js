@@ -76,10 +76,10 @@ async function editarPosicion (datos) {
 
 async function eliminarPosicion (datos) {
     try {
-        await bd.query(
-          `DELETE FROM posiciones WHERE id=$1`,
-          [datos.posicion]
-        );
+        await bd.query(`DELETE FROM estadisticas WHERE id_posicion=$1`,[datos.posicion]);
+        await bd.query(`DELETE FROM rendimientos WHERE id_posicion=$1`,[datos.posicion]);
+        await bd.query(`DELETE FROM inscripciones WHERE id_posicion=$1`,[datos.posicion]);
+        await bd.query(`DELETE FROM posiciones WHERE id=$1`,[datos.posicion]);
 
         id_posicion = datos.posicion
     

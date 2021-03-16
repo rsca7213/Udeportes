@@ -80,10 +80,20 @@ async function editarDeporte (edit) {
 
 async function eliminarDeporte (deporte_id) {
     try {
-        await bd.query(
-          `DELETE FROM deportes WHERE id=$1`,
-          [deporte_id]
-        );
+        await bd.query(`DELETE FROM asignaciones WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM categorias WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM posiciones WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM estadisticas WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM entrenamientos WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM competencias WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM rendimientos WHERE id_deporte_est=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM rendimientos WHERE id_deporte_comp=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM inscripciones WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM inscripciones WHERE id_deporte_pos=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM participaciones WHERE id_deporte=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM participaciones WHERE id_deporte_comp=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM participaciones WHERE id_deporte_ent=$1`,[deporte_id]);
+        await bd.query(`DELETE FROM deportes WHERE id=$1`,[deporte_id]);
     
         return { codigo: 200, texto: 'El deporte se ha eliminado correctamente del sistema', deporte_id}
     } catch (error) {
