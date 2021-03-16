@@ -39,7 +39,7 @@
           :loading="tablaCargando"
           >
             <template v-slot:item.acciones="{ item }">
-              <v-icon dense color="primary"> mdi-eye </v-icon>
+              <v-icon dense color="primary" @click="$router.push(`/atletas/${item.cedula}`)"> mdi-eye </v-icon>
               <EditarAtleta :cedula="item.cedula" @atletaEditado="obtenerAtletas()" />
               <EliminarAtleta :cedula="item.cedula" :nombre_completo="item.nombre_completo" @atletaEliminado="obtenerAtletas()" />
             </template>

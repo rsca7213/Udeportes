@@ -245,8 +245,8 @@ async function editarAtleta (cedula, atleta) {
           atleta.correo || null,
           atleta.telefono || null,
           atleta.nombre_beca || null,
-          atleta.porcentaje_beca || null,
-          atleta.numero_etapa || null,
+          atleta.nombre_beca ? atleta.porcentaje_beca || null : null,
+          atleta.id_educacion ? atleta.numero_etapa || null : null,
           cedula
         ]
       );
@@ -275,8 +275,8 @@ async function eliminarAtleta (cedula) {
     let check = validador.validarCedula(cedula);
     if (!check.estado) return { codigo: 422, texto: check.texto }
     // validamos la existencia del atleta en el sistema
-    let query = await bd.query(`SELECT EXISTS (SELECT u.cedula FROM usuarios u WHERE u.cedula = $1) AS "existe"`, [cedula]);
-    if (!query.rowCount)
+    let query = await bd.query(`SELECT EXISTS (SELECT a.cedula FROM atletas a WHERE a.cedula = $1) AS existe`, [cedula]);
+    if (!query.rows[0].existe)
       return { codigo: 404, texto: 'Este atleta no esta registrado en el sistema.' }
     // Si la cedula es valida y el atleta existe
     else {
@@ -295,10 +295,147 @@ async function eliminarAtleta (cedula) {
   }
 }
 
+/*
+  Funcion que obtiene los datos completos de un atleta con la cedula especificada.
+  Los datos a obtener son los siguientes:
+  atleta = {
+    cedula,
+    nombre_completo,
+    genero,
+    correo,
+    telefono,
+    edad (fecha_nacimiento),
+    beca,
+    educacion,
+    categorias: [
+      {
+        categoria,
+        deporte,
+        posicion
+      }
+    ],
+    participaciones: {
+      entrenamientos: {
+        asistencias,
+        faltadas
+      },
+      competencias: {
+        asistencias,
+        faltadas
+      }
+    }
+  }
+*/
+async function obtenerDatosCompletosAtleta (cedula) {
+  try {
+    // validamos la cedula
+    let check = validador.validarCedula(cedula);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    // validamos la existencia del atleta en el sistema
+    let query = await bd.query(`SELECT EXISTS (SELECT a.cedula FROM atletas a WHERE a.cedula = $1) AS existe`, [cedula]);
+    if (!query.rows[0].existe)
+      return { codigo: 404, texto: 'Este atleta no esta registrado en el sistema.' }
+    // Si la cedula es valida y el atleta existe
+    else {
+      // Buscamos los datos necesarios de la tabla atleta haciendo join con la tabla educaciones para conseguir
+      // la educacion del estudiante
+      let atleta = await bd.query(
+        `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
+         a.genero, TO_CHAR(a.fecha_nacimiento, 'dd/mm/yyyy') AS fecha_nacimiento, e.nombre AS educacion,
+         a.correo, a.telefono, a.nombre_beca, a.porcentaje_beca, a.numero_etapa,
+         CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't' THEN 'Trimestre' WHEN
+         e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa FROM atletas a
+         LEFT OUTER JOIN educaciones e ON a.id_educacion = e.id WHERE a.cedula = $1`,
+        [cedula]
+      );
+      atleta = atleta.rows[0];
+
+      // Manipulamos los datos obtenidos por el query para obtener el resultado esperado
+      // Faltando los siguientes datos: categorias y participaciones
+      atleta = {
+        cedula: atleta.cedula,
+        nombre_completo: 
+          [atleta.primer_nombre, atleta.segundo_nombre || '', atleta.primer_apellido, atleta.segundo_apellido]
+          .join(' ').replace(/ + /g, " "),
+        genero: atleta.genero === 'm' ? 'Masculino' : 'Femenino',
+        fecha_nacimiento: atleta.fecha_nacimiento,
+        edad: `${helper_edad(atleta.fecha_nacimiento)} ${helper_edad(atleta.fecha_nacimiento) === 1 ? 'Año' : 'Años'}`,
+        educacion: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '',
+        correo: atleta.correo,
+        telefono: atleta.telefono,
+        beca: atleta.nombre_beca ? `${atleta.nombre_beca} (${atleta.porcentaje_beca} %)` : ''
+      }
+
+      // Buscamos las inscripciones del atleta (retornando un arreglo que contiene objetos con los
+      // siguientes datos objeto = { categoria, deporte, posicion } )
+      atleta.categorias = await bd.query(
+        `SELECT c.nombre AS categoria, d.nombre AS deporte, p.nombre AS posicion 
+         FROM inscripciones i INNER JOIN categorias c
+         ON i.id_categoria = c.id INNER JOIN deportes d ON d.id = c.id_deporte
+         INNER JOIN posiciones p ON p.id_deporte = d.id
+         WHERE i.cedula_atleta = $1`,
+        [cedula]
+      );
+      atleta.categorias = atleta.categorias.rows;
+
+      // Buscamos las participaciones del atleta (participaciones tanto en competencias como entrenamientos)
+      atleta.participaciones = {
+        entrenamientos: {
+          asistencias: 
+            await bd.query(
+              `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 AND p.asistencia = TRUE
+               AND p.id_entrenamiento IS NOT NULL`,
+              [cedula]
+            ),
+          faltadas:
+            await bd.query(
+              `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 AND p.asistencia = FALSE
+               AND p.id_entrenamiento IS NOT NULL`,
+              [cedula]
+            )
+        },
+        competencias: {
+          asistencias: 
+            await bd.query(
+              `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 AND p.asistencia = TRUE
+               AND p.id_competencia IS NOT NULL`,
+              [cedula]
+            ),
+          faltadas:
+            await bd.query(
+              `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 AND p.asistencia = FALSE
+               AND p.id_competencia IS NOT NULL`,
+              [cedula]
+            )
+        }
+      };
+      atleta.participaciones = {
+        entrenamientos: {
+          asistencias: parseInt(atleta.participaciones.entrenamientos.asistencias.rows[0].count),
+          faltadas: parseInt(atleta.participaciones.entrenamientos.faltadas.rows[0].count)
+        },
+        competencias: {
+          asistencias: parseInt(atleta.participaciones.competencias.asistencias.rows[0].count),
+          faltadas: parseInt(atleta.participaciones.competencias.faltadas.rows[0].count)
+        }
+      };
+      
+
+      return { codigo: 200, atleta: atleta }
+    }
+    
+  }
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentelo de nuevo.'}; 
+  }
+}
+
 module.exports = {
   obtenerAtletas,
   registrarAtleta,
   obtenerDatosBasicosAtleta,
   editarAtleta,
-  eliminarAtleta
+  eliminarAtleta,
+  obtenerDatosCompletosAtleta
 }

@@ -105,7 +105,7 @@
               <v-text-field clear-icon="mdi-close" clearable 
               :label="`${inputs.id_educacion ? itemsEducacion.filter(item => item.value == inputs.id_educacion)[0].etapa : 'Etapa'}`" 
               :disabled="!inputs.id_educacion"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.numero_etapa"
+              prepend-icon="mdi-numeric-1-box" type="text" :rules="reglas.numero_etapa"
               validate-on-blur v-model.number.trim="inputs.numero_etapa" name="numero_etapa"
               :error-messages="validacion.numero_etapa"> </v-text-field>
             </v-col>
@@ -113,12 +113,12 @@
           <v-row>
             <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Nombre de Beca"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_beca"
+              prepend-icon="mdi-sale" type="text" :rules="reglas.nombre_beca"
               validate-on-blur v-model.trim="inputs.nombre_beca" name="nombre_beca"> </v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Porcentaje (%)" :disabled="!inputs.nombre_beca"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.porcentaje_beca"
+              prepend-icon="mdi-percent" type="text" :rules="reglas.porcentaje_beca"
               validate-on-blur v-model.number.trim="inputs.porcentaje_beca" name="porcentaje_beca"
               :error-messages="validacion.porcentaje_beca"> </v-text-field>
             </v-col>
@@ -238,6 +238,7 @@ export default {
   watch: {
     dialog () {
       if (!this.dialog) this.clearDialog();
+      else this.getData();
     }, 
 
     // Watcher que cambia el formato de la fecha 'yyyy-mm-dd' a dd/mm/yyyy'
@@ -351,16 +352,11 @@ export default {
       if(!Object.values(this.validacion).filter(item => item != '').length && this.$refs.form.validate()) {
         this.sendData();
       }
-    }
+    },
 
-    
-  },
-
-  /*
-    En mounted, se rellena el select box de educaciones, si hay datos se colocan en itemsEducacion
-  */
-  async mounted() {
-    await axios.get(`${server_url}/educaciones`, { withCredentials: true })
+    async getData() {
+      this.itemsEducacion = [];
+      await axios.get(`${server_url}/educaciones`, { withCredentials: true })
       .then((res) => {
         // Exito 200 (se hizo el select query, puede haber o no haber datos, indicado por "Vacio")
         if (res.status === 200) {
@@ -382,6 +378,15 @@ export default {
           console.warn('Warning: No response status was found, is the server running? ');
         }
       });
+    }
+    
+  },
+
+  /*
+    En mounted, se rellena el select box de educaciones, si hay datos se colocan en itemsEducacion
+  */
+  async mounted() {
+    this.getData();
   }
 }
 </script>

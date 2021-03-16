@@ -35,6 +35,10 @@ router.route('/:cedula')
       let data = await atletas.obtenerDatosBasicosAtleta(req.params.cedula);
       res.status(data.codigo).send(data.codigo === 200 ? data.atleta : data.texto);
     }
+    else if (req.query.data === 'completa') {
+      let data = await atletas.obtenerDatosCompletosAtleta(req.params.cedula);
+      res.status(data.codigo).send(data.codigo === 200 ? data.atleta : data.texto);
+    }
     else {
       res.status(400).send('Data debe ser basica o completa');
     }

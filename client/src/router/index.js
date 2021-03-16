@@ -27,7 +27,12 @@ const routes = [
   {
     path: '/atletas',
     name: 'Atletas',
-    component: () => import('../views/Atletas.vue')
+    component: () => import('../views/Atletas/Atletas.vue')
+  },
+  {
+    path: '/atletas/:cedula',
+    name: 'DetallesAtleta',
+    component: () => import('../views/Atletas/DetallesAtleta.vue')
   },
   {
     path: '/deportes',

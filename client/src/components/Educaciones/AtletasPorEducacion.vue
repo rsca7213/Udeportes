@@ -21,7 +21,7 @@
           <span v-text="mensajeError" class="ml-1"> </span>
         </v-alert>
         <div class="text-right mb-3" @click="vista = 2">
-          <v-btn color="primary">
+          <v-btn color="primary"  v-if="items.filter(item => item.atletas.length > 0).length">
             <v-icon left> mdi-chart-arc </v-icon>
             Ver gráfica
           </v-btn>
@@ -148,7 +148,7 @@ export default {
       .then((res) => {
         // Exito 200 (se hizo el select query, puede haber o no haber datos)
         if (res.status === 200) {
-          // si hay datos se colocan en items
+          // si hay datos se colocan en items y se rellena la grafica
           this.items = res.data;
           this.chartData = this.items.map(item => item.atletas.length);
           this.chartOptions.labels = this.items.map(item => item.nombre);

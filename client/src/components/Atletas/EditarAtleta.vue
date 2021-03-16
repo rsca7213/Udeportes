@@ -110,7 +110,7 @@
               <v-text-field clear-icon="mdi-close" clearable 
               :label="`${inputs.id_educacion ? itemsEducacion.filter(item => item.value == inputs.id_educacion)[0].etapa : 'Etapa'}`" 
               :disabled="!inputs.id_educacion"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.numero_etapa"
+              prepend-icon="mdi-numeric-1-box" type="text" :rules="reglas.numero_etapa"
               validate-on-blur v-model.number.trim="inputs.numero_etapa" name="numero_etapa"
               :error-messages="validacion.numero_etapa"> </v-text-field>
             </v-col>
@@ -118,12 +118,12 @@
           <v-row>
             <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Nombre de Beca"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_beca"
+              prepend-icon="mdi-sale" type="text" :rules="reglas.nombre_beca"
               validate-on-blur v-model.trim="inputs.nombre_beca" name="nombre_beca"> </v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Porcentaje (%)" :disabled="!inputs.nombre_beca"
-              prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.porcentaje_beca"
+              prepend-icon="mdi-percent" type="text" :rules="reglas.porcentaje_beca"
               validate-on-blur v-model.number.trim="inputs.porcentaje_beca" name="porcentaje_beca"
               :error-messages="validacion.porcentaje_beca"> </v-text-field>
             </v-col>
