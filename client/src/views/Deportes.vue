@@ -4,18 +4,22 @@
             <v-card-title class="grey--text text--darken-2"> 
                 Deportes 
             </v-card-title>
-            <v-row class="mt-5" justify="center" v-if="deportes.length > 0">
-                <v-card shaped class="ma-3" height="220" width="344" v-for="deporte in deportes" :key="deporte.id" @click="dialogEditar()" elevation="8">
-                    <v-card color="green" height="70" elevation="0" tile></v-card>
-                    <v-card height="90" elevation="0" tile color="rgb(0, 0, 0, 0)">
-                        <v-card-title>{{deporte.nombre}}</v-card-title> 
+            <v-row class="mt-5" v-if="deportes.length > 0" dense>
+                <v-col v-for="(deporte, index) in deportes" :key="deporte.id" cols="12" sm="6" md="4" lg="3">
+                    <v-card shaped class="ma-3" @click="dialogEditar()" elevation="8">
+                        <v-card :color="colores[index % 8]" height="150" >
+                            <v-card-title class="white--text"> 
+                                <v-icon left color="white"> mdi-basketball </v-icon>
+                                <span v-text="deporte.nombre"> </span>
+                            </v-card-title>
+                        </v-card>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="red" x-small dark fab @click="ver_Deporte(deporte.id, true)"><v-icon>mdi-delete</v-icon></v-btn>
+                            <v-btn color="primary" x-small dark fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon></v-btn>
+                        </v-card-actions>
                     </v-card>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" small dark fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon></v-btn>
-                        <v-btn color="red" small dark fab @click="ver_Deporte(deporte.id, true)"><v-icon>mdi-delete</v-icon></v-btn>
-                    </v-card-actions>
-                </v-card>
+                </v-col>
             </v-row>
             <v-card-subtitle class="grey--text text--darken-2" v-else>
                 No se encontraron deportes en el sistema.
@@ -159,6 +163,8 @@ export default {
 
   data() {
         return {
+            colores: ['indigo lighten-1', 'purple lighten-1', 'pink lighten-1', 'teal lighten-1', 'cyan lighten-1',
+                      'green lighten-1', 'orange lighten-1', 'blue-grey lighten-1'],
             cargando: true,
             crearDeporte: false,
             editarDeporte: false,
