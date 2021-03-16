@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog_editar_clave" max-width="600px" class="text-center">
+    <v-dialog v-model="dialog_editar_clave" max-width="600px" class="text-center" @click:outside="cerrarEditarClave()">
       <template v-slot:activator="{ on, attrs }">
         <v-icon color="primary" dense v-bind="attrs" v-on="on">
           mdi-key-variant
