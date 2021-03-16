@@ -6,7 +6,7 @@ async function crearDeporte (datos) {
     let check = validador.validarNombre(datos.nombre);
     if (!check.estado) return { codigo: 422, texto: check.texto }
     let check_uniques = await bd.query(`SELECT EXISTS (SELECT 1 FROM deportes WHERE nombre = $1) AS "existe"`, [datos.nombre])
-    if (check_uniques.rows[0].existe) return { codigo: 400, texto: 'Ya existe un deporte con el nombre intorducido' }
+    if (check_uniques.rows[0].existe) return { codigo: 400, texto: 'Ya existe un deporte con el nombre introducido' }
     try {
         await bd.query(
             `INSERT INTO deportes (id, nombre) VALUES (nextval('deportes_id_seq'),$1)`,
@@ -59,7 +59,7 @@ async function editarDeporte (edit) {
     let check = validador.validarNombre(edit.datos.nombre);
     if (!check.estado) return { codigo: 422, texto: check.texto }
     let check_uniques = await bd.query(`SELECT EXISTS (SELECT 1 FROM deportes WHERE nombre = $1) AS "existe"`, [edit.datos.nombre])
-    if (check_uniques.rows[0].existe) return { codigo: 400, texto: 'Ya existe un deporte con el nombre intorducido' }
+    if (check_uniques.rows[0].existe) return { codigo: 400, texto: 'Ya existe un deporte con el nombre introducido' }
     const id = edit.params.id
     try {
         await bd.query(

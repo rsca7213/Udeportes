@@ -107,33 +107,39 @@
             </v-dialog>
 
             <!-- Dialog para eliminar un deporte -->
-            <v-dialog  v-model="eliminarDeporte" max-width="450px">
-                <v-card>
+            <v-dialog v-model="eliminarDeporte" class="text-center" max-width="600">
+                <v-card rounded="md">
                     <v-card-title>
                         Eliminar Deporte
-                        <v-spacer />
+                        <v-spacer> </v-spacer>
                         <v-btn icon @click="eliminarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
-                    </v-card-title>
-                    <v-card-text class="text-justify mt-2">
-                        ¿Esta seguro de que desea eliminar {{deporte.nombre}}?
-                        <v-divider class="my-2"> </v-divider>
-                        Una vez eliminado no se podrán recuperar los datos del deporte
-                        como posiciones, categorias, entrenamientos y competencias.
+                    </v-card-title> 
+                    <v-card-text class="text-subtitle-1">
+                        <b class="error--text"> ¿Está seguro que desea eliminar este deporte? </b>
+                        <br>
+                        <span class="error--text"> Al eliminar el deporte se eliminaran todos sus datos del sistema, como sus categorias y posiciones. </span>
+                        <br>
+                        <b> Nombre del deporte: </b> {{deporte.nombre}}
                     </v-card-text>
-                    <v-card-actions>
+                    <v-card-actions> 
                         <v-spacer></v-spacer>
-                        <v-btn color="red" dark @click="eliminar_Deporte()" block>
-                            <v-icon left> mdi-delete </v-icon>
-                            eliminar
+                        <v-btn color="grey darken-1" dark @click="eliminarDeporte = false">
+                            <v-icon left> mdi-close </v-icon>
+                            Cancelar
                         </v-btn>
-                        <v-spacer></v-spacer>
+                        <v-btn color="error" @click="eliminar_Deporte()">
+                            <v-icon left> mdi-delete </v-icon>
+                            Eliminar
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
 
             <!-- Display de mensaje -->
-            <v-snackbar v-model="display.show" timeout="4000" shaped transition="scroll-y-reverse-transition" multi-line> 
-                {{display.mensaje}}
+            <v-snackbar v-model="display.show" timeout="3000" shaped top> 
+                <v-icon v-if="display.type == 'success'" left color="secondary"> mdi-check-circle </v-icon>
+                <v-icon v-else left color="red"> mdi-alert-circle </v-icon>
+                <span :class="display.type == 'success' ? 'secondary--text':'red--text'">{{display.mensaje}}</span> 
                 <template v-slot:action="{ attrs }">
                     <v-btn color="white" text v-bind="attrs" @click="display.show = false">
                     Cerrar
@@ -187,14 +193,22 @@ export default {
                     await axios
                     .post(`${server_url}/deportes/crear`, this.deporteCrear, { withCredentials: true })
                     .then((res) => {
-                        if (res.data.codigo === 200) this.deportes.push(res.data.deporte);
-                        console.log(res.data.texto);
+                        if (res.data.codigo === 200) {
+                            this.deportes.push(res.data.deporte);
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'success',
+                            }
+                        } else {
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'error',
+                            }
+                        }
                         this.$refs.crearForm.reset();
                         this.crearDeporte = false;
-                        this.display = {
-                            show: true, 
-                            mensaje: res.data.texto
-                        };
                     })
                     .catch((error) => {
                         this.$refs.crearForm.reset();
@@ -236,14 +250,20 @@ export default {
                         if (res.data.codigo === 200) {
                             const index = this.deportes.findIndex(d => d.id == this.deporte.id);
                             this.deportes[index] = res.data.deporte;
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'success',
+                            }
+                        } else {
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'error',
+                            }
                         }
-                        console.log(res.data.texto);
                         this.$refs.editForm.reset();
                         this.editarDeporte = false;
-                        this.display = {
-                            show: true, 
-                            mensaje: res.data.texto
-                        };
                     })
                     .catch((error) => {
                         this.$refs.editForm.reset();
@@ -263,12 +283,19 @@ export default {
                     if (res.data.codigo === 200){
                         const index = this.deportes.findIndex(d => d.id == this.deporte.id);
                         this.deportes.splice(index, 1);
+                        this.display = {
+                            show: true, 
+                            mensaje: res.data.texto,
+                            type: 'success',
+                        }
+                    } else {
+                        this.display = {
+                            show: true, 
+                            mensaje: res.data.texto,
+                            type: 'error',
+                        }
                     }
                     this.eliminarDeporte = false;
-                    this.display = {
-                        show: true, 
-                        mensaje: res.data.texto
-                    };
                 }).catch((error) => {
                     if (error.response.status === 428) this.$router.push('/init');
                     else this.$router.push('/login');
