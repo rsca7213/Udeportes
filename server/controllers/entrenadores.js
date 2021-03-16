@@ -107,7 +107,7 @@ async function listarUsuarios(){
 /*
   Función encargada de editar un usuario en la base de datos con la cédula especificada
 */
-async function editarUsuario(cedula_usuario, datos_usuario){
+async function editarUsuario(datos_usuario){
   try {
 
     // Validamos la información del usuario
@@ -132,12 +132,10 @@ async function editarUsuario(cedula_usuario, datos_usuario){
 
     // Chequeamos si existen usuarios con valores únicos iguales a los inputs    
     let check_uniques = {
-      cedula: await bd.query(`SELECT EXISTS (SELECT 1 FROM usuarios WHERE cedula = $1 AND cedula != $2) AS "existe"`, [datos_usuario.cedula, cedula_usuario]),
-      correo: await bd.query(`SELECT EXISTS (SELECT 1 FROM usuarios WHERE correo = $1 AND cedula != $2) AS "existe"`, [datos_usuario.correo, cedula_usuario]),
-      telefono: await bd.query(`SELECT EXISTS (SELECT 1 FROM usuarios WHERE telefono = $1 AND cedula != $2) AS "existe"`, [datos_usuario.telefono, cedula_usuario]),
+      correo: await bd.query(`SELECT EXISTS (SELECT 1 FROM usuarios WHERE correo = $1 AND cedula != $2) AS "existe"`, [datos_usuario.correo, datos_usuario.cedula]),
+      telefono: await bd.query(`SELECT EXISTS (SELECT 1 FROM usuarios WHERE telefono = $1 AND cedula != $2) AS "existe"`, [datos_usuario.telefono, datos_usuario.cedula]),
     }
     // En caso de que ya exista un usuario con algun dato único
-    if (check_uniques.cedula.rows[0].existe) return { codigo: 400, texto: 'Ya existe un usuario con la cédula introducida' }
     if (check_uniques.correo.rows[0].existe) return { codigo: 400, texto: 'Ya existe un usuario con el correo electrónico introducido' }
     if (check_uniques.telefono.rows[0].existe) return { codigo: 400, texto: 'Ya existe un usuario con el teléfono introducido' }
 
@@ -145,11 +143,10 @@ async function editarUsuario(cedula_usuario, datos_usuario){
     // Si no hay ningun usuario con datos únicos ya tomados, realizamos el UPDATE de los datos
     // para los valores NULLABLE se insertara el valor (si existe) o NULL en caso de que no se hayan colocado
     await bd.query(
-      `UPDATE usuarios SET cedula = $1, primer_nombre = $2, primer_apellido = $3, segundo_apellido = $4,
-        fecha_nacimiento = TO_DATE($5, 'dd/mm/yyyy'),segundo_nombre = $6, correo = $7,
-        telefono = $8, rol = $9 WHERE cedula = $10`, 
+      `UPDATE usuarios SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3,
+        fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'),segundo_nombre = $5, correo = $6,
+        telefono = $7, rol = $8 WHERE cedula = $9`, 
       [
-        datos_usuario.cedula,
         datos_usuario.primer_nombre,
         datos_usuario.primer_apellido,
         datos_usuario.segundo_apellido,
@@ -158,7 +155,7 @@ async function editarUsuario(cedula_usuario, datos_usuario){
         datos_usuario.correo.toLowerCase(),
         datos_usuario.telefono || null,
         datos_usuario.rol,
-        cedula_usuario
+        datos_usuario.cedula
       ]
     );
 

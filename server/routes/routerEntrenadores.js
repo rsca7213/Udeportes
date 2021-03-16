@@ -43,7 +43,7 @@ router.route('/')
 router.route('/:cedula')
 .put(mw_token, mw_rol, async(req, res) => {
   try{
-    let result = await usuarios.editarUsuario(req.params.cedula, req.body);
+    let result = await usuarios.editarUsuario(req.body);
     res.send(result);
   }
   catch(error){

@@ -15,6 +15,7 @@
         loading-text="Cargando datos..."
         locale="es-VE"
         fixed-header
+        :loading="tablaCargando"
       >
       <template v-slot:top>
         <v-dialog v-model="dialog_registro" persistent max-width="800px">
@@ -26,12 +27,12 @@
               </v-btn>
             </div>
           </template>
-          <Registro :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
+          <RegistroUsuarios :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
         </v-dialog>   
       </template>
       <template v-slot:item.acciones="{ item }">
         <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">
-          <EditarClave :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
+          <EditarClave :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
           <v-icon color="primary" dense @click="editItem(item)">
             mdi-pencil
           </v-icon>
@@ -46,7 +47,7 @@
 
 
 <script>
-import Registro from './Registro';
+import RegistroUsuarios from './RegistroUsuarios';
 import ExitoDialog from './ExitoDialog';
 import EditarClave from './EditarClave';
 import EliminarUsuario from './EliminarUsuario';
@@ -55,15 +56,15 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
 export default {
   name: 'TablaUsuarios',
   components: {
-    Registro,
+    RegistroUsuarios,
     ExitoDialog,
     EditarClave,
     EliminarUsuario
   },
   data() {
     return {
-      // se muestra el componente Cargador si cargando es true
-      cargando: true,
+      // manejadores de UI
+      tablaCargando: true,
       // variable encargada de mostrar el componente registro en un dialog para crear o editar usuarios
       dialog_registro: false,
       // variable encargada de mostrar el dialog para eliminar usuarios

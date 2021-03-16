@@ -92,7 +92,7 @@
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
   export default {
-    name: 'registro',
+    name: 'RegistroUsuarios',
     props: {
       usuario: {},
       mensaje_form : String,
