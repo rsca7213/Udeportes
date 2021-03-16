@@ -179,7 +179,6 @@ async function editarAtleta (cedula, atleta) {
     // Hacemos trim de los datos String para eliminar espacios innecesarios,
     // si el atributo es NULLABLE entonces se devuelve "" si esta vacio el input
     atleta = {
-      cedula: atleta.cedula,
       primer_nombre: atleta.primer_nombre.trim(),
       segundo_nombre: atleta.segundo_nombre ? atleta.segundo_nombre.trim() : "",
       primer_apellido: atleta.primer_apellido.trim(),
@@ -196,8 +195,6 @@ async function editarAtleta (cedula, atleta) {
   
     // Validamos todos los inputs haciendo uso del modulo validador y colocamos los resultados en el arreglo
     let validar = [];
-    validar.push(validador.validarCedula(cedula));
-    validar.push(validador.validarCedula(atleta.cedula));
     validar.push(validador.validarNombre(atleta.primer_nombre));
     validar.push(validador.validarSegundoNombre(atleta.segundo_nombre));
     validar.push(validador.validarNombre(atleta.primer_apellido));
@@ -217,24 +214,21 @@ async function editarAtleta (cedula, atleta) {
     else {
       // Chequeamos si existen atletas con valores unicos iguales a los inputs
       let check_uniques = {
-        cedula: await bd.query(`SELECT EXISTS (SELECT 1 FROM atletas WHERE cedula = $1 AND cedula != $2) AS "existe"`, [atleta.cedula, cedula]),
         correo: await bd.query(`SELECT EXISTS (SELECT 1 FROM atletas WHERE correo = $1 AND cedula != $2) AS "existe"`, [atleta.correo, cedula]),
         telefono: await bd.query(`SELECT EXISTS (SELECT 1 FROM atletas WHERE telefono = $1 AND cedula != $2) AS "existe"`, [atleta.telefono, cedula]),
       }
 
       // En caso de que ya exista un atleta con algun dato unico
-      if (check_uniques.cedula.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con la cedula introducida' }
       if (check_uniques.correo.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el correo electrónico introducido' }
       if (check_uniques.telefono.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el teléfono introducido' }
 
       // Si no hay ningun atleta con datos unicos ya tomados, realizamos el UPDATE de los datos
       // para los valores NULLABLE se insertara el valor (si existe) o NULL en caso de que no se hayan colocado
       await bd.query(
-        `UPDATE atletas SET cedula = $1, primer_nombre = $2, primer_apellido = $3, segundo_apellido = $4, genero = $5,
-         fecha_nacimiento = TO_DATE($6, 'dd/mm/yyyy'), id_educacion = $7, segundo_nombre = $8, correo = $9,
-         telefono = $10, nombre_beca = $11, porcentaje_beca = $12, numero_etapa = $13 WHERE cedula = $14`, 
+        `UPDATE atletas SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3, genero = $4,
+         fecha_nacimiento = TO_DATE($5, 'dd/mm/yyyy'), id_educacion = $6, segundo_nombre = $7, correo = $8,
+         telefono = $9, nombre_beca = $10, porcentaje_beca = $11, numero_etapa = $12 WHERE cedula = $13`, 
         [
-          atleta.cedula,
           atleta.primer_nombre,
           atleta.primer_apellido,
           atleta.segundo_apellido,

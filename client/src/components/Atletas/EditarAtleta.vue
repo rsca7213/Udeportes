@@ -42,7 +42,7 @@
           </v-row>
           <v-row>
             <v-col cols="12" sm="6">
-              <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
+              <v-text-field readonly disabled counter="8" label="Cédula de Identidad *"
               prepend-icon="mdi-card-account-details" type="text" :rules="reglas.cedula"
               validate-on-blur v-model.trim="inputs.cedula" name="cedula"> </v-text-field>
             </v-col>
