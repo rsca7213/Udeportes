@@ -7,7 +7,7 @@
             <v-row class="mt-5" v-if="deportes.length > 0" dense>
                 <v-col v-for="(deporte, index) in deportes" :key="deporte.id" cols="12" sm="6" md="4" lg="3">
                     <v-card shaped class="ma-3" @click="dialogEditar()" elevation="8">
-                        <v-card :color="colores[index % 8]" height="150" >
+                        <v-card :color="colores[index % 8]" height="150" elevation="0">
                             <v-card-title class="white--text"> 
                                 <v-icon left color="white"> mdi-basketball </v-icon>
                                 <span v-text="deporte.nombre"> </span>
@@ -163,8 +163,8 @@ export default {
 
   data() {
         return {
-            colores: ['indigo lighten-1', 'purple lighten-1', 'pink lighten-1', 'teal lighten-1', 'cyan lighten-1',
-                      'green lighten-1', 'orange lighten-1', 'blue-grey lighten-1'],
+            colores: ['indigo lighten-2', 'purple lighten-2', 'pink lighten-2', 'teal lighten-2', 'cyan lighten-2',
+                      'green lighten-2', 'orange lighten-2', 'blue-grey lighten-2'],
             cargando: true,
             crearDeporte: false,
             editarDeporte: false,
