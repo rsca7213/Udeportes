@@ -33,6 +33,37 @@ async function nombrePerfil (cedula) {
 
 }
 
+async function datosPerfil (cedula) {
+
+  try {
+    /* intenta buscar los datos del usuario a partir de la cédula */
+    let perfil = await bd.query(
+      `SELECT u.cedula, u.primer_nombre, COALESCE(u.segundo_nombre, '') segundo_nombre, u.primer_apellido,
+       u.segundo_apellido, u.rol, u.correo,
+       COALESCE(TO_CHAR(u.fecha_nacimiento, 'dd/mm/yyyy'), '') AS fecha_nacimiento, COALESCE(u.telefono, '') AS telefono FROM usuarios u
+       WHERE u.cedula = $1`,
+      [cedula]
+    );
+    perfil = perfil.rows;
+    /* si no se consigue al usuario se devuelve un 404 */
+    if (!perfil.length) return { codigo: 404, texto: 'Perfil no encontrado.'}
+    /* en caso de que todo salga bien se retorna un 200 y los datos */
+    else {
+      return {
+        codigo: 200,
+        usuario: perfil[0]
+      }
+    }
+  }
+  /* en caso de error inesperado */
+  catch(error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+
+}
+
 module.exports = {
-  nombrePerfil
+  nombrePerfil,
+  datosPerfil
 }
