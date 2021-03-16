@@ -15,8 +15,8 @@
                         </v-card>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="red" x-small dark fab @click="ver_Deporte(deporte.id, true)"><v-icon>mdi-delete</v-icon></v-btn>
-                            <v-btn color="primary" x-small dark fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon></v-btn>
+                            <v-btn color="red" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, true)"><v-icon>mdi-delete</v-icon> </v-btn>
+                            <v-btn color="primary" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon> </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>
