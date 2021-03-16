@@ -10,7 +10,6 @@
   "dependencies": {
     "apexcharts": "^3.26.0",
     "axios": "^0.21.1",
-    "chartjs": "^0.3.24",
     "core-js": "^3.6.5",
     "pdfmake": "^0.1.70",
     "vue": "^2.6.11",

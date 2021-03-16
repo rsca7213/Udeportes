@@ -39,7 +39,7 @@
                 </v-container>
               </v-form>
               <v-card-actions class="mt-4 d-flex justify-center justify-sm-end flex-column flex-sm-row">
-                <v-btn class="mr-2 mb-2" color="red" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
+                <v-btn class="mr-2 mb-2" color="error" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
                     <v-icon left> mdi-close </v-icon>
                     Cancelar
                 </v-btn>
@@ -71,7 +71,7 @@
                 </v-form>
               </v-card-text>
               <v-card-actions class="d-flex justify-center justify-sm-end mt-2">
-                <v-btn color="red" dark @click="confirmar_registro = false">
+                <v-btn color="error" dark @click="confirmar_registro = false">
                   <v-icon left> mdi-close </v-icon>
                   Regresar
                 </v-btn>

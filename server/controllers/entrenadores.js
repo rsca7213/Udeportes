@@ -3,8 +3,11 @@ const bcrypt = require('bcrypt');
 const bd = require('../conexion');
 const validador = require('./validador');
 
-//funcion para insertar usuarios
-async function insertar_usuario(datos_usuario){
+/*
+  función para insertar usuarios en la base de datos
+  con los datos previamente especificados
+*/
+async function insertarUsuario(datos_usuario){
 
   try {
 
@@ -51,8 +54,10 @@ async function insertar_usuario(datos_usuario){
 }
 
 
-//funcion encargada de insertar los datos del usuario, es llamada luego de realizar todas
-//las validaciones y verificaciones respectivas
+/*
+  función encargada de insertar los datos del usuario, es llamada luego de realizar todas
+  las validaciones y verificaciones respectivas
+*/
 async function insertar(datos_usuario){
   try{
     let salt = bcrypt.genSaltSync(10);
@@ -80,7 +85,7 @@ async function insertar(datos_usuario){
 }
 
 //funcion que obtiene todos los usuarios registrados en la base de datos
-async function listar_usuarios(){
+async function listarUsuarios(){
   try {
     let usuarios = await bd.query(
       `SELECT u.cedula, u.primer_nombre, COALESCE(u.segundo_nombre, '') segundo_nombre, u.primer_apellido,
@@ -99,8 +104,31 @@ async function listar_usuarios(){
   }
 }
 
-async function editar_usuario(cedula_usuario, datos_usuario){
+/*
+  Función encargada de editar un usuario en la base de datos con la cédula especificada
+*/
+async function editarUsuario(cedula_usuario, datos_usuario){
   try {
+
+    // Validamos la información del usuario
+    let check = validador.validarCedula(datos_usuario.cedula);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(datos_usuario.primer_nombre);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(datos_usuario.primer_apellido);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarNombre(datos_usuario.segundo_apellido);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarSegundoNombre(datos_usuario.segundo_nombre);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarCorreo(datos_usuario.correo);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarFecha(datos_usuario.fecha_nacimiento);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarRol(datos_usuario.rol);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    check = validador.validarTelefono(datos_usuario.telefono);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
 
     // Chequeamos si existen usuarios con valores únicos iguales a los inputs    
     let check_uniques = {
@@ -143,8 +171,16 @@ async function editar_usuario(cedula_usuario, datos_usuario){
   }
 }
 
-async function editar_clave_usuario(cedula_usuario, clave_usuario){
+/*
+  Funcion para editar la clave de un usuario de la base de datos con la cédula especificada.
+*/
+async function editarClaveUsuario(cedula_usuario, clave_usuario){
   try {
+
+    // Validamos la clave del usuario
+    let check = validador.validarClave(clave_usuario);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+
     let salt = bcrypt.genSaltSync(10);
     let hash_clave = bcrypt.hashSync(clave_usuario, salt);
 
@@ -165,9 +201,42 @@ async function editar_clave_usuario(cedula_usuario, clave_usuario){
   }
 }
 
+/*
+  Funcion que eliminará a un usuario de la base de datos con la cédula especificada,
+  Adicionalmente la función tambien eliminar los registros del usuario en todas las tablas
+  que le hagan referencia. Las tablas de las que se eliminará son las siguientes:
+  Usuarios y Asignaciones
+  La funcion retornará los siguientes codigos: 200 Exito, 404 Usuario no existe, 500 Error inesperado
+*/
+async function eliminarUsuario (cedula) {
+  try {
+    // validamos la cedula
+    let check = validador.validarCedula(cedula);
+    if (!check.estado) return { codigo: 422, texto: check.texto }
+    
+    // validamos la existencia del usuario en el sistema
+    let query = await bd.query(`SELECT EXISTS (SELECT u.cedula FROM usuarios u WHERE u.cedula = $1) AS "existe"`, [cedula]);
+    if (!query.rowCount) return { codigo: 404, texto: 'Este usuario no está registrado en el sistema.' }
+    
+    // Si la cédula es válida y el usuario existe
+    else {
+      // Eliminamos de las tablas correspondientes y retornamos un código 200 de éxito
+      await bd.query(`DELETE FROM asignaciones WHERE cedula_usuario = $1`, [cedula]);
+      await bd.query(`DELETE FROM usuarios WHERE cedula = $1`, [cedula]);
+
+      return { codigo: 200, texto: 'Usuario eliminado satisfactoriamente.' }
+    }
+  }
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentelo de nuevo.'}; 
+  }
+}
+
 module.exports = {
-  insertar_usuario,
-  listar_usuarios,
-  editar_usuario,
-  editar_clave_usuario
+  insertarUsuario,
+  listarUsuarios,
+  editarUsuario,
+  editarClaveUsuario,
+  eliminarUsuario
 }

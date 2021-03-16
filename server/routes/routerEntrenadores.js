@@ -15,7 +15,7 @@ router.route('/')
 */
 .post(mw_token, mw_rol, async(req, res) => {
   try{
-    let result = await usuarios.insertar_usuario(req.body);
+    let result = await usuarios.insertarUsuario(req.body);
     res.send(result);
   }
   catch(error){
@@ -30,7 +30,7 @@ router.route('/')
   */
 .get(mw_token, mw_rol, async(req, res) => {
   try{
-    let result = await usuarios.listar_usuarios();
+    let result = await usuarios.listarUsuarios();
     res.send(result);
   }
   catch(error){
@@ -43,12 +43,26 @@ router.route('/')
 router.route('/:cedula')
 .put(mw_token, mw_rol, async(req, res) => {
   try{
-    let result = await usuarios.editar_usuario(req.params.cedula, req.body);
+    let result = await usuarios.editarUsuario(req.params.cedula, req.body);
     res.send(result);
   }
   catch(error){
     if (process.env.NODE_ENV === 'development') console.error(error);
       res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+  } 
+})
+/*
+  Ruta DELETE que elimina a un usuario del sistema con la cédula especificada junto con los registros
+  en tablas que contengan datos del usuario, siempre y cuando exista el usuario y la cédula sea válida
+*/
+.delete(mw_token, mw_rol, async (req, res) => {
+  try{
+    let result = await usuarios.eliminarUsuario(req.params.cedula);
+    res.send(result);
+  }
+  catch(error){
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
   } 
 });
 
@@ -56,7 +70,7 @@ router.route('/:cedula')
 router.route('/clave/:cedula')
 .put(mw_token, mw_rol, async(req, res) => {
   try{
-    let result = await usuarios.editar_clave_usuario(req.params.cedula, req.body.clave);
+    let result = await usuarios.editarClaveUsuario(req.params.cedula, req.body.clave);
     res.send(result);
   }
   catch(error){

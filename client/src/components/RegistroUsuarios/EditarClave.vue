@@ -116,7 +116,7 @@ export default {
           .then((res) => {
             if (res.data.codigo === 200) {
               //se vacían los campos del formulario
-              this.clave=''
+              this.inputs.clave=''
               this.form_cargando = false;
               this.mensaje_exito = '¡Contraseña actualizada exitosamente!';
               this.dialog_editar_clave = false;
