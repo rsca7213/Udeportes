@@ -1,4 +1,4 @@
-// Importamos Bcrypt, Instanciamos la conexión a la BD y el validador
+// Instanciamos la conexión a la BD y el validador
 const bd = require('../conexion');
 const validador = require('./validador');
 

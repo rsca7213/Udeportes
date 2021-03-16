@@ -3,9 +3,11 @@
         <h1 class="display-1 mt-2">Deportes</h1>
         <br>
         <v-row class="mt-5" justify="center" v-if="deportes.length > 0">
-            <v-card shaped class="ma-3" width="344" v-for="deporte in deportes" :key="deporte.id" @click="dialogEditar()" elevation="8">
-                <v-card color="green" height="50px" elevation="0" tile></v-card>
-                <v-card-title>{{deporte.nombre}}</v-card-title>
+            <v-card shaped class="ma-3" height="220" width="344" v-for="deporte in deportes" :key="deporte.id" @click="dialogEditar()" elevation="8">
+                <v-card color="green" height="70" elevation="0" tile></v-card>
+                <v-card height="90" elevation="0" tile color="rgb(0, 0, 0, 0)">
+                    <v-card-title>{{deporte.nombre}}</v-card-title> 
+                </v-card>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" small dark fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -121,7 +123,7 @@
         <v-snackbar v-model="display.show" timeout="4000" shaped transition="scroll-y-reverse-transition" multi-line> 
             {{display.mensaje}}
             <template v-slot:action="{ attrs }">
-                <v-btn color="white" text v-bind="attrs" @click="display = false">
+                <v-btn color="white" text v-bind="attrs" @click="display.show = false">
                 Cerrar
                 </v-btn>
             </template>

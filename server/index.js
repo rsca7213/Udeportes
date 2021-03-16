@@ -25,6 +25,8 @@ const routerEducaciones = require('./routes/routerEducaciones.js');
 app.use('/api/educaciones', routerEducaciones);
 const routerDeportes = require('./routes/routerDeportes.js');
 app.use('/api/deportes', routerDeportes);
+const routerPosiciones = require('./routes/routerPosiciones.js');
+app.use('/api/posiciones/deporte', routerPosiciones);
 
 // Para producción
 /*

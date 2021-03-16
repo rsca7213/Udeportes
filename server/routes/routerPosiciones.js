@@ -1,15 +1,16 @@
 /*Se importa el router de express*/
 const router = require('express').Router();
-const deportes = require('../controllers/deportes');
-const mw_token = require('../middleware/token');
-const mw_rol = require('../middleware/rol');
+const posiciones = require('../controllers/posiciones');
+// const mw_token = require('../middleware/token');
+// const mw_rol = require('../middleware/rol');
 
-//ruta encargada de crear deportes
+//ruta encargada de crear posiciones en un deporte
 
-router.route('/crear')
-    .post(mw_token, mw_rol, async(req, res) => {
+router.route('/:id/crear')
+    .post(async(req, res) => {
         try{
-            let result = await deportes.crearDeporte(req.body);
+            let datos = {body: req.body, params: req.params.id};
+            let result = await posiciones.crearPosicion(datos);
             res.send(result);
         }
         catch(error){
@@ -18,26 +19,12 @@ router.route('/crear')
         } 
         });
 
-//ruta encargada de obtener todos los deportes
-
-router.route('/')
-    .get(mw_token, mw_rol, async(req, res) => {
-        try{
-            let result = await deportes.verDeportes(req.body);
-            res.send(result);
-        }
-        catch(error){
-            if (process.env.NODE_ENV === 'development') console.error(error);
-            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
-        } 
-    });
-
-//ruta encargada de obtener un deporte en específico segun el id
+//ruta encargada de obtener todas las posiciones de un deporte
 
 router.route('/:id')
-    .get(mw_token, mw_rol, async(req, res) => {
+    .get(async(req, res) => {
         try{
-            let result = await deportes.verDeporte(req.params.id);
+            let result = await posiciones.verPosiciones(req.params.id);
             res.send(result);
         }
         catch(error){
@@ -46,13 +33,13 @@ router.route('/:id')
         } 
     });
 
-//ruta encargada de editar deportes
+//ruta encargada de obtener una posicion en específico segun el id
 
-router.route('/editar/:id')
-    .put(mw_token, mw_rol, async(req, res) => {
+router.route('/:id_deporte/posicion/:id_posicion')
+    .get(async(req, res) => {
         try{
-            let datos = {datos: req.body, params: req.params};
-            let result = await deportes.editarDeporte(datos);
+            let datos = {deporte: req.params.id_deporte, posicion: req.params.id_posicion}
+            let result = await posiciones.verPosicion(datos);
             res.send(result);
         }
         catch(error){
@@ -61,12 +48,13 @@ router.route('/editar/:id')
         } 
     });
 
-//ruta encargada de eliminar deportes
+//ruta encargada de editar posiciones
 
-router.route('/eliminar/:id')
-    .delete(mw_token, mw_rol, async(req, res) => {
+router.route('/:id_deporte/posicion/:id_posicion/editar')
+    .put(async(req, res) => {
         try{
-            let result = await deportes.eliminarDeporte(req.params.id);
+            let datos = {body: req.body, deporte: req.params.id_deporte, posicion: req.params.id_posicion};
+            let result = await posiciones.editarPosicion(datos);
             res.send(result);
         }
         catch(error){
@@ -75,6 +63,19 @@ router.route('/eliminar/:id')
         } 
     });
 
+//ruta encargada de eliminar posiciones
 
+router.route('/:id_deporte/posicion/:id_posicion/eliminar')
+    .delete(async(req, res) => {
+        try{
+            let datos = {deporte: req.params.id_deporte, posicion: req.params.id_posicion}
+            let result = await posiciones.eliminarPosicion(datos);
+            res.send(result);
+        }
+        catch(error){
+            if (process.env.NODE_ENV === 'development') console.error(error);
+            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+        } 
+    });
 
 module.exports = router;
