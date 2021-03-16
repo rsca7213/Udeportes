@@ -289,6 +289,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       },
       //Watcher que actualiza los datos del formulario para editar un usuario luego de la primera vez
       usuario: function(){
+        console.log('epa');
         if(this.usuario.cedula){
           this.inputs.cedula = this.usuario.cedula;
           this.inputs.primer_nombre = this.usuario.primer_nombre;

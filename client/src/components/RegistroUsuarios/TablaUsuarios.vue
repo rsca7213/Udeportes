@@ -18,7 +18,7 @@
         :loading="tablaCargando"
       >
       <template v-slot:top>
-        <v-dialog v-model="dialog_registro" persistent max-width="800px">
+        <!--<v-dialog v-model="dialog_registro" max-width="800px" @click:outside="cerrarForm">
           <template v-slot:activator="{ on, attrs }">
             <div class="d-flex justify-end">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
@@ -28,7 +28,8 @@
             </div>
           </template>
           <RegistroUsuarios :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
-        </v-dialog>   
+        </v-dialog>-->
+        <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
       </template>
       <template v-slot:item.acciones="{ item }">
         <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">
@@ -44,7 +45,6 @@
     </v-container>
   </v-card>
 </template>
-
 
 <script>
 import RegistroUsuarios from './RegistroUsuarios';
@@ -65,8 +65,8 @@ export default {
     return {
       // manejadores de UI
       tablaCargando: true,
-      // variable encargada de mostrar el componente registro en un dialog para crear o editar usuarios
-      dialog_registro: false,
+      // variable encargada de mostrar el componente edición en un dialog para crear o editar usuarios
+      dialog_editar: false,
       // variable encargada de mostrar el dialog para eliminar usuarios
       dialogDelete: false,
       // variable encargada de buscar lo que se inserte en el campo busqueda
@@ -151,7 +151,7 @@ export default {
       this.editedIndex = this.usuarios.indexOf(item);
       this.editar_usuario = Object.assign({}, item);
       this.cedula_usuario = this.editar_usuario.cedula;
-      this.dialog_registro = true;
+      this.dialog_editar = true;
     },
 
     //método que se ejecuta cuando se obtiene una respuesta del componente EditarClave
@@ -170,7 +170,7 @@ export default {
     cerrarForm(evento){
       this.editar_usuario = {};
       this.cedula_usuario = '';
-      this.dialog_registro=false;
+      this.dialog_editar=false;
 
       if(evento.estatus_operacion != null){
         this.obtenerEntrenadores();

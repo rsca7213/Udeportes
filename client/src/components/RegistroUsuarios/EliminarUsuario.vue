@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog_eliminar_usuario" persistent max-width="600px" class="text-center">
+    <v-dialog v-model="dialog_eliminar_usuario" max-width="600px" class="text-center">
       <template v-slot:activator="{ on, attrs }">
         <v-icon color="error" dense v-bind="attrs" v-on="on">
           mdi-delete

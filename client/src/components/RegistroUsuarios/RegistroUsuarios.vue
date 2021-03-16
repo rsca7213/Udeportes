@@ -1,90 +1,100 @@
 <template>
   <div class="">
-    <v-container>
-      <v-row class="" align="start">
-        <v-col cols="12 px-0 py-0"> 
-          <v-card rounded="md">
-            <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
-              {{mensaje_form}}
-              <v-spacer> </v-spacer>
-              <v-btn icon @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})"><v-icon> mdi-close </v-icon></v-btn>
-            </v-card-title>
-            <div v-show="!confirmar_registro">
-              <v-card-subtitle class="pb-0 pt-3 pl-8 grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
-              <div v-if="mensajeError" class="">
-                <v-col class="error--text px-4"> 
-                  <div class="ml-4">
-                    <v-alert text color="error" dense>
-                      <v-icon color="error"> mdi-alert </v-icon>
-                      <span v-text="mensajeError" class="ml-1"> </span>
-                    </v-alert>
-                  </div>
-                </v-col>
-              </div>
-              <v-form ref="form">
-                <v-container class="px-md-4">
-                  <v-row class="px-0">
-                    <v-col cols=12 :sm="(item.nombre === 'Correo')? 12:6" v-for="item in datosUsuario" :key="item.cedula">
-                      <v-text-field :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :disabled="(usuario.cedula && item.variable_asociada==='cedula')? true:false"
-                      :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
-                      <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
-                      <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]"></v-text-field>
-                        </template>
-                        <v-date-picker color="primary" ref="picker" v-model="fecha" no-title scrollable @change="guardar" locale="es-419"></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-form>
-              <v-card-actions class="mt-4 d-flex justify-center justify-sm-end flex-column flex-sm-row">
-                <v-btn class="mb-2" color="error" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
-                    <v-icon left> mdi-close </v-icon>
-                    Cancelar
-                </v-btn>
-                <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
-                  <v-icon left> mdi-check-circle </v-icon>
-                  Registrar
-                </v-btn>
-                <v-btn v-else color="secondary" class="mr-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
-                  <v-icon left> mdi-check-circle </v-icon>
-                  Editar
-                </v-btn>
-              </v-card-actions>
-            </div>
-            <div v-show="confirmar_registro">
-              <v-card-text class="pb-0 pt-4 text-subtitle-1">
-                <v-container>
-                  <v-row class="px-1">
-                    <v-col  cols=12 sm=6 lg=4 class="py-1" v-for="dato in datosUsuario" :key="dato.nombre" v-show="inputs[dato.variable_asociada] != ''">
-                      <b><span class="my-0 grey--text text--darken-2">{{dato.nombre+": "}}</span></b>
-                      <span class="my-0 grey--text text--darken-2">{{(dato.variable_asociada == 'rol')? ((inputs[dato.variable_asociada] == 'a')? 'Administrador':'Entrenador'): inputs[dato.variable_asociada]}}</span>  
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <p class="subtitle-1 px-4 mb-0 mt-5">Por favor introduce una contraseña para el usuario.</p>
-                <v-form ref="form_clave">
-                  <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
-                  prepend-icon="mdi-key" type="password" class="px-4" 
-                  validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
+    <v-dialog v-model="dialog_registro" max-width="800px" @click:outside="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
+      <template v-slot:activator="{ on, attrs }">
+        <div class="d-flex justify-end">
+          <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+            <v-icon left> mdi-plus-circle </v-icon>
+            Registrar Usuarios
+          </v-btn>
+        </div>
+      </template>
+      <v-container>
+        <v-row class="" align="start">
+          <v-col cols="12 px-0 py-0"> 
+            <v-card rounded="md">
+              <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
+                {{mensaje_form}}
+                <v-spacer> </v-spacer>
+                <v-btn icon @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})"><v-icon> mdi-close </v-icon></v-btn>
+              </v-card-title>
+              <div v-show="!confirmar_registro">
+                <v-card-subtitle class="pb-0 pt-3 pl-8 grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> <span>Los campos que contienen un <span class="red--text">"*"</span> son obligatorios</span> </v-card-subtitle>
+                <div v-if="mensajeError" class="">
+                  <v-col class="error--text px-4"> 
+                    <div class="ml-4">
+                      <v-alert text color="error" dense>
+                        <v-icon color="error"> mdi-alert </v-icon>
+                        <span v-text="mensajeError" class="ml-1"> </span>
+                      </v-alert>
+                    </div>
+                  </v-col>
+                </div>
+                <v-form ref="form">
+                  <v-container class="px-md-4">
+                    <v-row class="px-0">
+                      <v-col cols=12 :sm="(item.nombre === 'Correo')? 12:6" v-for="item in datosUsuario" :key="item.cedula">
+                        <v-text-field :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :disabled="(usuario.cedula && item.variable_asociada==='cedula')? true:false"
+                        :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
+                        <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
+                        <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]"></v-text-field>
+                          </template>
+                          <v-date-picker color="primary" ref="picker" v-model="fecha" no-title scrollable @change="guardar" locale="es-419"></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                  </v-container>
                 </v-form>
-              </v-card-text>
-              <v-card-actions class="d-flex justify-center justify-sm-end mt-2">
-                <v-btn color="error" dark @click="confirmar_registro = false">
-                  <v-icon left> mdi-close </v-icon>
-                  Regresar
-                </v-btn>
-                <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
-                  <v-icon left> mdi-check-circle </v-icon>
-                  Aceptar
-                </v-btn>
-              </v-card-actions>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                <v-card-actions class="mt-4 d-flex justify-end">
+                  <v-btn class="mb-2" color="error" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
+                      <v-icon left> mdi-close </v-icon>
+                      Cancelar
+                  </v-btn>
+                  <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
+                    <v-icon left> mdi-check-circle </v-icon>
+                    Registrar
+                  </v-btn>
+                  <v-btn v-else color="secondary" class="mr-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
+                    <v-icon left> mdi-check-circle </v-icon>
+                    Editar
+                  </v-btn>
+                </v-card-actions>
+              </div>
+              <div v-show="confirmar_registro">
+                <v-card-text class="pb-0 pt-4 text-subtitle-1">
+                  <v-container>
+                    <v-row class="px-1">
+                      <v-col  cols=12 sm=6 lg=4 class="py-1" v-for="dato in datosUsuario" :key="dato.nombre" v-show="inputs[dato.variable_asociada] != ''">
+                        <b><span class="my-0 grey--text text--darken-2">{{dato.nombre+": "}}</span></b>
+                        <span class="my-0 grey--text text--darken-2">{{(dato.variable_asociada == 'rol')? ((inputs[dato.variable_asociada] == 'a')? 'Administrador':'Entrenador'): inputs[dato.variable_asociada]}}</span>  
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <p class="subtitle-1 px-4 mb-0 mt-5">Por favor introduce una contraseña para el usuario.</p>
+                  <v-form ref="form_clave">
+                    <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
+                    prepend-icon="mdi-key" type="password" class="px-4" 
+                    validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions class="d-flex justify-end">
+                  <v-btn color="error" dark @click="confirmar_registro = false">
+                    <v-icon left> mdi-close </v-icon>
+                    Regresar
+                  </v-btn>
+                  <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
+                    <v-icon left> mdi-check-circle </v-icon>
+                    Aceptar
+                  </v-btn>
+                </v-card-actions>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-dialog>
   </div>
 </template>
 
@@ -96,6 +106,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
     props: {
       usuario: {},
       mensaje_form : String,
+      dialog_editar: Boolean
     },
     data() {
       return {
@@ -152,6 +163,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         confirmar_registro: false,
         //editado:
         editado: true,
+        //variable para cerrar el formulario de registro
+        dialog_registro: false,
         reglas: {
           reglasCorreo: [
             v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres',
@@ -289,6 +302,8 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       },
       //Watcher que actualiza los datos del formulario para editar un usuario luego de la primera vez
       usuario: function(){
+        console.log(this.dialog_editar);
+        if(this.dialog_editar) this.dialog_registro=true;
         if(this.usuario.cedula){
           this.inputs.cedula = this.usuario.cedula;
           this.inputs.primer_nombre = this.usuario.primer_nombre;
@@ -316,6 +331,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
     },
     //asigna los datos del usuario a editar para mostrarlos en el form la primera vez
     mounted(){
+      console.log(this.dialog_editar);
       if(this.usuario.cedula){
         this.inputs.cedula = this.usuario.cedula;
         this.inputs.primer_nombre = this.usuario.primer_nombre;
@@ -347,7 +363,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       // :estatus_operacion (true = exitosa, false = fallida)
       // :mensaje_operacion (mensaje a mostrar segun el tipo de operación y su estatus)
       cerrarForm({estatus_operacion, mensaje_operacion}){
-        
+        this.dialog_registro = false;
         //se reinicia la validación y se quita el mensaje de error en caso de que exista
         this.$refs.form.resetValidation();
         this.mensajeError = '';
