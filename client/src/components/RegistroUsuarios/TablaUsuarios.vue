@@ -1,5 +1,5 @@
 <template>
-  <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
+  <v-card class="px-1 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
     <v-card-title class="grey--text text--darken-2"> 
       Usuarios Registrados en el Sistema 
     </v-card-title>
@@ -18,22 +18,11 @@
         :loading="tablaCargando"
       >
       <template v-slot:top>
-        <!--<v-dialog v-model="dialog_registro" max-width="800px" @click:outside="cerrarForm">
-          <template v-slot:activator="{ on, attrs }">
-            <div class="d-flex justify-end">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                <v-icon left> mdi-plus-circle </v-icon>
-                Registrar Usuarios
-              </v-btn>
-            </div>
-          </template>
-          <RegistroUsuarios :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
-        </v-dialog>-->
-        <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm" :cedula_usuario="cedula_usuario"/>
+        <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm"/>
       </template>
       <template v-slot:item.acciones="{ item }">
         <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">
-          <EditarClave :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
+          <EditarClave :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
           <v-icon color="primary" dense @click="editItem(item)">
             mdi-pencil
           </v-icon>
@@ -133,8 +122,6 @@ export default {
       exito_dialog: false,
       //estado de la operación y mensaje a mostrar en el dialog de éxito
       props_exito_dialog: {estatus_operacion: false, mensaje_exito: ''},
-      //variable con la cédula del usuario a editar
-      cedula_usuario: '',
       //datos del usuario a editar
       editar_usuario: {},
       //cédula del usuario que se encuentra logeado en el sistema
@@ -150,7 +137,7 @@ export default {
     editItem (item) {
       this.editedIndex = this.usuarios.indexOf(item);
       this.editar_usuario = Object.assign({}, item);
-      this.cedula_usuario = this.editar_usuario.cedula;
+      //this.cedula_usuario = this.editar_usuario.cedula;
       this.dialog_editar = true;
     },
 
@@ -167,11 +154,10 @@ export default {
       this.exito_dialog = true;
       this.props_exito_dialog = evento;
     },
+    //luego de que se cierra el formulario de registro se limpian los datos del registro
     cerrarForm(evento){
       this.editar_usuario = {};
-      this.cedula_usuario = '';
       this.dialog_editar=false;
-
       if(evento.estatus_operacion != null){
         this.obtenerEntrenadores();
         this.exito_dialog = true;

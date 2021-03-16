@@ -85,9 +85,9 @@ export default {
       itemsPerfil: [
         {
           nombre: 'Editar Perfil',
-          ruta: '/p',
+          ruta: '/perfil',
           icono: 'mdi-account-edit',
-          funcion: null
+          funcion: null,
         },
         {
           nombre: 'Cerrar Sesión',

@@ -165,6 +165,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
         editado: true,
         //variable para cerrar el formulario de registro
         dialog_registro: false,
+        //reglas de validación de los campos de los formularios de registro y actualización de usuarios
         reglas: {
           reglasCorreo: [
             v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres',
@@ -201,7 +202,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       }
     },
     watch: {
-      //Funcion encargada de observar si se ha hecho click en el menu para abrir el calendario
+      //Función encargada de observar si se ha hecho click en el menu para abrir el calendario
       menu (val) {
         val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR')) //Abre el calendario comenzando por el año
       },
@@ -408,7 +409,6 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
                   this.inputs[key] = '';
                 });
                 this.mensajeExito = 'Usuario creado exitosamente!'
-                //this.display_creacion_dialog= true;
                 this.formCargando = false;
                 //para cerrar el modal
                 this.confirmar_registro = false;
@@ -430,7 +430,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             });
         }
       },
-      //metodo para editar usuarios
+      //método para editar usuarios
       async editarUsuario(){
         this.modal = false;
         if(this.$refs.form.validate()) {
