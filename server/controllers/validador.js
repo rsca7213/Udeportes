@@ -99,7 +99,11 @@ const reglasEtapaEducacion = [
 
 const reglasId = [
   v => v && typeof(v) === typeof(1) || 'La id no es un numero'
-]
+];
+
+const reglasNombreEntrenamiento = [
+  v => !v || v.length === 0 || v.length <= 50 || 'El nombre del entrenamiento debe contener como máximo 50 caracteres'
+];
 
 
 
@@ -122,7 +126,8 @@ let validador = {
   validarFechaObligatoria: (fecha) => validar(reglasFechaObligatoria, fecha),
   validarNombreEducacion: (nombre) => validar(reglasNombreEducacion, nombre),
   validarEtapaEducacion: (etapa) => validar(reglasEtapaEducacion, etapa),
-  validarId: (id) => validar(reglasId, id)
+  validarId: (id) => validar(reglasId, id),
+  validarNombreEntrenamiento: (nombre) => validar(reglasNombreEntrenamiento, nombre)
 };
 
 module.exports = validador;

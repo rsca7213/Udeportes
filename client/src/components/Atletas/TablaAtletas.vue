@@ -41,12 +41,19 @@
             <template v-slot:item.acciones="{ item }">
               <v-icon dense color="primary" @click="$router.push(`/atletas/${item.cedula}`)"> mdi-eye </v-icon>
               <EditarAtleta :cedula="item.cedula" @atletaEditado="obtenerAtletas()" />
-              <EliminarAtleta :cedula="item.cedula" :nombre_completo="item.nombre_completo" @atletaEliminado="obtenerAtletas()" />
+              <EliminarAtleta :cedula="item.cedula" :nombre_completo="item.nombre_completo" @atletaEliminado="obtenerAtletas(); snackbarEliminar = true" />
             </template>
           </v-data-table>
         </v-col>
       </v-row>
     </v-container>
+    <v-snackbar v-model="snackbarEliminar" timeout="3000" shaped top>
+      <v-icon left color="secondary"> mdi-check-circle </v-icon>
+      <span class="success--text"> ¡El atleta fue eliminado con éxito! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbarEliminar = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -77,6 +84,7 @@ export default {
     return {
       // manejadores de UI
       tablaCargando: true,
+      snackbarEliminar: false,
       // input de busqueda de la tabla
       busquedaAtleta: '',
       // headers de la tabla

@@ -31,7 +31,8 @@
               </v-row>
             </v-container>
             <span v-if="categoria && categoria.id_categoria && !categoriaCargando">
-              <TablaEntrenamientos :entrenamientos="entrenamientos" />
+              <TablaEntrenamientos :entrenamientos="entrenamientos" :id_deporte="categoria.id_deporte" 
+              :id_categoria="categoria.id_categoria" />
             </span>
           </v-card>
         </v-col>
@@ -57,11 +58,15 @@ export default {
 
   data() {
     return {
+      // UI Handlers
       cargando: true,
       categoriaCargando: true,
       mensajeError: '',
+      // Entrenamientos de una categoria
       entrenamientos: [],
+      // Items en el select box (Categorias)
       itemsSelect: [],
+      // V-model del select box
       categoria: {
         id_categoria: 0,
         id_deporte: 0
@@ -70,13 +75,29 @@ export default {
   },
 
   methods: {
+    /*
+      Función que obtiene los entrenamientos de una categoria
+      Los datos obtenidos son:
+      res.data = {
+        id: Number,
+        fecha: Date (String 'dd/mm/yyyy'),
+        nombre: String,
+        asistencias: String (Ej.: '4 Atletas'),
+        faltas: String (Ej.: '2 Atletas'),
+        porcentaje: String (Ej.: '50.00 %')
+      }
+    */
     async getEntrenamientos() {
+      // Si se selecciona una categoria
       if (this.categoria) {
+        // Colocamos el loader
         this.categoriaCargando = true;
+        // Request GET
         await axios.get(`${server_url}/entrenamientos/${this.categoria.id_deporte}/${this.categoria.id_categoria}`, { withCredentials: true } )
           .then((res) => {
             // En caso de exito
             if (res.status === 200) {
+              // Asignamos la data obtenida a la variable entrenamientos
               this.entrenamientos = res.data;
             }
           })
@@ -91,6 +112,7 @@ export default {
               console.warn('Warning: No response status was found, is the server running? ');
             }
           });
+        // Quitamos el loader
         this.categoriaCargando = false;
       }
     }

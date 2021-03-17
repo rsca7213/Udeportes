@@ -36,13 +36,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <v-snackbar v-model="snackbar" timeout="3000" shaped top>
-      <v-icon left color="secondary"> mdi-check-circle </v-icon>
-      <span class="success--text"> ¡El atleta fue eliminado con éxito! </span>
-      <template v-slot:action="{ attrs }">
-        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbar = false"> Cerrar </v-btn>
-      </template>
-  </v-snackbar>
 </span>
 </template>
 

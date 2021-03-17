@@ -123,7 +123,7 @@
               :error-messages="validacion.porcentaje_beca"> </v-text-field>
             </v-col>
           </v-row>
-      </v-container>
+        </v-container>
       </v-form>
       <v-card-actions> 
         <v-spacer></v-spacer>

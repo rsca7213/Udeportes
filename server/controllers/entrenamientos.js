@@ -30,7 +30,7 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
     // Buscamos los entrenamientos
     let entrenamientos = await bd.query(
       `SELECT e.id, TO_CHAR(e.fecha, 'dd/mm/yyyy') AS fecha, e.nombre FROM entrenamientos e 
-       WHERE e.id_deporte = $1 AND e.id_categoria = $2`,
+       WHERE e.id_deporte = $1 AND e.id_categoria = $2 ORDER BY e.fecha DESC, e.nombre`,
       [id_deporte, id_categoria]
     );
     entrenamientos = entrenamientos.rows;
@@ -51,12 +51,12 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
       return {
         id: item.id,
         fecha: item.fecha,
-        nombre: item.nombre,
+        nombre: item.nombre || 'Sin nombre',
         asistencias: `${asistencias} ${asistencias === 1 ? 'Atleta' : 'Atletas'}`,
         faltas: `${faltas} ${faltas === 1 ? 'Atleta' : 'Atletas'}`,
         porcentaje: 
           parseFloat(
-            (asistencias / (asistencias + faltas)) * 100
+            (asistencias / (asistencias + faltas)) * 100 || 0
           ).toFixed(2) + " %"
       }
     }));
@@ -131,7 +131,133 @@ async function obtenerCategorias (cedula, rol = 'e') {
   }
 }
 
+/*
+  Funcion que crea un entrenamiento para una categoria siempre y
+  cuando todos los datos sean validos
+*/
+async function crearEntrenamiento (id_deporte, id_categoria, entrenamiento) {
+  try {
+    // validamos las ids y los datos del entrenamiento
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    entrenamiento = {
+      fecha:  entrenamiento.fecha.trim(),
+      nombre: entrenamiento.nombre ? entrenamiento.nombre.trim() : ''
+    };
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    if (!validador.validarFechaObligatoria(entrenamiento.fecha).estado) 
+      return { codigo: 422, texto: validador.validarFechaObligatoria(entrenamiento.fecha).texto }
+    if (!validador.validarNombreEntrenamiento(entrenamiento.nombre).estado)
+      return { codigo: 422, texto: validador.validarNombreEntrenamiento(entrenamiento.nombre).texto }
+    
+    // Insertamos los datos del entrenamiento
+    await bd.query(
+      `INSERT INTO entrenamientos VALUES (nextval('entrenamientos_id_seq'), $1, $2, TO_DATE($3, 'dd/mm/yyyy'), $4)`,
+      [id_categoria, id_deporte, entrenamiento.fecha, entrenamiento.nombre || '']
+    );
+
+    // Retornamos un codigo 200 con los datos
+    return { codigo: 200, texto: 'Entrenamiento registrado con éxito.' }
+  } 
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
+/*
+  Funcion que editar un entrenamiento para una categoria siempre y
+  cuando todos los datos sean validos y este exista
+*/
+async function editarEntrenamiento (id_deporte, id_categoria, id, entrenamiento) {
+  try {
+    // validamos las ids y los datos del entrenamiento
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    entrenamiento = {
+      fecha:  entrenamiento.fecha.trim(),
+      nombre: entrenamiento.nombre ? entrenamiento.nombre.trim() : ''
+    };
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    if (!validador.validarFechaObligatoria(entrenamiento.fecha).estado) 
+      return { codigo: 422, texto: validador.validarFechaObligatoria(entrenamiento.fecha).texto }
+    if (!validador.validarNombreEntrenamiento(entrenamiento.nombre).estado)
+      return { codigo: 422, texto: validador.validarNombreEntrenamiento(entrenamiento.nombre).texto }
+    
+    // Verificamos que el entrenamiento exista
+    let verify = await bd.query(
+      `SELECT EXISTS (SELECT e.fecha FROM entrenamientos e WHERE e.id = $1 AND e.id_categoria = $2 AND e.id_deporte = $3) AS existe`,
+      [id, id_categoria, id_deporte]
+    );
+    if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este entrenamiento no existe.' }
+
+    // Actualizamos los datos del entrenamiento
+    await bd.query(
+      `UPDATE entrenamientos SET fecha = TO_DATE($1, 'dd/mm/yyyy'), nombre = $2 WHERE id = $3 
+       AND id_categoria = $4 AND id_deporte = $5`,
+      [entrenamiento.fecha, entrenamiento.nombre || '', id, id_categoria, id_deporte]
+    );
+
+    // Retornamos un codigo 200
+    return { codigo: 200, texto: 'Entrenamiento editado con éxito.' }
+  } 
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
+/*
+  Funcion que elimina un entrenamiento con las ids dadas
+  siempre y cuando este exista y las ids sean validas
+*/
+async function eliminarEntrenamiento(id_deporte, id_categoria, id) {
+  try {
+    // validamos las ids
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    
+    // Verificamos que el entrenamiento exista
+    let verify = await bd.query(
+      `SELECT EXISTS (SELECT e.fecha FROM entrenamientos e WHERE e.id = $1 AND e.id_categoria = $2 AND e.id_deporte = $3) AS existe`,
+      [id, id_categoria, id_deporte]
+    );
+    if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este entrenamiento no existe.' }
+
+    // Eliminamos los datos del entrenamiento y tambien las participaciones de este entrenamiento
+    await bd.query(
+      `DELETE FROM participaciones WHERE id_entrenamiento = $1 AND id_categoria_ent = $2 AND id_deporte_ent = $3`,
+      [id, id_categoria, id_deporte]
+    );
+    await bd.query(
+      `DELETE FROM entrenamientos WHERE id = $1 AND id_categoria = $2 AND id_deporte = $3`,
+      [id, id_categoria, id_deporte]
+    )
+
+    // Retornamos un codigo 200
+    return { codigo: 200, texto: 'Entrenamiento eliminado con éxito.' }
+  } 
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
 module.exports = { 
   obtenerCategorias,
-  obtenerEntrenamientos
+  obtenerEntrenamientos,
+  crearEntrenamiento,
+  editarEntrenamiento,
+  eliminarEntrenamiento
 }
