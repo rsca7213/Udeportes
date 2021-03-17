@@ -25,7 +25,7 @@ async function crearPosicion (datos) {
 async function verPosiciones (id_deporte) {
     try {
         let posiciones = await bd.query(
-          `SELECT * FROM posiciones p WHERE p.id_deporte=$1`,
+          `SELECT * FROM posiciones p WHERE p.id_deporte=$1 ORDER BY id`,
           [id_deporte]
         );
         posiciones = posiciones.rows;

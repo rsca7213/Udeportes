@@ -1,0 +1,300 @@
+<template>
+    <v-container v-if="!cargando">
+        <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
+            <v-card-title class="grey--text text--darken-2"> 
+                Posiciones de {{deporte.nombre}}
+            </v-card-title>
+            <v-row class="mt-5" v-if="posiciones.length > 0" dense>
+                <v-col v-for="(posicion, index) in posiciones" :key="posicion.id" cols="12" sm="6" md="4" lg="3">
+                    <v-card shaped class="ma-3" elevation="8">
+                        <v-card :color="colores[index % 8]" height="150" elevation="0">
+                            <v-card-title class="white--text"> 
+                                <v-icon left color="white"> mdi-basketball </v-icon>
+                                <span v-text="posicion.nombre"> </span>
+                            </v-card-title>
+                        </v-card>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="black" class="pa-0 ma-0" x-small dark text fab><v-icon>mdi-file</v-icon> </v-btn>
+                            <v-btn color="primary" class="pa-0 ma-0" x-small dark text fab @click="ver_Posicion(posicion.id, 'editar')"><v-icon>mdi-pencil</v-icon> </v-btn>
+                            <v-btn color="red" class="pa-0 ma-0" x-small dark text fab @click="ver_Posicion(posicion.id, 'eliminar')"><v-icon>mdi-delete</v-icon> </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-card-subtitle class="grey--text text--darken-2" v-else>
+                No se encontraron posiciones en {{deporte.nombre}}.
+            </v-card-subtitle>
+
+            <!-- Dialog para crear un posicion -->
+            <v-dialog  v-model="crearPosicion" max-width="450px">
+                <v-card>
+                    <v-card-title>
+                        Crear Posición
+                        <v-spacer />
+                        <v-btn icon @click="crearPosicion=false"><v-icon> mdi-close </v-icon></v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-form ref="crearForm" @submit.prevent="crear_Posicion()" class="ma-3">
+                            <v-text-field clear-icon="mdi-close" clearable label="Nombre de la posición" counter="50"
+                            type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="posicionCrear.nombre"></v-text-field>
+                            <v-btn block class="mt-3" color="secondary" type="submit">
+                                <v-icon left> mdi-check-circle </v-icon>
+                                crear
+                            </v-btn>
+                        </v-form>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+            
+            <!-- Dialog para editar un posicion -->
+            <v-dialog  v-model="editarPosicion" max-width="450px">
+                <v-card>
+                    <v-card-title>
+                        Editar Nombre
+                        <v-spacer />
+                        <v-btn icon @click="editarPosicion = false"><v-icon> mdi-close </v-icon></v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-form ref="editForm" @submit.prevent="editar_Posicion()" class="ma-3">
+                            <v-text-field clear-icon="mdi-close" clearable label="Nombre de la posición" counter="50"
+                            type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="posicion.nombre"></v-text-field>
+                            <v-btn block class="mt-3" color="secondary" type="submit">
+                                <v-icon left> mdi-check-circle </v-icon>
+                                guardar
+                            </v-btn>
+                        </v-form>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
+            <!-- Dialog para eliminar un posicion -->
+            <v-dialog v-model="eliminarPosicion" class="text-center" max-width="600">
+                <v-card rounded="md">
+                    <v-card-title>
+                        Eliminar Posición
+                        <v-spacer> </v-spacer>
+                        <v-btn icon @click="eliminarPosicion = false"><v-icon> mdi-close </v-icon></v-btn>
+                    </v-card-title> 
+                    <v-card-text class="text-subtitle-1">
+                        <b class="error--text"> ¿Está seguro que desea eliminar esta posición? </b>
+                        <br>
+                        <span class="error--text"> Al eliminar la posición se perderán todos los datos de sus estadísticas. </span>
+                        <br>
+                        <b> Nombre de la Posición: </b> {{posicion.nombre}}
+                        <br>
+                        <b> Nombre del Deporte: </b> {{deporte.nombre}}
+                    </v-card-text>
+                    <v-card-actions> 
+                        <v-spacer></v-spacer>
+                        <v-btn color="grey darken-1" dark @click="eliminarPosicion = false">
+                            <v-icon left> mdi-close </v-icon>
+                            Cancelar
+                        </v-btn>
+                        <v-btn color="error" @click="eliminar_Posicion()">
+                            <v-icon left> mdi-delete </v-icon>
+                            Eliminar
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Display de mensaje -->
+            <v-snackbar v-model="display.show" timeout="3000" shaped top> 
+                <v-icon v-if="display.type == 'success'" left color="secondary"> mdi-check-circle </v-icon>
+                <v-icon v-else left color="red"> mdi-alert-circle </v-icon>
+                <span :class="display.type == 'success' ? 'secondary--text':'red--text'">{{display.mensaje}}</span> 
+                <template v-slot:action="{ attrs }">
+                    <v-btn color="white" text v-bind="attrs" @click="display.show = false">
+                    Cerrar
+                    </v-btn>
+                </template>
+            </v-snackbar>
+
+            <v-btn color="primary" @click="crearPosicion = true" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
+        </v-card>  
+    </v-container>
+    <Cargador v-else/>
+</template>
+
+<script>
+import axios from 'axios';
+import Cargador from '../components/Cargador';
+
+const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+
+export default {
+
+  name: 'Posiciones',
+
+  components: {
+    Cargador,
+  },
+
+  data() {
+        return {
+            colores: ['indigo lighten-2', 'purple lighten-2', 'pink lighten-2', 'teal lighten-2', 'cyan lighten-2',
+                      'green lighten-2', 'orange lighten-2', 'blue-grey lighten-2'],
+            cargando: true,
+            crearPosicion: false,
+            editarPosicion: false,
+            eliminarPosicion: false,
+            display: {show: false},
+            posicionCrear: {},
+            posicion: {},
+            deporte: {},
+            posiciones: [],
+            reglasNombre: [
+                v => !!v || 'Este campo es obligatorio',
+                v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
+            ],
+        }
+    },
+    methods: {
+        async crear_Posicion () {
+            if(this.$refs.crearForm.validate()) { 
+                try {
+                    await axios
+                    .post(`${server_url}/posiciones/${this.$route.params.id_deporte}`, this.posicionCrear, { withCredentials: true })
+                    .then((res) => {
+                        if (res.data.codigo === 200) {
+                            this.posiciones.push(res.data.posicion);
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'success',
+                            }
+                        } else {
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'error',
+                            }
+                        }
+                        this.$refs.crearForm.reset();
+                        this.crearPosicion = false;
+                    })
+                    .catch((error) => {
+                        this.$refs.crearForm.reset();
+                        this.mensajeError = error.response.status === 400
+                        ? 'Ha ocurrido un error a la hora de crear la posición'
+                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        },
+        async ver_Posicion (id, evento) {
+            try {
+                axios.get(`${server_url}/posiciones/${this.$route.params.id_deporte}/${id}`, { withCredentials: true })
+                .then((res) => {
+                    if (res.data.codigo === 200){
+                        this.posicion = res.data.posicion;
+                    }
+                    console.log(this.posicion);
+                })
+            } catch (error) {
+                console.log(error);
+            }
+            if (evento == 'eliminar') {
+                this.eliminarPosicion = true;
+            } else {
+                this.editarPosicion = true;
+            } 
+        },
+        async editar_Posicion () {
+            if(this.$refs.editForm.validate()) { 
+                try {
+                    await axios
+                    .put(`${server_url}/posiciones/${this.$route.params.id_deporte}/${this.posicion.id}`, this.posicion, { withCredentials: true })
+                    .then((res) => {
+                        if (res.data.codigo === 200) {
+                            const index = this.posiciones.findIndex(p => p.id == this.posicion.id);
+                            this.posiciones[index] = res.data.posicion;
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'success',
+                            }
+                        } else {
+                            this.display = {
+                                show: true, 
+                                mensaje: res.data.texto,
+                                type: 'error',
+                            }
+                        }
+                        this.$refs.editForm.reset();
+                        this.editarPosicion = false;
+                    })
+                    .catch((error) => {
+                        this.$refs.editForm.reset();
+                        this.mensajeError = error.response.status === 400
+                        ? 'Ha ocurrido un error a la hora de editar la posición'
+                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        },
+        async eliminar_Posicion () {
+            try {
+                axios.delete(`${server_url}/posiciones/${this.$route.params.id_deporte}/${this.posicion.id}`, { withCredentials: true })
+                .then((res) => {
+                    if (res.data.codigo === 200){
+                        const index = this.posiciones.findIndex(p => p.id == this.posicion.id);
+                        this.posiciones.splice(index, 1);
+                        this.display = {
+                            show: true, 
+                            mensaje: res.data.texto,
+                            type: 'success',
+                        }
+                    } else {
+                        this.display = {
+                            show: true, 
+                            mensaje: res.data.texto,
+                            type: 'error',
+                        }
+                    }
+                    this.eliminarPosicion = false;
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
+    },
+    // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
+    // en caso positivo, se redirecciona a Posiciones, sino se muestra el componente para iniciar sesión
+    async mounted() {
+    await axios
+      .get(`${server_url}/auth/admin`, { withCredentials: true })
+      .then((res) => {
+        if (res.status === 200) {
+            //en caso de que se pasen todas las validaciones se llaman a todas las posiciones del deporte
+            axios.get(`${server_url}/posiciones/${this.$route.params.id_deporte}`, { withCredentials: true })
+            .then((res) => {
+                if (res.data.codigo === 200){
+                    this.posiciones = res.data.posiciones;
+                }
+            })
+            //se busca la información del deporte
+            axios.get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
+            .then((res) => {
+                if (res.data.codigo === 200){
+                    this.deporte = res.data.deporte;
+                }
+            })
+            this.cargando = false;
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 428) this.$router.push('/init');
+        else this.$router.push('/login');
+      });
+  }
+}
+</script>
+
+<style>
+</style>

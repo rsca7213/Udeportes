@@ -28,7 +28,10 @@ async function crearCategoria (datos) {
             [datos.params, datos.body.nombre, datos.registro, datos.body.genero]
         ); 
         let categoria = await bd.query(
-            `SELECT id, id_deporte, nombre, TO_CHAR(fecha_registro, 'DD/MM/YYYY'), genero FROM categorias ORDER BY id DESC LIMIT 1`
+            `SELECT id, id_deporte, nombre, TO_CHAR(fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
+            CASE WHEN genero = 'm' THEN 'Masculino' WHEN genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero 
+            FROM categorias 
+            ORDER BY id DESC LIMIT 1`
         ); 
         categoria = categoria.rows[0];
         return { codigo: 200, texto: 'Se ha creado la categoria correctamente.', categoria};
@@ -41,9 +44,11 @@ async function crearCategoria (datos) {
 async function verCategorias (id_deporte) {
     try {
         let categorias = await bd.query(
-          `SELECT id AS id, id_deporte AS id_deporte, nombre As nombre, TO_CHAR(fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
-          CASE WHEN genero = 'm' THEN 'Masculino' WHEN genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero
-          FROM categorias WHERE id_deporte=$1`,
+          `SELECT c.id AS id, c.id_deporte AS id_deporte, c.nombre As nombre, TO_CHAR(c.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
+          CASE WHEN c.genero = 'm' THEN 'Masculino' WHEN c.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero
+          FROM categorias c
+          WHERE c.id_deporte=$1 
+          ORDER BY c.id`,
           [id_deporte]
         );
         categorias = categorias.rows;

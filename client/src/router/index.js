@@ -40,6 +40,16 @@ const routes = [
     component: () => import('../views/Deportes.vue')
   },
   {
+    path: '/deporte/:id_deporte/posiciones',
+    name: 'Posiciones',
+    component: () => import('../views/Posiciones.vue')
+  },
+  {
+    path: '/deporte/:id_deporte/categorias',
+    name: 'Categorias',
+    component: () => import('../views/Categorias.vue')
+  },
+  {
     path: '/perfil',
     name: 'Perfil',
     component: () => import('../views/Perfil.vue')

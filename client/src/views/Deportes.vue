@@ -4,9 +4,9 @@
             <v-card-title class="grey--text text--darken-2"> 
                 Deportes 
             </v-card-title>
-            <v-row class="mt-5" v-if="deportes.length > 0" dense>
+            <v-row class="mt-5" v-if="deportes_Vacios() == false" dense>
                 <v-col v-for="(deporte, index) in deportes" :key="deporte.id" cols="12" sm="6" md="4" lg="3">
-                    <v-card shaped class="ma-3" @click="dialogEditar()" elevation="8">
+                    <v-card shaped class="ma-3" @click="ver_Deporte(deporte.id, 'config')" elevation="8">
                         <v-card :color="colores[index % 8]" height="150" elevation="0">
                             <v-card-title class="white--text"> 
                                 <v-icon left color="white"> mdi-basketball </v-icon>
@@ -15,8 +15,8 @@
                         </v-card>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="red" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, true)"><v-icon>mdi-delete</v-icon> </v-btn>
-                            <v-btn color="primary" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, false)"><v-icon>mdi-pencil</v-icon> </v-btn>
+                            <v-btn color="primary" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, 'editar')"><v-icon>mdi-pencil</v-icon> </v-btn>
+                            <v-btn color="red" class="pa-0 ma-0" x-small dark text fab @click="ver_Deporte(deporte.id, 'eliminar')"><v-icon>mdi-delete</v-icon> </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -24,131 +24,131 @@
             <v-card-subtitle class="grey--text text--darken-2" v-else>
                 No se encontraron deportes en el sistema.
             </v-card-subtitle>
-
-            <!-- Dialog para crear un deporte -->
-            <v-dialog  v-model="crearDeporte" max-width="450px">
-                <v-card>
-                    <v-card-title>
-                        Crear Deporte
-                        <v-spacer />
-                        <v-btn icon @click="crearDeporte=false"><v-icon> mdi-close </v-icon></v-btn>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-form ref="crearForm" @submit.prevent="crear_Deporte()" class="ma-3">
-                            <v-text-field clear-icon="mdi-close" clearable label="Nombre del deporte" counter="50"
-                            type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="deporteCrear.nombre"></v-text-field>
-                            <v-btn block class="mt-3" color="secondary" type="submit">
-                                <v-icon left> mdi-check-circle </v-icon>
-                                crear
-                            </v-btn>
-                        </v-form>
-                    </v-card-text>
-                </v-card>
-            </v-dialog>
-            
-            <!-- Dialog para configurar el deporte (posiciones y categorias) -->
-            <v-dialog  v-model="configDeporte" max-width="450px">
-                <v-card>
-                    <v-card-title>
-                        Editar Deporte
-                        <v-spacer />
-                        <v-btn icon @click="configDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
-                    </v-card-title>
-                    <v-col>
-                        <v-card elevation="11">
-                            <div class="d-flex flex-no-wrap justify-space-between">
-                                <v-card-title class="align-center">Posiciones</v-card-title>
-                                <v-avatar class="ma-3" size="100">
-                                    <v-img src="../assets/deportes/posiciones.png"></v-img>
-                                </v-avatar>
-                            </div>
-                        </v-card>
-                        <br>
-                        <v-card elevation="11">
-                            <div class="d-flex flex-no-wrap justify-space-between">
-                                <v-card-title class="align-center">Categorias</v-card-title>
-                                <v-avatar class="ma-3" size="100">
-                                    <v-img src="../assets/deportes/categorias.png"></v-img>
-                                </v-avatar>
-                            </div>
-                        </v-card>
-                        <br>
-                        <v-card elevation="11">
-                            <div class="d-flex flex-no-wrap justify-space-between">
-                                <v-card-title class="align-center">Entrenadores</v-card-title>
-                                <v-avatar class="ma-3" size="100">
-                                    <v-img src="../assets/deportes/entrenadores.png"></v-img>
-                                </v-avatar>
-                            </div>
-                        </v-card>
-                    </v-col>
-                </v-card>
-            </v-dialog>
-            
-            <!-- Dialog para editar un deporte -->
-            <v-dialog  v-model="editarDeporte" max-width="450px">
-                <v-card>
-                    <v-card-title>
-                        Editar Nombre
-                        <v-spacer />
-                        <v-btn icon @click="editarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-form ref="editForm" @submit.prevent="editar_Deporte()" class="ma-3">
-                            <v-text-field clear-icon="mdi-close" clearable label="Nombre del deporte" counter="50"
-                            type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="deporte.nombre"></v-text-field>
-                            <v-btn block class="mt-3" color="secondary" type="submit">
-                                <v-icon left> mdi-check-circle </v-icon>
-                                guardar
-                            </v-btn>
-                        </v-form>
-                    </v-card-text>
-                </v-card>
-            </v-dialog>
-
-            <!-- Dialog para eliminar un deporte -->
-            <v-dialog v-model="eliminarDeporte" class="text-center" max-width="600">
-                <v-card rounded="md">
-                    <v-card-title>
-                        Eliminar Deporte
-                        <v-spacer> </v-spacer>
-                        <v-btn icon @click="eliminarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
-                    </v-card-title> 
-                    <v-card-text class="text-subtitle-1">
-                        <b class="error--text"> ¿Está seguro que desea eliminar este deporte? </b>
-                        <br>
-                        <span class="error--text"> Al eliminar el deporte se eliminaran todos sus datos del sistema, como sus categorias y posiciones. </span>
-                        <br>
-                        <b> Nombre del deporte: </b> {{deporte.nombre}}
-                    </v-card-text>
-                    <v-card-actions> 
-                        <v-spacer></v-spacer>
-                        <v-btn color="grey darken-1" dark @click="eliminarDeporte = false">
-                            <v-icon left> mdi-close </v-icon>
-                            Cancelar
-                        </v-btn>
-                        <v-btn color="error" @click="eliminar_Deporte()">
-                            <v-icon left> mdi-delete </v-icon>
-                            Eliminar
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-
-            <!-- Display de mensaje -->
-            <v-snackbar v-model="display.show" timeout="3000" shaped top> 
-                <v-icon v-if="display.type == 'success'" left color="secondary"> mdi-check-circle </v-icon>
-                <v-icon v-else left color="red"> mdi-alert-circle </v-icon>
-                <span :class="display.type == 'success' ? 'secondary--text':'red--text'">{{display.mensaje}}</span> 
-                <template v-slot:action="{ attrs }">
-                    <v-btn color="white" text v-bind="attrs" @click="display.show = false">
-                    Cerrar
-                    </v-btn>
-                </template>
-            </v-snackbar>
-
-            <v-btn color="primary" @click="crearDeporte = true" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
         </v-card>  
+        
+        <!-- Dialog para crear un deporte -->
+        <v-dialog  v-model="crearDeporte" max-width="450px">
+            <v-card>
+                <v-card-title>
+                    Crear Deporte
+                    <v-spacer />
+                    <v-btn icon @click="crearDeporte=false"><v-icon> mdi-close </v-icon></v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <v-form ref="crearForm" @submit.prevent="crear_Deporte()" class="ma-3">
+                        <v-text-field clear-icon="mdi-close" clearable label="Nombre del deporte" counter="50"
+                        type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="deporteCrear.nombre"></v-text-field>
+                        <v-btn block class="mt-3" color="secondary" type="submit">
+                            <v-icon left> mdi-check-circle </v-icon>
+                            crear
+                        </v-btn>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+        
+        <!-- Dialog para configurar el deporte (posiciones y categorias) -->
+        <v-dialog  v-model="configDeporte" max-width="450px">
+            <v-card>
+                <v-card-title>
+                    Editar Deporte
+                    <v-spacer />
+                    <v-btn icon @click="configDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
+                </v-card-title>
+                <v-col>
+                    <v-card elevation="11" @click="$router.push(`/deporte/${deporte.id}/posiciones`);">
+                        <div class="d-flex flex-no-wrap justify-space-between">
+                            <v-card-title class="align-center">Posiciones</v-card-title>
+                            <v-avatar class="ma-3" size="100">
+                                <v-img src="../assets/deportes/posiciones.png"></v-img>
+                            </v-avatar>
+                        </div>
+                    </v-card>
+                    <br>
+                    <v-card elevation="11" @click="$router.push(`/deporte/${deporte.id}/categorias`);">
+                        <div class="d-flex flex-no-wrap justify-space-between">
+                            <v-card-title class="align-center">Categorias</v-card-title>
+                            <v-avatar class="ma-3" size="100">
+                                <v-img src="../assets/deportes/categorias.png"></v-img>
+                            </v-avatar>
+                        </div>
+                    </v-card>
+                    <br>
+                    <v-card elevation="11">
+                        <div class="d-flex flex-no-wrap justify-space-between">
+                            <v-card-title class="align-center">Entrenadores</v-card-title>
+                            <v-avatar class="ma-3" size="100">
+                                <v-img src="../assets/deportes/entrenadores.png"></v-img>
+                            </v-avatar>
+                        </div>
+                    </v-card>
+                </v-col>
+            </v-card>
+        </v-dialog>
+        
+        <!-- Dialog para editar un deporte -->
+        <v-dialog  v-model="editarDeporte" max-width="450px">
+            <v-card>
+                <v-card-title>
+                    Editar Nombre
+                    <v-spacer />
+                    <v-btn icon @click="editarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <v-form ref="editForm" @submit.prevent="editar_Deporte()" class="ma-3">
+                        <v-text-field clear-icon="mdi-close" clearable label="Nombre del deporte" counter="50"
+                        type="text" prepend-icon="mdi-square-edit-outline" :rules="reglasNombre" validate-on-blur v-model="deporte.nombre"></v-text-field>
+                        <v-btn block class="mt-3" color="secondary" type="submit">
+                            <v-icon left> mdi-check-circle </v-icon>
+                            guardar
+                        </v-btn>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
+        <!-- Dialog para eliminar un deporte -->
+        <v-dialog v-model="eliminarDeporte" class="text-center" max-width="600">
+            <v-card rounded="md">
+                <v-card-title>
+                    Eliminar Deporte
+                    <v-spacer> </v-spacer>
+                    <v-btn icon @click="eliminarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
+                </v-card-title> 
+                <v-card-text class="text-subtitle-1">
+                    <b class="error--text"> ¿Está seguro que desea eliminar este deporte? </b>
+                    <br>
+                    <span class="error--text"> Al eliminar el deporte se eliminarán todos sus datos del sistema, como sus categorias y posiciones. </span>
+                    <br>
+                    <b> Nombre del deporte: </b> {{deporte.nombre}}
+                </v-card-text>
+                <v-card-actions> 
+                    <v-spacer></v-spacer>
+                    <v-btn color="grey darken-1" dark @click="eliminarDeporte = false">
+                        <v-icon left> mdi-close </v-icon>
+                        Cancelar
+                    </v-btn>
+                    <v-btn color="error" @click="eliminar_Deporte()">
+                        <v-icon left> mdi-delete </v-icon>
+                        Eliminar
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Display de mensaje -->
+        <v-snackbar v-model="display.show" timeout="3000" shaped top> 
+            <v-icon v-if="display.type == 'success'" left color="secondary"> mdi-check-circle </v-icon>
+            <v-icon v-else left color="red"> mdi-alert-circle </v-icon>
+            <span :class="display.type == 'success' ? 'secondary--text':'red--text'">{{display.mensaje}}</span> 
+            <template v-slot:action="{ attrs }">
+                <v-btn color="white" text v-bind="attrs" @click="display.show = false">
+                Cerrar
+                </v-btn>
+            </template>
+        </v-snackbar>
+
+        <v-btn color="primary" @click="crearDeporte = true" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
     </v-container>
     <Cargador v-else/>
 </template>
@@ -221,24 +221,25 @@ export default {
                 }
             }
         },
-        async ver_Deporte (id, eliminar) {
+        async ver_Deporte (id, evento) {
             try {
                 axios.get(`${server_url}/deportes/${id}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200){
                         this.deporte = res.data.deporte;
                     }
-                }).catch((error) => {
-                    if (error.response.status === 428) this.$router.push('/init');
-                    else this.$router.push('/login');
-                });
+                })
             } catch (error) {
                 console.log(error);
             }
-            if (eliminar) {
+            if (evento == 'eliminar') {
                 this.eliminarDeporte = true;
-            } else {
+            } else if (evento == 'editar') {
                 this.editarDeporte = true;
+            } else {
+                if (!this.editarDeporte && !this.eliminarDeporte) {
+                    this.configDeporte = true;
+                }
             }
         },
         async editar_Deporte () {
@@ -296,45 +297,40 @@ export default {
                         }
                     }
                     this.eliminarDeporte = false;
-                }).catch((error) => {
-                    if (error.response.status === 428) this.$router.push('/init');
-                    else this.$router.push('/login');
-                });
+                })
             } catch (error) {
                 console.log(error);
             }
         },
-        dialogEditar () {
-            if (!this.editarDeporte && !this.eliminarDeporte) {
-                this.configDeporte = true;
+        deportes_Vacios () {
+            if (this.deportes.length == 0) {
+                return true;
             }
-        },
+            return false;
+        }
     },
     // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
     // en caso positivo, se redirecciona a Deportes, sino se muestra el componente para iniciar sesión
     async mounted() {
-    await axios
-      .get(`${server_url}/auth/login`, { withCredentials: true })
-      .then((res) => {
-        if (res.status === 200) {
-          this.cargando = false;
-          //en caso de que se pasen todas las validaciones se llaman a todos los deportes del sistema
-          axios.get(`${server_url}/deportes/`, { withCredentials: true })
-          .then((res) => {
-            if (res.data.codigo === 200){
-                this.deportes = res.data.deportes;
+        await axios
+        .get(`${server_url}/auth/admin`, { withCredentials: true })
+        .then((res) => {
+            if (res.status === 200) {
+                //en caso de que se pasen todas las validaciones se llaman a todos los deportes del sistema
+                axios.get(`${server_url}/deportes/`, { withCredentials: true })
+                .then((res) => {
+                    if (res.data.codigo === 200){
+                        this.deportes = res.data.deportes;
+                    }
+                })
+                this.cargando = false;
             }
-          }).catch((error) => {
-              if (error.response.status === 428) this.$router.push('/init');
-              else this.$router.push('/login');
-          });
-        }
-      })
-      .catch((error) => {
-        if (error.response.status === 428) this.$router.push('/init');
-        else this.$router.push('/login');
-      });
-  }
+        })
+        .catch((error) => {
+            if (error.response.status === 428) this.$router.push('/init');
+            else this.$router.push('/login');
+        });
+    }
 }
 </script>
 

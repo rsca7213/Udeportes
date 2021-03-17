@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       // rutas que deberian tener sidebar (agregar rutas aqui)
-      rutasConNav: [ 'Inicio', 'Entrenadores', 'Atletas', 'Deportes', 'DetallesAtleta', 'Perfil', 'Entrenamientos', 'Reportes' ]
+      rutasConNav: [ 'Inicio', 'Entrenadores', 'Atletas', 'Deportes', 'Posiciones', 'Categorias', 'DetallesAtleta', 'Perfil', 'Entrenamientos', 'Reportes' ]
     }
   }
 }
