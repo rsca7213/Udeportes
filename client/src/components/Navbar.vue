@@ -130,7 +130,7 @@ export default {
         },
         {
           nombre: 'Entrenamientos',
-          ruta: '/e',
+          ruta: '/entrenamientos',
           icono: 'mdi-clipboard-text',
           admin: false
         },

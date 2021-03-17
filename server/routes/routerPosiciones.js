@@ -4,12 +4,11 @@ const posiciones = require('../controllers/posiciones');
 // const mw_token = require('../middleware/token');
 // const mw_rol = require('../middleware/rol');
 
-//ruta encargada de crear posiciones en un deporte
-
-router.route('/:id/crear')
+router.route('/:id_deporte')
+    //ruta encargada de crear posiciones en un deporte
     .post(async(req, res) => {
         try{
-            let datos = {body: req.body, params: req.params.id};
+            let datos = {body: req.body, params: req.params.id_deporte};
             let result = await posiciones.crearPosicion(datos);
             res.send(result);
         }
@@ -17,14 +16,11 @@ router.route('/:id/crear')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-        });
-
-//ruta encargada de obtener todas las posiciones de un deporte
-
-router.route('/:id')
+        })
+    //ruta encargada de obtener todas las posiciones de un deporte
     .get(async(req, res) => {
         try{
-            let result = await posiciones.verPosiciones(req.params.id);
+            let result = await posiciones.verPosiciones(req.params.id_deporte);
             res.send(result);
         }
         catch(error){
@@ -33,9 +29,8 @@ router.route('/:id')
         } 
     });
 
-//ruta encargada de obtener una posicion en específico segun el id
-
-router.route('/:id_deporte/posicion/:id_posicion')
+router.route('/:id_deporte/:id_posicion')
+    //ruta encargada de obtener una posicion en específico segun el id
     .get(async(req, res) => {
         try{
             let datos = {deporte: req.params.id_deporte, posicion: req.params.id_posicion}
@@ -46,11 +41,8 @@ router.route('/:id_deporte/posicion/:id_posicion')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-    });
-
-//ruta encargada de editar posiciones
-
-router.route('/:id_deporte/posicion/:id_posicion/editar')
+    })
+    //ruta encargada de editar posiciones
     .put(async(req, res) => {
         try{
             let datos = {body: req.body, deporte: req.params.id_deporte, posicion: req.params.id_posicion};
@@ -61,11 +53,8 @@ router.route('/:id_deporte/posicion/:id_posicion/editar')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-    });
-
-//ruta encargada de eliminar posiciones
-
-router.route('/:id_deporte/posicion/:id_posicion/eliminar')
+    })
+    //ruta encargada de eliminar posiciones
     .delete(async(req, res) => {
         try{
             let datos = {deporte: req.params.id_deporte, posicion: req.params.id_posicion}

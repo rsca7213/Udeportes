@@ -4,12 +4,11 @@ const categorias = require('../controllers/categorias');
 // const mw_token = require('../middleware/token');
 // const mw_rol = require('../middleware/rol');
 
-//ruta encargada de crear categoria de un deporte
-
-router.route('/:id/crear')
+router.route('/:id_deporte')
+    //ruta encargada de crear categoria de un deporte
     .post(async(req, res) => {
         try{
-            let datos = {body: req.body, params: req.params.id};
+            let datos = {body: req.body, params: req.params.id_deporte};
             let result = await categorias.crearCategoria(datos);
             res.send(result);
         }
@@ -17,14 +16,11 @@ router.route('/:id/crear')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-        });
-
-//ruta encargada de obtener todas las categorias de un deporte
-
-router.route('/:id')
+        })
+    //ruta encargada de obtener todas las categorias de un deporte
     .get(async(req, res) => {
         try{
-            let result = await categorias.verCategorias(req.params.id);
+            let result = await categorias.verCategorias(req.params.id_deporte);
             res.send(result);
         }
         catch(error){
@@ -33,9 +29,8 @@ router.route('/:id')
         } 
     });
 
-//ruta encargada de obtener una categoria en específico segun el id
-
-router.route('/:id_deporte/categoria/:id_categoria')
+router.route('/:id_deporte/:id_categoria')
+    //ruta encargada de obtener una categoria en específico segun el id
     .get(async(req, res) => {
         try{
             let datos = {deporte: req.params.id_deporte, categoria: req.params.id_categoria}
@@ -46,11 +41,8 @@ router.route('/:id_deporte/categoria/:id_categoria')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-    });
-
-//ruta encargada de editar categorias
-
-router.route('/:id_deporte/categoria/:id_categoria/editar')
+    })
+    //ruta encargada de editar categorias
     .put(async(req, res) => {
         try{
             let datos = {body: req.body, deporte: req.params.id_deporte, categoria: req.params.id_categoria};
@@ -61,11 +53,8 @@ router.route('/:id_deporte/categoria/:id_categoria/editar')
             if (process.env.NODE_ENV === 'development') console.error(error);
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
-    });
-
-//ruta encargada de eliminar categorias
-
-router.route('/:id_deporte/categoria/:id_categoria/eliminar')
+    })
+    //ruta encargada de eliminar categorias
     .delete(async(req, res) => {
         try{
             let datos = {deporte: req.params.id_deporte, categoria: req.params.id_categoria}
