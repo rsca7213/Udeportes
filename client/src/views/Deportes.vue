@@ -191,7 +191,7 @@ export default {
             if(this.$refs.crearForm.validate()) { 
                 try {
                     await axios
-                    .post(`${server_url}/deportes/crear`, this.deporteCrear, { withCredentials: true })
+                    .post(`${server_url}/deportes`, this.deporteCrear, { withCredentials: true })
                     .then((res) => {
                         if (res.data.codigo === 200) {
                             this.deportes.push(res.data.deporte);
@@ -245,7 +245,7 @@ export default {
             if(this.$refs.editForm.validate()) { 
                 try {
                     await axios
-                    .put(`${server_url}/deportes/editar/${this.deporte.id}`, this.deporte, { withCredentials: true })
+                    .put(`${server_url}/deportes/${this.deporte.id}`, this.deporte, { withCredentials: true })
                     .then((res) => {
                         if (res.data.codigo === 200) {
                             const index = this.deportes.findIndex(d => d.id == this.deporte.id);
@@ -278,7 +278,7 @@ export default {
         },
         async eliminar_Deporte () {
             try {
-                axios.delete(`${server_url}/deportes/eliminar/${this.deporte.id}`, { withCredentials: true })
+                axios.delete(`${server_url}/deportes/${this.deporte.id}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200){
                         const index = this.deportes.findIndex(d => d.id == this.deporte.id);

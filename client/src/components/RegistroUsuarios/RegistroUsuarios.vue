@@ -135,6 +135,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           correo: '',
           clave: ''
         },
+        //nombre y valores del select para el rol
         roles: [
           {
             nombre: 'Administrador', valor: 'a'
@@ -186,14 +187,14 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
           ],
           reglasSegundoNombre: [
-            v => v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
+            v => !v || (v.length <= 50) || 'Este campo debe contener como máximo 50 caracteres',
           ],
           reglasTelefono: [
             v => ((v && v.length == 13) || !v) || 'El teléfono debe tener 13 caracteres.',
             v => ((v && (/^[+]\d{1,12}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
           ],
           reglasFecha: [
-            v => v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
+            v => !v || (v.length <= 10) || 'La fecha debe contener como máximo 10 caracteres.'
           ],
           reglasRol: [
             v => ['a', 'e'].includes(v) || 'El rol es obligatorio',
@@ -344,7 +345,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
       }
     },
     methods: {
-      //funcion encargada de guardar la fecha (cierra el calendario luego de elegida la fecha)
+      //función encargada de guardar la fecha (cierra el calendario luego de elegida la fecha)
       guardar (fecha) {
         this.$refs.menu[0].save(fecha);
       },
@@ -398,7 +399,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
           /*
             se solicita al servidor la creacion del usuario con un POST, enviando los datos del usuario, si se recibe
             un 200 se redirecciona se muestra un mensaje de éxito ya que todo salio bien, sino se muestra un mensaje
-            de error que especifica que sucedió
+            de error que especifíca que sucedió
           */
           await axios
             .post(`${server_url}/entrenadores/`, this.inputs, { withCredentials: true })
@@ -408,7 +409,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
                 Object.keys(this.inputs).forEach(key => {
                   this.inputs[key] = '';
                 });
-                this.mensajeExito = 'Usuario creado exitosamente!'
+                this.mensajeExito = '¡Usuario creado exitosamente!'
                 this.formCargando = false;
                 //para cerrar el modal
                 this.confirmar_registro = false;
@@ -450,7 +451,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
                   this.inputs[key] = '';
                 });
                 this.formCargando = false;
-                this.mensajeExito = 'Usuario editado exitosamente!';
+                this.mensajeExito = '¡Usuario editado exitosamente!';
                 this.cerrarForm({estatus_operacion: true, mensaje_operacion: this.mensajeExito});
               }
               else{

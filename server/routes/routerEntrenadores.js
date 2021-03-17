@@ -41,7 +41,7 @@ router.route('/')
 
 //ruta encargada de actualizar un usuario
 router.route('/:cedula')
-.put(mw_token, mw_rol, async(req, res) => {
+.put(mw_token, async(req, res) => {
   try{
     let result = await usuarios.editarUsuario(req.body);
     res.send(result);
@@ -68,7 +68,7 @@ router.route('/:cedula')
 
 //ruta encargada de actualizar la clave de un usuario
 router.route('/clave/:cedula')
-.put(mw_token, mw_rol, async(req, res) => {
+.put(mw_token, async(req, res) => {
   try{
     let result = await usuarios.editarClaveUsuario(req.params.cedula, req.body.clave);
     res.send(result);

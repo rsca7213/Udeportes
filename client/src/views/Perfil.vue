@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="!cargando">
+    <v-container class="px-6" v-if="!cargando">
       <v-row>
         <v-col cols="12"> 
           <EditarPerfil/>

@@ -4,9 +4,9 @@ const perfil = require('../controllers/perfil.js');
 const mw_token = require('../middleware/token');
 
 /*
-  Ruta GET que posee parametros query, data = nombre, data = completa,
-  indicando si se desea solo el nombre del usuario o si se desea la data completa.
-  La ruta llamara al controlador perfil pidiendole los datos a partir del query y devolvera
+  Ruta GET que posee parametros query, data = nombre, data = completa y data = cedula
+  indicando si se desea solo el nombre del usuario, si se desea la data completa o si se desea la cedula del usuario.
+  La ruta llamará al controlador perfil pidiendole los datos a partir del query y devolvera
   los resultados obtenidos. RUTA PROTEGIDA POR TOKEN
 */
 router.route('/')
@@ -18,6 +18,13 @@ router.route('/')
     */
     if (req.query.data === 'nombre') {
       let data = await perfil.nombrePerfil(req.body.cedula_auth);
+      if (data.codigo === 200) 
+        res.send(data);
+      else
+        res.status(data.codigo).send(data.texto);
+    }
+    else if(req.query.data === 'completa'){
+      let data = await perfil.datosPerfil(req.body.cedula_auth);
       if (data.codigo === 200) 
         res.send(data);
       else
