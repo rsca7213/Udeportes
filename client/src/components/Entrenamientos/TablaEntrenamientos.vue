@@ -1,0 +1,284 @@
+<template>
+  <v-container>
+    <v-row no-gutters>
+      <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
+        <v-row align="center">
+          <v-col cols="12">
+            <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+            prepend-icon="mdi-magnify" type="text" v-model="busquedaEntrenamiento" name="busqueda"> </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row class="d-none d-md-flex">
+          <v-col cols="12" class="text-right">
+            <RegistrarEntrenamiento />
+          </v-col>
+        </v-row>
+        <v-row class="d-flex d-md-none">
+          <v-col class="text-center" cols="12">
+            <RegistrarEntrenamiento />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12"> 
+            <v-data-table :headers="atributosTabla" :items="entrenamientos" :search="busquedaEntrenamiento" 
+            no-data-text="No hay entrenamientos registrados para esta categoria."
+            no-results-text="No hay resultados para esta busqueda."
+            loading-text="Cargando datos..."
+            locale="es-VE"
+            fixed-header
+            :loading="tablaCargando"
+            >
+              <template v-slot:item.acciones="{ }">
+                <AsistenciaEntrenamiento />
+                <EditarEntrenamiento />
+                <EliminarEntrenamiento />
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="12" lg="3" xl="4">
+        <v-row class="justify-center">
+          <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+            <ApexChart type="radialBar" :options="chartOptions" 
+            :series="[ratioAsistencias]" 
+            class="elevation-4 p-4 rounded-lg grey lighten-4" />
+          </v-col>
+        </v-row>
+        <v-row class="justify-center">
+          <v-col lg="11" sm="6" cols="11">
+            <ApexChart type="radialBar" :options="chartOptions2" 
+            :series="[ratioInasistencias]" 
+            class="elevation-4 p-4 rounded-lg grey lighten-4" />
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import RegistrarEntrenamiento from './RegistrarEntrenamiento';
+import EditarEntrenamiento from './EditarEntrenamiento';
+import EliminarEntrenamiento from './EliminarEntrenamiento';
+import AsistenciaEntrenamiento from './AsistenciaEntrenamiento';
+import ApexChart from 'vue-apexcharts';
+
+export default {
+  name: 'TablaEntrenamientos',
+
+  components: {
+    RegistrarEntrenamiento,
+    EditarEntrenamiento,
+    EliminarEntrenamiento,
+    AsistenciaEntrenamiento,
+    ApexChart
+  },
+
+  props: ['entrenamientos'],
+
+  data() {
+    return {
+      tablaCargando: false,
+      busquedaEntrenamiento: '',
+      ratioAsistencias: 0,
+      ratioInasistencias: 0,
+      // headers de la tabla
+      atributosTabla: [
+        {
+          text: 'Fecha',
+          align: 'center',
+          sortable: true,
+          filterable: true,
+          value: 'fecha',
+          class: 'primary--text font-weight-bold'
+        },
+        {
+          text: 'Nombre',
+          align: 'start',
+          sortable: true,
+          filterable: true,
+          value: 'nombre',
+          class: 'primary--text font-weight-bold'
+        },
+        {
+          text: 'Asistencias',
+          align: 'end',
+          sortable: true,
+          filterable: true,
+          value: 'asistencias',
+          class: 'primary--text font-weight-bold'
+        },
+        {
+          text: 'Inasistencias',
+          align: 'end',
+          sortable: true,
+          filterable: true,
+          value: 'faltas',
+          class: 'primary--text font-weight-bold'
+        },
+        {
+          text: '% Asistencia',
+          align: 'end',
+          sortable: true,
+          filterable: true,
+          value: 'porcentaje',
+          class: 'primary--text font-weight-bold'
+        },
+        {
+          text: 'Acciones',
+          align: 'center',
+          sortable: false,
+          filterable: false,
+          value: 'acciones',
+          class: 'primary--text font-weight-bold',
+          width: '95'
+        },
+      ],
+
+      chartOptions: {
+        chart: {
+          type: 'radialBar',
+          offsetY: -10,
+          sparkline: {
+            enabled: true
+          }
+        },
+        
+        title: {
+          text: '% Asistencia General',
+          align: 'center',
+          margin: 0,
+          offsetX: 0,
+          offsetY: 10,
+          floating: false,
+          style: {
+            fontSize:  '16px',
+            fontWeight:  '500',
+            fontFamily:  'Roboto',
+            color:  '#616161'
+          },
+        },
+        plotOptions: {
+          radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            track: {
+              background: "#e7e7e7",
+              strokeWidth: '97%',
+              margin: 5, // margin is in pixels
+              dropShadow: {
+                enabled: true,
+                top: 2,
+                left: 0,
+                color: '#616161',
+                opacity: 1,
+                blur: 2
+              }
+            },
+            dataLabels: {
+              name: {
+                show: false
+              },
+              value: {
+                offsetY: -2,
+                fontSize: '22px'
+              }
+            }
+          }
+        },
+        grid: {
+          padding: {
+            top: -10
+          }
+        }
+
+      },
+
+      chartOptions2: {
+        chart: {
+          type: 'radialBar',
+          offsetY: -10,
+          sparkline: {
+            enabled: true
+          }
+        },
+
+        colors: ['#F83E70'],
+        
+        title: {
+          text: '% Inasistencia General',
+          align: 'center',
+          margin: 0,
+          offsetX: 0,
+          offsetY: 10,
+          floating: false,
+          style: {
+            fontSize:  '16px',
+            fontWeight:  '500',
+            fontFamily:  'Roboto',
+            color:  '#616161'
+          },
+        },
+        plotOptions: {
+          radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            track: {
+              background: "#e7e7e7",
+              strokeWidth: '97%',
+              margin: 5, // margin is in pixels
+              dropShadow: {
+                enabled: true,
+                top: 2,
+                left: 0,
+                color: '#616161',
+                opacity: 1,
+                blur: 2
+              }
+            },
+            dataLabels: {
+              name: {
+                show: false
+              },
+              value: {
+                offsetY: -2,
+                fontSize: '22px'
+              }
+            }
+          }
+        },
+        grid: {
+          padding: {
+            top: -10
+          }
+        }
+
+      },
+    }
+  },
+
+  mounted() {
+    let total = this.entrenamientos.map(item => 
+      parseInt(item.asistencias.replace(' Atleta', '').replace(' Atletas', '')) +
+      parseInt(item.faltas.replace(' Atleta', '').replace(' Atletas', '')) 
+    );
+    total = total.reduce(function(a, b) {
+      return a + b;
+    }, 0);
+
+    let totalAsistencias = this.entrenamientos.map(item => parseInt(item.asistencias.replace(' Atleta', '').replace(' Atletas', '')));
+    totalAsistencias = totalAsistencias.reduce(function(a, b) {
+      return a + b;
+    }, 0);
+
+    this.ratioAsistencias = (totalAsistencias/total)*100|| 0;
+    this.ratioInasistencias = ((total - totalAsistencias)/total)*100|| 0;
+  }
+
+}
+</script>
+
+<style>
+
+</style>
