@@ -29,6 +29,8 @@ const routerPosiciones = require('./routes/routerPosiciones.js');
 app.use('/api/posiciones', routerPosiciones);
 const routerCategorias = require('./routes/routerCategorias.js');
 app.use('/api/categorias', routerCategorias);
+const routerEntrenamientos = require('./routes/routerEntrenamientos.js');
+app.use('/api/entrenamientos', routerEntrenamientos);
 
 // Para producción
 /*
