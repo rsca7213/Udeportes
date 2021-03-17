@@ -161,7 +161,7 @@ export default {
         .catch(() => {});
       }
       else {
-        this.$router.push(item.ruta);
+        this.$router.push(item.ruta).catch(() => {});
       }
     }
   },
