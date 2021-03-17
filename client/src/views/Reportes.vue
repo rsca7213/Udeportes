@@ -3,7 +3,7 @@
     <v-container class="px-6" v-if="!cargando">
       <v-row>
         <v-col cols="12"> 
-          
+          <MenuReportes/>
         </v-col>
       </v-row>
     </v-container>
@@ -13,14 +13,14 @@
 
 <script>
 import Cargador from '../components/Cargador';
-//import EditarPerfil from '../components/Reportes/EditarPerfil';
+import MenuReportes from '../components/Reportes/MenuReportes';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
   name: 'Reportes',
   components: {
     Cargador,
-    //EditarPerfil
+    MenuReportes
   },
   data() {
     return {

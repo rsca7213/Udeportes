@@ -136,7 +136,7 @@ export default {
         },
         {
           nombre: 'Reportes',
-          ruta: '/f',
+          ruta: '/reportes',
           icono: 'mdi-pdf-box',
           admin: false
         },

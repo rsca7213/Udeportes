@@ -50,6 +50,11 @@ const routes = [
     component: () => import('../views/Entrenamientos.vue')
   },
   {
+    path: '/reportes',
+    name: 'Reportes',
+    component: () => import('../views/Reportes.vue')
+  },
+  {
     path: '/:catchAll(.*)',
     name: '404',
     component: () => import('../views/404')

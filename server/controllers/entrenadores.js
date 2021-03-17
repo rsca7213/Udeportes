@@ -11,7 +11,21 @@ async function insertarUsuario(datos_usuario){
 
   try {
 
-    datos_usuario.correo = datos_usuario.correo.toLowerCase();
+    // Hacemos trim de los datos String para eliminar espacios innecesarios,
+    // si el atributo es NULLABLE entonces se devuelve "" si esta vacio el input
+    datos_usuario = {
+      cedula: datos_usuario.cedula,
+      primer_nombre: datos_usuario.primer_nombre.trim(),
+      segundo_nombre: datos_usuario.segundo_nombre ? datos_usuario.segundo_nombre.trim() : "",
+      primer_apellido: datos_usuario.primer_apellido.trim(),
+      segundo_apellido: datos_usuario.segundo_apellido.trim(),
+      fecha_nacimiento: datos_usuario.fecha_nacimiento,
+      correo: datos_usuario.correo.trim().toLowerCase(),
+      telefono: datos_usuario.telefono || null,
+      clave: datos_usuario.clave,
+      rol: datos_usuario.rol
+    };
+    
     // Validamos la informacion del usuario
     let check = validador.validarCedula(datos_usuario.cedula);
     if (!check.estado) return { codigo: 422, texto: check.texto }
@@ -110,6 +124,19 @@ async function listarUsuarios(){
 async function editarUsuario(datos_usuario){
   try {
 
+    // Hacemos trim de los datos String para eliminar espacios innecesarios,
+    // si el atributo es NULLABLE entonces se devuelve "" si esta vacio el input
+    datos_usuario = {
+      cedula: datos_usuario.cedula,
+      primer_nombre: datos_usuario.primer_nombre.trim(),
+      segundo_nombre: datos_usuario.segundo_nombre ? datos_usuario.segundo_nombre.trim() : "",
+      primer_apellido: datos_usuario.primer_apellido.trim(),
+      segundo_apellido: datos_usuario.segundo_apellido.trim(),
+      fecha_nacimiento: datos_usuario.fecha_nacimiento,
+      correo: datos_usuario.correo.trim().toLowerCase(),
+      telefono: datos_usuario.telefono || null,
+      rol: datos_usuario.rol
+    };
     // Validamos la información del usuario
     let check = validador.validarCedula(datos_usuario.cedula);
     if (!check.estado) return { codigo: 422, texto: check.texto }

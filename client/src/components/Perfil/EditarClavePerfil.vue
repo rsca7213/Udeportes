@@ -22,7 +22,7 @@
           <v-form ref="form_clave">
             <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
             prepend-icon="mdi-key" type="password" class="mt-2" 
-            validate-on-blur v-model="inputs.clave" :rules="reglasClave"> </v-text-field>
+            validate-on-blur v-model="inputs.clave" :rules="reglasClave" @keydown.space.prevent> </v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions> 

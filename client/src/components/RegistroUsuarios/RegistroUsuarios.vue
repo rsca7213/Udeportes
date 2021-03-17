@@ -39,7 +39,7 @@
                         <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
                         <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]"></v-text-field>
+                            <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]" @click:clear="fecha=''"></v-text-field>
                           </template>
                           <v-date-picker color="primary" ref="picker" v-model="fecha" no-title scrollable @change="guardar" locale="es-419"></v-date-picker>
                         </v-menu>
@@ -76,7 +76,7 @@
                   <v-form ref="form_clave">
                     <v-text-field clear-icon="mdi-close" clearable counter="128" label="Contraseña" 
                     prepend-icon="mdi-key" type="password" class="px-4" 
-                    validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave"> </v-text-field>
+                    validate-on-blur v-model="inputs.clave" :rules="reglas.reglasClave" @keydown.space.prevent> </v-text-field>
                   </v-form>
                 </v-card-text>
                 <v-card-actions class="d-flex justify-end">
@@ -183,7 +183,7 @@ const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.get
             v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
           ],
           reglasNombre: [
-            v => !!v || 'Este campo es obligatorio',
+            v => (v && v.trim()!=='') || 'Este campo es obligatorio',
             v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
           ],
           reglasSegundoNombre: [
