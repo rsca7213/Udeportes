@@ -31,7 +31,8 @@
             :loading="tablaCargando"
             >
               <template v-slot:item.acciones="{ item }">
-                <AsistenciaEntrenamiento />
+                <AsistenciaEntrenamiento :id_deporte="id_deporte" :id_categoria="id_categoria" :id="item.id" 
+                @asistenciasGuardadas="getEntrenamientos(); snackbarAsistencias = true" />
                 <EditarEntrenamiento :id_deporte="id_deporte" :id_categoria="id_categoria" 
                 :entrenamiento="{id: item.id, nombre: item.nombre === 'Sin nombre' ? ''  :  item.nombre, fecha: item.fecha }" 
                 @entrenamientoEditado="getEntrenamientos(); snackbarEditar = true" />
@@ -44,22 +45,29 @@
         </v-row>
       </v-col>
       <v-col cols="12" lg="3" xl="4">
-        <v-row class="justify-center">
+        <v-row class="justify-center" v-if="show">
           <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
             <ApexChart type="radialBar" :options="chartOptions" 
-            :series="[ratioAsistencias || 0]" 
+            :series="[ratioAsistencias || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />
           </v-col>
         </v-row>
-        <v-row class="justify-center">
+        <v-row class="justify-center" v-if="show">
           <v-col lg="11" sm="6" cols="11">
             <ApexChart type="radialBar" :options="chartOptions2" 
-            :series="[ratioInasistencias || 0]" 
+            :series="[ratioInasistencias || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />
           </v-col>
         </v-row>
       </v-col>
     </v-row>
+    <v-snackbar v-model="snackbarAsistencias" timeout="3000" shaped top>
+      <v-icon left color="secondary"> mdi-check-circle </v-icon>
+      <span class="success--text"> ¡Registro de asistencias guardado con éxito! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbarAsistencias = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
     <v-snackbar v-model="snackbarEliminar" timeout="3000" shaped top>
       <v-icon left color="secondary"> mdi-check-circle </v-icon>
       <span class="success--text"> ¡El entrenamiento fue eliminado con éxito! </span>
@@ -103,11 +111,13 @@ export default {
 
   data() {
     return {
-      entrenamientosData: this.entrenamientos,
+      entrenamientosData: [],
       // UI Handlers
       tablaCargando: false,
       snackbarEliminar: false,
       snackbarEditar: false,
+      snackbarAsistencias: false,
+      show: false,
       // Input del search bar
       busquedaEntrenamiento: '',
       // Ratios de ambos charts
@@ -294,8 +304,9 @@ export default {
       ApexCharts de Asistencias e Inasistencias
     */
     calcularRatios() {
+      this.show = false;
       // Generamos un arreglo con la cantidad de atletas que asistieron y faltaron (sumados) por entrenamiento
-      let total = this.entrenamientos.map(item => 
+      let total = this.entrenamientosData.map(item => 
         parseInt(item.asistencias.replace(' Atleta', '').replace(' Atletas', '')) +
         parseInt(item.faltas.replace(' Atleta', '').replace(' Atletas', '')) 
       );
@@ -304,14 +315,15 @@ export default {
         return a + b;
       }, 0);
       // Generamos un arreglo con la cantidad de atletas que asistieron por entrenamiento
-      let totalAsistencias = this.entrenamientos.map(item => parseInt(item.asistencias.replace(' Atleta', '').replace(' Atletas', '')));
+      let totalAsistencias = this.entrenamientosData.map(item => parseInt(item.asistencias.replace(' Atleta', '').replace(' Atletas', '')));
       // Sumamos dicho arreglo para obtener el total de asistencias
       totalAsistencias = totalAsistencias.reduce(function(a, b) {
         return a + b;
       }, 0);
       // Calculamos los ratios
-      this.ratioAsistencias = (totalAsistencias/total)*100|| 0;
-      this.ratioInasistencias = ((total - totalAsistencias)/total)*100|| 0;
+      this.ratioAsistencias = ((totalAsistencias/total)*100|| 0).toFixed(2);
+      this.ratioInasistencias = (((total - totalAsistencias)/total)*100|| 0).toFixed(2);
+      this.show = true;
     },
 
     /*
@@ -357,7 +369,7 @@ export default {
   },
 
   mounted() {
-    this.calcularRatios();
+    this.getEntrenamientos();
   }
 
 }

@@ -37,7 +37,7 @@
           <v-list outlined class="rounded-lg" v-if="items.length">
             <v-list-item two-line v-for="(educacion, index) in items" :key="educacion.id" 
             :class="items.length - 1 === index ? '' : 'list-item'" >
-              <v-list-item-icon>
+              <v-list-item-icon class="d-none d-sm-flex">
                 <v-icon color="indigo"> mdi-school </v-icon>
               </v-list-item-icon>
               <v-list-item-content>
