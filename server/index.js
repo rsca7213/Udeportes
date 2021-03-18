@@ -8,7 +8,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 dotenv.config();
-console.log(process.env.CLIENT_LINK);
 app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
 // Inicializar enrutador de express
 const routerAuth = require('./routes/routerAuth.js');
@@ -31,9 +30,10 @@ const routerCategorias = require('./routes/routerCategorias.js');
 app.use('/api/categorias', routerCategorias);
 const routerEntrenamientos = require('./routes/routerEntrenamientos.js');
 app.use('/api/entrenamientos', routerEntrenamientos);
+const routerCompetencias = require('./routes/routerCompetencias.js');
+app.use('/api/competencias', routerCompetencias);
 
 // Para producción
-/*
 if (process.env.NODE_ENV === 'production') {
   // Static folder
   app.use(express.static(__dirname + '/public'));
@@ -41,9 +41,10 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(__dirname + '/public/index.html');
   });
 }
-*/
+
 
 // Iniciar servidor
 app.listen(process.env.SERVER_PORT, async () => {
   console.log(`Servidor ejecutandose en: ${process.env.SERVER_URL}:${process.env.SERVER_PORT}`);
+  console.log('Ruta del cliente: ', process.env.CLIENT_LINK);
 });

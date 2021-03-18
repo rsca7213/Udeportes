@@ -124,7 +124,7 @@ export default {
         },
         {
           nombre: 'Competencias',
-          ruta: '/d',
+          ruta: '/competencias',
           icono: 'mdi-trophy',
           admin: false
         },
