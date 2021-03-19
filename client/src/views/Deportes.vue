@@ -76,7 +76,7 @@
                     <br>
                     <v-card elevation="11">
                         <div class="d-flex flex-no-wrap justify-space-between">
-                            <v-card-title class="align-center">Entrenadores</v-card-title>
+                            <v-card-title class="align-center">Inscripciones</v-card-title>
                             <v-avatar class="ma-3" size="100">
                                 <v-img src="../assets/deportes/entrenadores.png"></v-img>
                             </v-avatar>

@@ -76,11 +76,15 @@ async function editarPosicion (datos) {
 
 async function eliminarPosicion (datos) {
     try {
-        await bd.query(`DELETE FROM estadisticas WHERE id_posicion=$1`,[datos.posicion]);
+        //Tabla Rendimientos
         await bd.query(`DELETE FROM rendimientos WHERE id_posicion=$1`,[datos.posicion]);
+        //Tabla Estadisticas
+        await bd.query(`DELETE FROM estadisticas WHERE id_posicion=$1`,[datos.posicion]);
+        //Tabla Inscripciones
         await bd.query(`DELETE FROM inscripciones WHERE id_posicion=$1`,[datos.posicion]);
+        //Tabla Posiciones
         await bd.query(`DELETE FROM posiciones WHERE id=$1`,[datos.posicion]);
-
+        
         id_posicion = datos.posicion
     
         return { codigo: 200, texto: 'La posición se ha eliminado correctamente del sistema', id_posicion}

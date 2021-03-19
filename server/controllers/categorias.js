@@ -111,14 +111,21 @@ async function editarCategoria (datos) {
 
 async function eliminarCategoria (datos) {
     try {
-        await bd.query( `DELETE FROM asignaciones WHERE id_categoria=$1`,[datos.categoria]);
-        await bd.query( `DELETE FROM entrenamientos WHERE id_categoria=$1`,[datos.categoria]);
-        await bd.query( `DELETE FROM competencias WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Rendimientos
         await bd.query( `DELETE FROM rendimientos WHERE id_categoria=$1`,[datos.categoria]);
-        await bd.query( `DELETE FROM inscripciones WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Participaciones
         await bd.query( `DELETE FROM participaciones WHERE id_categoria=$1`,[datos.categoria]);
         await bd.query( `DELETE FROM participaciones WHERE id_categoria_comp=$1`,[datos.categoria]);
         await bd.query( `DELETE FROM participaciones WHERE id_categoria_ent=$1`,[datos.categoria]);
+        //Tabla Competencias
+        await bd.query( `DELETE FROM competencias WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Entrenamientos
+        await bd.query( `DELETE FROM entrenamientos WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Inscripciones
+        await bd.query( `DELETE FROM inscripciones WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Asignaciones
+        await bd.query( `DELETE FROM asignaciones WHERE id_categoria=$1`,[datos.categoria]);
+        //Tabla Categorias
         await bd.query( `DELETE FROM categorias WHERE id=$1`,[datos.categoria]);
 
         id_categoria = datos.categoria
