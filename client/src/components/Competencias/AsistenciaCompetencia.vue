@@ -117,6 +117,19 @@ export default {
 
   methods: {
     /*
+      Funcion que calcula el ratio de asistencias e inasistencias a partir del arreglo de items
+    */
+    calcularRatios() {
+      return {
+        asistencias: 
+          (this.items.filter(item => item.asistencia === true).length / 
+          this.items.filter(item => typeof(item.asistencia) === typeof(true) ).length) * 100 || 0,
+        inasistencias: (this.items.filter(item => item.asistencia === false).length / 
+          this.items.filter(item => typeof(item.asistencia) === typeof(true) ).length) * 100 || 0,
+      }
+    },
+
+    /*
       Funcion que hace la solicitud POST al servidor para registrar asistencias,
       en caso de 200 (exito) se cierra el dialog, se reinicia todo y se despliega un snackbar de exito,
       en caso de error (bien sea 400 unicidad o 500 error generico) se coloca el mensaje de error en la UI
@@ -180,13 +193,16 @@ export default {
     /* 
       Cierra el dialog, reinicia las validaciones, 
       en caso de que success sea true, se despliega un snackbar indicando exito
-      y se realiza un emit para indicarle a la tabla de entrenamientos que se actualice
+      y se realiza un emit para indicarle a las graficas del panel que se actualice
     */
     clearDialog(success = false) {
       this.dialog = false;
       this.mensajeError = '';
       if (success) {
-        setTimeout(() => this.getData(), 170);
+        setTimeout(async () => {
+          await this.getData();
+          this.$emit('updateAsistencias', this.calcularRatios());
+        }, 170);
       }
       else {
         this.inputs = this.items.map(item => { return { cedula: item.cedula, asistencia: item.asistencia } });
@@ -195,7 +211,8 @@ export default {
   },
 
   async mounted() {
-    this.getData();
+    await this.getData();
+    this.$emit('updateAsistencias', this.calcularRatios());
   }
 }
 </script>

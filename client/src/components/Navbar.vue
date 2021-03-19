@@ -1,7 +1,7 @@
 <template>
   <nav v-if="usuario.nombre">
 
-    <v-navigation-drawer v-model="menu" app color="primary">
+    <v-navigation-drawer v-model="menu" app color="primary" disable-resize-watcher>
       <v-container>
         <v-row class="pt-2 pl-2 pb-2">
           <v-img src="../assets/logo-blanco.png" alt="logo" max-width="40"> </v-img>

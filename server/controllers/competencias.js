@@ -403,8 +403,7 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
 }
 
 /*
-  Funcion que retorna los rendimientos de una categoria (no es necesario verificar que exista ya que
-  se verifica en el routerCompetencias) con el siguiente formato:
+  Funcion que retorna los rendimientos de una competencia con el siguiente formato:
       competencia: {
         categoria: String,
         deporte: String,
@@ -453,6 +452,7 @@ async function obtenerRendimientos (id_deporte, id_categoria, id) {
        WHERE co.id = $1 AND co.id_deporte = $2 AND co.id_categoria = $3`,
        [id, id_deporte, id_categoria]
     );
+    if (!query.rowCount) return { codigo: 404, texto: 'Esta competencia no existe.' }
     query = query.rows[0];
     
     // Buscamos las posiciones del deporte y los atletas libres (sin posición)
@@ -547,6 +547,88 @@ async function obtenerRendimientos (id_deporte, id_categoria, id) {
 }
 
 
+async function actualizarRendimiento (id_deporte, id_categoria, id, cedula, id_posicion, estadisticas) {
+  try {
+    // validamos las ids, cedula y estadisticas
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    id_posicion = parseInt(id_posicion);
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    if (!validador.validarId(id_posicion).estado) return { codigo: 422, texto: validador.validarId(id_posicion).texto }
+    if (!validador.validarCedula(cedula).estado) return { codigo: 422, texto: validador.validarCedula(cedula).texto }
+    let validar = [];
+    estadisticas.forEach(e => {
+      validar.push(validador.validarId(parseInt(e.id)));
+      validar.push({
+        estado: e.valor ? (typeof(e.valor) === typeof(1) ? true : false) : true,
+        texto: e.valor ? (typeof(e.valor) === typeof(1) ? '' : 'El valor debe ser un numero.') : ''
+      });
+    });
+    validar = validar.filter(v => !v.estado);
+    if (validar.length) return { codigo: 422, texto: validar[0].texto }
+
+    // Verificamos la existencia de la competencia
+    let query = await bd.query(
+      `SELECT EXISTS (SELECT c.id FROM competencias c WHERE c.id = $1 AND c.id_deporte = $2 AND c.id_categoria = $3) AS existe`,
+      [id, id_deporte, id_categoria]
+    );
+    if (!query.rows[0].existe) return { codigo: 400, texto: 'Esta competencia no existe.' }
+
+    // Verificamos la existencia de la inscripcion del atleta con dicha posicion 
+    // (validando que exista la posicion debido a la restriccion FK y el atleta por la misma razon)
+    query = await bd.query(
+      `SELECT EXISTS (SELECT i.cedula_atleta FROM inscripciones i WHERE i.cedula_atleta = $1 AND i.id_posicion = $2
+       AND i.id_deporte_pos = $3 AND i.id_categoria = $4 AND i.id_deporte = $5) AS existe`,
+      [cedula, id_posicion, id_deporte, id_categoria, id_deporte]
+    );
+    if (!query.rows[0].existe) return { codigo: 400, texto: 'Este atleta no esta inscrito en esta categoria con esta posicion.' }
+
+    // Verificamos la existencia de las estadisticas para la posicion previamente verificada
+    let check = true;
+    estadisticas.forEach(async e => {
+      await bd.query(
+        `SELECT EXISTS (SELECT e.id FROM estadisticas e WHERE e.id = $1 AND e.id_posicion = $2 AND e.id_deporte = $3) AS existe`,
+        [e.id, id_posicion, id_deporte]
+      );
+      if (!query.rows[0].existe) check = false;
+    });
+    if (!check) return { codigo: 400, texto: 'Las estadisticas no existen.'}
+
+    // Realizamos la actualizacion de la tabla rendimientos con los datos
+    estadisticas.forEach(async e => {
+      console.log(e);
+      // Si el valor es nulo, significa que se deberia borrar el registro de la base de datos
+      if (e.valor === null) {
+        await bd.query(
+          `DELETE FROM rendimientos WHERE cedula_atleta = $1 AND id_estadistica = $2 AND id_posicion = $3 AND id_deporte_est = $4
+           AND id_competencia = $5 AND id_categoria = $6 AND id_deporte_comp = $7`,
+          [cedula, e.id, id_posicion, id_deporte, id, id_categoria, id_deporte]
+        );
+      }
+      // En otro caso se inserta y si se diera el caso de que ya exista un rendimiento con dichas PK, se updatea
+      else {
+        await bd.query(
+          `INSERT INTO rendimientos VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (cedula_atleta, id_estadistica,
+           id_posicion, id_deporte_est, id_competencia, id_categoria, id_deporte_comp) DO
+           UPDATE SET valor = $9`,
+          [cedula, e.id, id_posicion, id_deporte, id, id_categoria, id_deporte, e.valor, e.valor]
+        );
+      }
+    });
+
+    return { codigo: 200, texto: 'Rendimiento guardado correctamente.' }
+  }
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
+
 
 
 
@@ -558,5 +640,6 @@ module.exports = {
   eliminarCompetencia,
   obtenerParticipaciones,
   guardarParticipaciones,
-  obtenerRendimientos
+  obtenerRendimientos,
+  actualizarRendimiento
 }

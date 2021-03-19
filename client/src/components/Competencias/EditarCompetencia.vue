@@ -101,6 +101,7 @@ export default {
 
   data() {
     return {
+      // UI handlers
       dialog: false,
       mensajeError: '',
       datosValidos: false,
@@ -109,6 +110,7 @@ export default {
       formEnviando: false,
       fechaInicioSelec: '',
       fechaFinSelec: '',
+      // inputs
       inputs: {
         nombre: this.competencia.nombre,
         fecha_inicio: this.competencia.fecha_inicio,

@@ -247,4 +247,47 @@ router.route('/:id_deporte/:id_categoria/:id/rendimientos')
     }
   });
 
+router.route('/:id_deporte/:id_categoria/:id/rendimientos/:cedula/:id_posicion')
+  /*
+    Ruta POST que actualizara el rendimiento de un atleta en una competencia
+    siempre y cuando la competencia existe y se tenga acceso a ella
+    Los datos recibidos son los siguientes: 
+    estadisticas = [
+      {
+        id: Number,
+        valor: Number
+      }
+    ]
+  */
+  .post(mw_token, async (req, res) => {
+    try {
+      // Verificamos si este usuario tiene permiso para acceder a esta categoria
+      let check_permiso = await helper_rol(req.body.cedula_auth) === 'a'
+        // Usuario admin? Entonces tiene permiso
+        ? true
+        // Usuario no admin? entonces debemos verificar las categorias que posee
+        : await competencias.obtenerCategorias(req.body.cedula_auth);
+
+      if (check_permiso != true) {
+        // verificamos que tenga acceso a la categoria
+        check_permiso = check_permiso.data.filter(item => item.id_deporte === req.params.id_deporte);
+        check_permiso = check_permiso.filter(item => item.categorias.map(i => i.id_categoria).includes(req.params.id_categoria)).length;
+      }
+      
+      // Si tiene acceso a la categoria
+      if (check_permiso) {
+        let data = await competencias.actualizarRendimiento(req.params.id_deporte, req.params.id_categoria, 
+        req.params.id, req.params.cedula, req.params.id_posicion, req.body.data);
+        res.status(data.codigo).send(data.texto);
+      }
+      // Si no tiene acceso a la categoria
+      else res.status(423).send('No posee una asignación con esta categoria.');
+      
+    }
+    catch (error) {
+      if (process.env.NODE_ENV === 'development') console.error(error);
+      res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+    }
+  });
+
 module.exports = router;

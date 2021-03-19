@@ -25,17 +25,25 @@
 
             <v-container class="pt-0 pl-4">
               <v-row class="pt-0">
-                <v-col class="py-0">
+                <v-col class="py-0 px-2">
                   <v-icon color="success" v-if="competencia.estatus === 'v'"> mdi-arrow-top-right-thick </v-icon>
                   <v-icon color="error" v-else-if="competencia.estatus === 'd'"> mdi-arrow-bottom-left-thick </v-icon>
                   <v-icon color="indigo" v-else-if="competencia.estatus === 'e'"> mdi-progress-clock </v-icon>
                   <v-icon color="grey darken-1" v-else> mdi-clock-outline </v-icon>
-                  <span v-text="competencia.nombre" class="ml-1"> </span>
+                  <span class="success--text" v-if="competencia.estatus === 'v'"> Victoria </span>
+                  <span class="error--text" v-else-if="competencia.estatus === 'd'"> Derrota </span>
+                  <span class="indigo--text" v-else-if="competencia.estatus === 'e'"> En curso </span>
+                  <span class="grey--text text--darken-1" v-else> No iniciada </span>
+                </v-col>
+              </v-row>
+              <v-row class="pt-0">
+                <v-col class="py-0">
+                  <span v-text="competencia.nombre"> </span>
                   <span v-text="` (${competencia.fecha_inicio}${competencia.fecha_fin ? ' a ' + competencia.fecha_fin : ''})`"> </span>
                 </v-col>
               </v-row>
               <v-row class="pt-0">
-                <v-col class="pt-0 ml-7">
+                <v-col class="pt-0">
                   <span v-text="competencia.categoria"> </span>
                   <span v-text="` (${competencia.deporte})`"> </span>
                 </v-col>
@@ -52,7 +60,8 @@
                     <v-spacer class="d-none d-sm-block"></v-spacer>
                     <v-col class="pt-1 pt-sm-2">
                       <AsistenciaCompetencia :id_deporte="$route.params.id_deporte" 
-                      :id_categoria="$route.params.id_categoria" :id="$route.params.id" />
+                      :id_categoria="$route.params.id_categoria" :id="$route.params.id"
+                      @updateAsistencias="datosAsistencia" />
                     </v-col>
                   </v-row>
                   <v-row v-for="posicion in competencia.posiciones" :key="posicion.id">
@@ -90,10 +99,10 @@
                                   </v-row>
                                 </v-col>
                                 <v-col class="px-0" v-else>
-                                  <v-btn color="primary" small text class="px-1"> 
-                                    <v-icon left> mdi-pencil </v-icon>
-                                    Editar Estadísticas
-                                  </v-btn>
+                                  <EditarRendimiento :estadisticas="atleta.estadisticas" :id="$route.params.id"
+                                  :id_deporte="$route.params.id_deporte" :id_categoria="$route.params.id_categoria"
+                                  :cedula="atleta.cedula" @rendimientoEditado="getDataCompetencia()"
+                                  :id_posicion="posicion.id" />
                                 </v-col>
                               </v-expansion-panel-content>
                             </v-expansion-panel>
@@ -151,7 +160,20 @@
                   </v-container>
                 </v-col>
                 <v-col cols="12" xl="4" md="6" class="elevation-2 py-4 mt-3 px-4 px-sm-5 px-md-6 rounded-lg">
-                  c
+                  <v-row class="justify-center">
+                    <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+                      <ApexChart type="radialBar" :options="asistenciaOptions" 
+                      :series="[ratioAsistencias|| 0]"
+                      class="elevation-4 p-4 rounded-lg grey lighten-4" />
+                    </v-col>
+                  </v-row>
+                  <v-row class="justify-center">
+                    <v-col lg="11" sm="6" cols="11">
+                      <ApexChart type="radialBar" :options="inasistenciaOptions" 
+                      :series="[ratioInasistencias || 0]"
+                      class="elevation-4 p-4 rounded-lg grey lighten-4" />
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-container>
@@ -164,6 +186,7 @@
 
 <script>
 import Cargador from '../components/Cargador';
+import EditarRendimiento from '../components/Competencias/EditarRendimiento';
 import AsistenciaCompetencia from '../components/Competencias/AsistenciaCompetencia';
 import ApexChart from 'vue-apexcharts';
 
@@ -177,13 +200,17 @@ export default {
   components: {
     Cargador,
     AsistenciaCompetencia,
-    ApexChart
+    ApexChart,
+    EditarRendimiento
   },
 
   data() {
     return {
-      cargando: false,
+      // UI handlers
+      cargando: true,
       mensajeError: '',
+
+      // Datos de la competencia
       competencia: {
         categoria: 'Sub 21 - Unisex',
         deporte: 'Futbol',
@@ -193,17 +220,22 @@ export default {
         atletas_libres: [],
         posiciones: []
       },
+
+      // Select box del radar
       inputs: {
         select: {
             tipo: '',
             id: ''
         }
       },
+      // Items del select box del radar
       itemsSelect: [],
+      // Data del radar
       dataRadar: [],
+      // Labels del radar
       radarCategories: [],
       
-      // Opciones chart1
+      // Opciones asistencias
       asistenciaOptions: {
         chart: {
           type: 'radialBar',
@@ -262,7 +294,7 @@ export default {
         }
 
       },
-      // Opciones chart2
+      // Opciones inasistencias
       inasistenciaOptions: {
         chart: {
           type: 'radialBar',
@@ -323,14 +355,26 @@ export default {
         }
 
       },
+
+      // data para las graficas de asistencia
+      ratioAsistencias: 0,
+      ratioInasistencias: 0
     }
   },
 
   methods: {
-    datosRadar() {
+    // Settea los datos de las graficas de asistencia
+    datosAsistencia (data) {
+      this.ratioAsistencias = data.asistencias;
+      this.ratioInasistencias = data.inasistencias;
+    },
+
+    // Settea los datos y labels de la grafica radar a partir del input del select box
+    datosRadar () {
       if (!this.inputs.select) return;
       this.dataRadar = [];
       this.radarCategories = [];
+      // Si la grafica es sobre el atleta sencillamente recorremos cada estadistica y vamos pusheando
       if (this.inputs.select.tipo ===  'a') {
         this.competencia.posiciones.map(posicion => {
           posicion.atletas.forEach(atleta => {
@@ -343,6 +387,7 @@ export default {
           });
         });
       }
+      // Si la grafica es de una posicion, vamos sumando a los arreglos y luego calculamos el promedio
       else if (this.inputs.select.tipo === 'p') {
         let nombres = [];
         let data = [];
@@ -372,14 +417,21 @@ export default {
       }
     },
 
+    /*
+      Funcion que obtiene la data completa de la competencia\
+    */
     async getDataCompetencia() {
+      this.inputs.select = [];
+      this.itemsSelect = [];
       await axios.get(`${server_url}/competencias/${this.$route.params.id_deporte}/${this.$route.params.id_categoria}/
       ${this.$route.params.id}/rendimientos`, { withCredentials: true } )
       .then((res) => {
         // En caso de exito
         if (res.status === 200) {
-          // Asignamos la data obtenida a la variable items
+          // Asignamos la data a la variable competencia
           this.competencia = res.data;
+          // Para cada posicion, rellenamos el select box de la grafica de radar
+          // con posiciones y atletas
           this.competencia.posiciones.forEach(posicion => {
             if (posicion.atletas.length)
               this.itemsSelect.push({
@@ -399,6 +451,8 @@ export default {
               });
             });
           });
+          
+          this.cargando = false;
         }
       })
       .catch((err) => {
@@ -406,6 +460,7 @@ export default {
           // errores
           if (err.response.status === 423) this.$router.push('/competencias');
           else if (err.response.status === 401) this.$router.push('/login');
+          else if (err.response.status === 404 || err.response.status === 422) this.$router.push('/competencias');
           else this.mensajeError = err.response.data;
         }
         catch (error) {
