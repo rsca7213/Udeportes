@@ -31,6 +31,8 @@ const routerCategorias = require('./routes/routerCategorias.js');
 app.use('/api/categorias', routerCategorias);
 const routerEntrenamientos = require('./routes/routerEntrenamientos.js');
 app.use('/api/entrenamientos', routerEntrenamientos);
+const routerReportes = require('./routes/routerReportes.js');
+app.use('/api/reportes', routerReportes);
 
 // Para producción
 /*

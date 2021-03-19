@@ -56,7 +56,7 @@ import ApexChart from 'vue-apexcharts';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
-  name: 'NominaEquipo',
+  name: 'AsistenciaGeneralEntrenamientos',
   components: {
     ApexChart
   },
@@ -119,7 +119,7 @@ export default {
           class: 'primary--text font-weight-bold'
         },
         {
-          text: 'Educación (Etapa)',
+          text: 'Asistencia',
           align: 'start',
           sortable: true,
           filterable: true,
@@ -202,7 +202,8 @@ export default {
               },
             ],
             
-          },  
+          },
+          {text:'Asistencia General a Entrenamientos', bold:true, color: '#2196F3', fontSize: 16, margin: [ 0, 10, 0, 10 ]},
           {text: [{text:'Nómina de equipo: ', bold:true, color: '#2196F3'},{text:`${this.equipo}`}], fontSize: 14, margin: [ 0, 10, 0, 20 ]},
           {
             layout: 'lightHorizontalLines',
@@ -230,7 +231,7 @@ export default {
          { text: 'Género', bold: true, color:'#2196F3' },
          { text: 'Edad', bold: true, color:'#2196F3' },
          { text: 'Correo Electrónico', bold: true, color:'#2196F3' },
-         { text: 'Educación(Etapa)', bold: true, color:'#2196F3' },
+         { text: 'Asistencia', bold: true, color:'#2196F3' },
       ]);
 
       //todos los atletas del reporte

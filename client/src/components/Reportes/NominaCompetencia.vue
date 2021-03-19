@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row no-gutters>
-      <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
+      <v-col cols="12" lg="8" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
         <v-alert text color="error" dense v-if="mensaje_error">
           <v-icon color="error"> mdi-alert </v-icon>
           <span v-text="mensaje_error" class="ml-1"> </span>
@@ -28,7 +28,7 @@
           
         </v-row>
       </v-col>
-      <v-col cols="12" lg="3" xl="4">
+      <v-col cols="12" lg="4" xl="4">
         <v-row class="justify-center" v-if="chartData.length">
           <v-col lg="11" sm="8" md="10" cols="11" class="mt-6 mt-lg-0 d-flex justify-center">
             <ApexChart height="270" type="donut" :options="chartOptions" :series="chartData" class="elevation-4  rounded-lg grey lighten-4" />
@@ -38,7 +38,7 @@
       
     </v-row>
     <v-row>
-      <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+      <v-col cols="12" lg="8" xl="8" class="d-flex justify-end">
         <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
           <v-icon>mdi-download</v-icon>
           Generar Reporte
@@ -56,13 +56,12 @@ import ApexChart from 'vue-apexcharts';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
-  name: 'NominaEquipo',
+  name: 'NominaCompetencia',
   components: {
     ApexChart
   },
   props:{
-    categoria: {},
-    equipo: {}
+    competencia: {},
   },
   data() {
     return {
@@ -179,7 +178,7 @@ export default {
 
   watch: {
     //método que se ejecuta cada vez que cambia la categoría(se selecciona otro valor en el select de equipos)
-    categoria(){
+    competencia(){
       this.chartData=[];
       this.getAtletas();
     }
@@ -203,7 +202,7 @@ export default {
             ],
             
           },  
-          {text: [{text:'Nómina de equipo: ', bold:true, color: '#2196F3'},{text:`${this.equipo}`}], fontSize: 14, margin: [ 0, 10, 0, 20 ]},
+          {text: [{text:'Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.nombre}`}], fontSize: 14, margin: [ 0, 10, 0, 20 ]},
           {
             layout: 'lightHorizontalLines',
         
@@ -243,7 +242,7 @@ export default {
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas() {
       this.tabla_cargando = true;
-      await axios.get(`${server_url}/reportes/nomina/equipo/${this.categoria.id_categoria}`, { withCredentials: true } )
+      await axios.get(`${server_url}/reportes/nomina/competencia/${this.competencia}`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
           if (res.status === 200) {

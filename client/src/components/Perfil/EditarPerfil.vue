@@ -3,7 +3,7 @@
     <v-container>
       <v-row class="" align="start">
         <v-col cols="12 "> 
-          <v-card rounded="md">
+          <v-card color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
               Editar Perfil
             </v-card-title>
@@ -327,8 +327,7 @@ export default {
   //Se cargan los datos del usuario para rellenar el formulario con dichos datos
   async mounted(){
     /*
-      se busca la cédula del usuario para que las acciones de la tabla no se puedan realizar
-      sobre el directamente, ya que el usuario debe actualizar sus datos en editar perfil
+      se busca la informacion completa del usuario
     */
     await axios
     .get(`${server_url}/perfil?data=completa`, { withCredentials: true })
