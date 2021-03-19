@@ -105,6 +105,16 @@ const reglasNombreEntrenamiento = [
   v => !v || v.length === 0 || v.length <= 50 || 'El nombre del entrenamiento debe contener como máximo 50 caracteres'
 ];
 
+const reglasNombreCompetencia = [
+  v => !!v || 'El nombre de la competencia es obligatorio',
+  v => v && v.length <= 50 || 'El nombre de la competencia debe contener como máximo 50 caracteres'
+];
+
+const reglasEstatusCompetencia = [
+  v => !!v || 'El estatus es obligatorio',
+  v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Valor de estatus invalido'
+];
+
 
 
 let validador = {
@@ -127,7 +137,9 @@ let validador = {
   validarNombreEducacion: (nombre) => validar(reglasNombreEducacion, nombre),
   validarEtapaEducacion: (etapa) => validar(reglasEtapaEducacion, etapa),
   validarId: (id) => validar(reglasId, id),
-  validarNombreEntrenamiento: (nombre) => validar(reglasNombreEntrenamiento, nombre)
+  validarNombreEntrenamiento: (nombre) => validar(reglasNombreEntrenamiento, nombre),
+  validarNombreCompetencia: (nombre) => validar(reglasNombreCompetencia, nombre),
+  validarEstatusCompetencia: (estatus) => validar(reglasEstatusCompetencia, estatus)
 };
 
 module.exports = validador;

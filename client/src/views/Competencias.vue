@@ -1,13 +1,13 @@
 <template>
-  <div class="entrenamientos">
+  <div class="competencias">
     <Cargador v-if="cargando" /> 
     <v-container v-else> 
       <v-row>
         <v-col>
           <v-card class="px-2 py-4" color="#F5F5F5" elevation="4" shaped>
-            <v-card-title> Entrenamientos </v-card-title>
+            <v-card-title> Competencias </v-card-title>
             <v-card-subtitle v-if="!categoria || !categoria.id_categoria"> 
-              Para comenzar a gestionar los entrenamientos, por favor selecciona una categoria. 
+              Para comenzar a gestionar las competencias, por favor selecciona una categoria. 
             </v-card-subtitle>
             <v-card-subtitle> 
               Puedes cambiar la categoria en cualquier momento.
@@ -17,12 +17,12 @@
                 <v-col class="pt-0" cols="12" md="6" lg="4" xl="3">
                   <v-select v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
                   clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
-                  no-data-text="No tiene categorias asignadas" @change="getEntrenamientos()">
+                  no-data-text="No tiene categorias asignadas" @change="getCompetencias()">
                   </v-select>
                 </v-col>
               </v-row>
               <v-row v-if="!categoria || !categoria.id_categoria">
-                <v-col class="grey--text text-center"> Selecciona una categoria para gestionar sus entrenamientos. </v-col>
+                <v-col class="grey--text text-center"> Selecciona una categoria para gestionar sus competencias. </v-col>
               </v-row>
               <v-row v-else-if="categoriaCargando"> 
                 <v-col class="px-6 mx-5">
@@ -31,8 +31,8 @@
               </v-row>
             </v-container>
             <span v-if="categoria && categoria.id_categoria && !categoriaCargando">
-              <TablaEntrenamientos :entrenamientos="entrenamientos" :id_deporte="categoria.id_deporte" 
-              :id_categoria="categoria.id_categoria" />
+              <TablaCompetencias :competencias="competencias" :id_deporte="categoria.id_deporte" 
+              :id_categoria="categoria.id_categoria" :usuario="usuario" />
             </span>
           </v-card>
         </v-col>
@@ -43,17 +43,17 @@
 
 <script>
 import Cargador from '../components/Cargador';
-import TablaEntrenamientos from '../components/Entrenamientos/TablaEntrenamientos';
+import TablaCompetencias from '../components/Competencias/TablaCompetencias';
 import axios from 'axios';
 
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 
 export default {
-  name: 'Entrenamientos',
+  name: 'Competencias',
 
   components: {
     Cargador,
-    TablaEntrenamientos
+    TablaCompetencias
   },
 
   data() {
@@ -62,8 +62,12 @@ export default {
       cargando: true,
       categoriaCargando: true,
       mensajeError: '',
-      // Entrenamientos de una categoria
-      entrenamientos: [],
+      // Usuario actualmente iniciado
+      usuario: {
+        admin: false
+      },
+      // Competencias de una categoria
+      competencias: [],
       // Items en el select box (Categorias)
       itemsSelect: [],
       // V-model del select box
@@ -76,29 +80,30 @@ export default {
 
   methods: {
     /*
-      Función que obtiene los entrenamientos de una categoria
+      Función que obtiene las competencias de una categoria
       Los datos obtenidos son:
       res.data = {
         id: Number,
-        fecha: Date (String 'dd/mm/yyyy'),
         nombre: String,
-        asistencias: String (Ej.: '4 Atletas'),
-        faltas: String (Ej.: '2 Atletas'),
-        porcentaje: String (Ej.: '50.00 %')
+        estatus: String,
+        fecha_inicio: Date (String 'dd/mm/yyyy'),
+        fecha_fin: Date (String 'dd/mm/yyyy'),
       }
     */
-    async getEntrenamientos() {
+    async getCompetencias() {
       // Si se selecciona una categoria
       if (this.categoria) {
         // Colocamos el loader
         this.categoriaCargando = true;
         // Request GET
-        await axios.get(`${server_url}/entrenamientos/${this.categoria.id_deporte}/${this.categoria.id_categoria}`, { withCredentials: true } )
+        await axios.get(`${server_url}/competencias/${this.categoria.id_deporte}/${this.categoria.id_categoria}`,
+        { withCredentials: true } )
           .then((res) => {
             // En caso de exito
             if (res.status === 200) {
               // Asignamos la data obtenida a la variable entrenamientos
-              this.entrenamientos = res.data;
+              this.competencias = res.data;
+              if (!this.competencias) this.competencias = [];
             }
           })
           .catch((err) => {
@@ -115,11 +120,10 @@ export default {
         // Quitamos el loader
         this.categoriaCargando = false;
       }
-    }
-  },
+    },
 
-  /*
-    En mounted se rellena el select box de categorias haciendo una solicitud GET al servidor,
+    /*
+    Funcion que rellena el select box de categorias haciendo una solicitud GET al servidor,
     esta devolvera un arreglo de objetos de la siguiente manera
     res.data = [
       {
@@ -151,11 +155,9 @@ export default {
     En caso de error de login se redirecciona a '/login', en caso de otros errores
     se indica con un v-alert
   */
-  async mounted() {
-    // Ocultamos el componente y desplegamos el componente Cargador hasta que termine el proceso
-    this.cargando = true;
+  async obtenerCategorias() {
     // Solicitud GET
-    await axios.get(`${server_url}/entrenamientos/categorias`, { withCredentials: true })
+    await axios.get(`${server_url}/competencias/categorias`, { withCredentials: true })
       .then((res) => {
         // En caso de exito
         if (res.status === 200) {
@@ -192,6 +194,39 @@ export default {
         catch (error) {
           // Servidor no disponible
           this.mensajeError = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+          console.warn('Warning: No response status was found, is the server running? ');
+        }
+      })
+  }
+  },
+
+  // En mounted verificamos login, admin y config inicial, adicionalmente rellenamos el selectBox con
+  // las categorias a las que tiene acceso el usuario
+  async mounted() {
+    // Ocultamos el componente, mostrando el Cargador
+    this.cargando = true;
+    await axios
+      .get(`${server_url}/auth/admin`, { withCredentials: true })
+      .then((res) => {
+        // si el usuario es admin y ha iniciado sesión
+        if (res.status === 200) {
+          this.usuario.admin = true;
+          this.obtenerCategorias();
+        }
+      })
+      .catch((err) => {
+        try {
+          // no hay config inicial
+          if (err.response.status === 428) this.$router.push('/init');
+          // usuario no ha iniciado sesión
+          else if (err.response.status === 401) this.$router.push('/login');
+          // si el usuario ha iniciado sesión pero no es admin
+          else {
+            this.usuario.admin = false;
+            this.obtenerCategorias();
+          }
+        }
+        catch { 
           console.warn('Warning: No response status was found, is the server running? ');
         }
       })

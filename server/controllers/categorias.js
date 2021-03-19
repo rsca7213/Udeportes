@@ -17,8 +17,6 @@ async function crearCategoria (datos) {
     datos.registro = hoy;
     let check = validador.validarNombre(datos.body.nombre);
     if (!check.estado) return { codigo: 422, texto: check.texto }
-    check = validador.validarGenero(datos.body.genero);
-    if (!check.estado) return { codigo: 422, texto: check.texto }
     check = validador.validarFechaObligatoria(datos.registro);
     if (!check.estado) return { codigo: 422, texto: check.texto }
     try {
@@ -34,7 +32,7 @@ async function crearCategoria (datos) {
             ORDER BY id DESC LIMIT 1`
         ); 
         categoria = categoria.rows[0];
-        return { codigo: 200, texto: 'Se ha creado la categoria correctamente.', categoria};
+        return { codigo: 200, texto: 'Se ha creado la categoría correctamente.', categoria};
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -44,18 +42,28 @@ async function crearCategoria (datos) {
 async function verCategorias (id_deporte) {
     try {
         let categorias = await bd.query(
-          `SELECT c.id AS id, c.id_deporte AS id_deporte, c.nombre As nombre, TO_CHAR(c.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
-          CASE WHEN c.genero = 'm' THEN 'Masculino' WHEN c.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero
-          FROM categorias c
-          WHERE c.id_deporte=$1 
-          ORDER BY c.id`,
-          [id_deporte]
+            `SELECT c.id AS id, c.id_deporte AS id_deporte, c.nombre As nombre, TO_CHAR(c.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
+            CASE WHEN c.genero = 'm' THEN 'Masculino' WHEN c.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, a.cedula_usuario AS cedula,
+            CASE WHEN a.cedula_usuario = NULL THEN 'Sin asignar' ELSE (u.primer_nombre || ' ' || u.primer_apellido) END AS entrenador
+            FROM asignaciones a
+            FULL JOIN categorias c ON a.id_categoria=c.id
+            FULL JOIN usuarios u ON a.cedula_usuario=u.cedula
+            WHERE c.id_deporte=$1 
+            ORDER BY c.id`,
+            [id_deporte]
         );
+        let categoriasNoAsignadas = await bd.query(
+            `SELECT c.id AS id, 
+            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+            FROM asignaciones a
+            FULL JOIN categorias c ON a.id_categoria=c.id
+            WHERE c.id_deporte=$1 AND a.cedula_usuario IS NULL
+            ORDER BY c.id`,
+            [id_deporte]
+        );
+        categoriasNoAsignadas = categoriasNoAsignadas.rows
         categorias = categorias.rows;
-    
-        if(categorias.length){
-          return { codigo: 200, categorias}
-        }
+        return { codigo: 200, categorias, categoriasNoAsignadas}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -82,8 +90,8 @@ async function verCategoria (datos) {
 async function editarCategoria (datos) {
     let check = validador.validarNombre(datos.body.nombre);
     if (!check.estado) return { codigo: 422, texto: check.texto }
-    check = validador.validarGenero(datos.body.genero);
-    if (!check.estado) return { codigo: 422, texto: check.texto }
+    // check = validador.validarGenero(datos.body.genero);
+    // if (!check.estado) return { codigo: 422, texto: check.texto }
     try {
         await bd.query(
             `UPDATE categorias SET nombre=$1, genero=$2 WHERE id=$3 AND id_deporte=$4`,
@@ -115,11 +123,44 @@ async function eliminarCategoria (datos) {
 
         id_categoria = datos.categoria
     
-        return { codigo: 200, texto: 'La categoria se ha eliminado correctamente del sistema', id_categoria}
+        return { codigo: 200, texto: 'La categoría se ha eliminado correctamente del sistema', id_categoria}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
     }
 }
 
-module.exports = { crearCategoria, verCategorias, verCategoria, editarCategoria, eliminarCategoria }
+async function verEntrenadores () {
+    try {
+        let entrenadores = await bd.query(
+          `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+          FROM usuarios u 
+          WHERE u.rol='e'`
+        );
+        entrenadores = entrenadores.rows;
+        return { codigo: 200, entrenadores}
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') console.error(error);
+        return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    }
+}
+
+async function verCategoriasEntrenador (datos) {
+    try {
+        let categorias = await bd.query(
+            `SELECT c.id AS id, 
+            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+            FROM asignaciones a, categorias c
+            WHERE c.id_deporte=$1 AND a.cedula_usuario=$2 AND c.id=a.id_categoria
+            ORDER BY c.id`,
+            [datos.deporte, datos.cedula]
+        );
+        categorias = categorias.rows
+        return { codigo: 200, categorias}
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') console.error(error);
+        return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    }
+}
+
+module.exports = { crearCategoria, verCategorias, verCategoria, editarCategoria, eliminarCategoria, verEntrenadores, verCategoriasEntrenador }
