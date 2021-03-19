@@ -367,5 +367,7 @@ export default {
 </script>
 
 <style>
-
+  .v-data-table-header th {
+    white-space: nowrap;
+  }
 </style>

@@ -32,7 +32,8 @@ export default {
         'Perfil', 
         'Entrenamientos', 
         'Reportes',
-        'Competencias'
+        'Competencias',
+        'PanelCompetencia'
       ]
     }
   }

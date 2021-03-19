@@ -70,6 +70,11 @@ const routes = [
     component: () => import('../views/Competencias.vue')
   },
   {
+    path: '/competencias/:id_deporte/:id_categoria/:id',
+    name: 'PanelCompetencia',
+    component: () => import('../views/PanelCompetencia.vue')
+  },
+  {
     path: '/:catchAll(.*)',
     name: '404',
     component: () => import('../views/404')

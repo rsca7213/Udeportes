@@ -262,7 +262,289 @@ async function eliminarCompetencia(id_deporte, id_categoria, id) {
   }
 }
 
+/*
+  Funcion que obbtiene las participaciones de una competencia siempre y cuando
+  esta xista
+  Los datos a retornar son los siguientes
+  participaciones = [
+    {
+      cedula: String,
+      nombre_completo: String,
+      asistencia: Boolean or Null
+    }
+  ]
+  Esta funcion retornara basicamente todos los atletas inscritos en la categoria junto
+  con su atributo de asistencia en la tabla participaciones, en caso de que no tenga dicho
+  atributo la funcion sencillamente retornara null en dicho atributo
+*/
+async function obtenerParticipaciones (id_deporte, id_categoria, id) {
+  try {
+    // validamos las ids
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    
+    let participaciones = await bd.query(
+      `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
+      (SELECT p.asistencia FROM participaciones p WHERE p.cedula_atleta = a.cedula
+      AND p.id_competencia = $1 AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 ) AS asistencia
+      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta`,
+      [id, id_deporte, id_categoria]
+    );
 
+    participaciones = participaciones.rows;
+
+    participaciones = participaciones.map(participacion => {
+      let nombres = [
+        participacion.primer_nombre,
+        participacion.segundo_nombre || '',
+        participacion.primer_apellido,
+        participacion.segundo_apellido
+      ];
+      return {
+        cedula: participacion.cedula,
+        nombre_completo: nombres.join(' ').replace(/ +/g, " "),
+        asistencia: participacion.asistencia
+      }
+    });
+
+    // Retornamos un codigo 200 y la data
+    return { codigo: 200, participaciones }
+  } 
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
+/*
+  Funcion que guarda el registro de asistencia de una competencia siempre y cuando
+  la data sea valida y dicha exista
+*/
+async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
+  try {
+    // validamos las ids
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+
+    // Validamos la data
+    let validar = data.map(item => {
+      if (!validador.validarCedula(item.cedula).estado) return {
+        codigo: 422, 
+        texto: validador.validarCedula(item.cedula).texto
+      }
+      else if (![true, false, null].includes(item.asistencia)) return {
+        codigo: 422,
+        texto: 'Valor de asistencia invalido.'
+      }
+      else return null;
+    }).filter(item => item != null);
+    if (validar.length) return validar[0];
+
+    // Verificamos que la competencia exista
+    let verify = await bd.query(
+      `SELECT EXISTS (SELECT c.nombre FROM competencias c WHERE c.id = $1 AND c.id_categoria = $2 AND c.id_deporte = $3) AS existe`,
+      [id, id_categoria, id_deporte]
+    );
+    if (!verify.rows[0].existe) return { codigo: 400, texto: 'Esta competencia no existe.' }
+    // Si la competencia existe y la data es valida
+    await data.forEach(async item => {
+      // Si la asistencia no esta determinada, se borra si exite el registro
+      if (item.asistencia === null) 
+        await bd.query(
+          `DELETE FROM participaciones WHERE cedula_atleta = $1 AND id_competencia = $2
+           AND id_categoria_comp = $3 AND id_deporte_comp = $4`,
+           [item.cedula, id, id_categoria, id_deporte]
+        );
+      else {
+        // Si la asistencia es falsa o verdadera, verificamos si existe ya un registro
+        let check = await bd.query(
+          `SELECT EXISTS (SELECT p.id FROM participaciones p WHERE p.cedula_atleta = $1 AND p.id_competencia = $2
+           AND p.id_categoria_comp = $3 AND p.id_deporte_comp = $4) AS existe`,
+          [item.cedula, id, id_categoria, id_deporte]
+        );
+        check = check.rows[0].existe;
+        // Si existe el registro actualizamos
+        if (check) {
+          await bd.query(
+            `UPDATE participaciones SET asistencia = $1 WHERE cedula_atleta = $2 AND id_competencia = $3
+            AND id_categoria_comp = $4 AND id_deporte_comp = $5`,
+            [item.asistencia, item.cedula, id, id_categoria, id_deporte]
+          );
+        }
+        // Si no existe insertamos
+        else {
+          await bd.query(
+            `INSERT INTO participaciones VALUES (nextval('participaciones_id_seq'), $1, $2, $3, $4, 
+             $5, $6, $7, NULL, NULL, NULL )`,
+            [item.cedula, id_categoria, id_deporte, item.asistencia, id, id_categoria, id_deporte]
+          );
+        }
+
+      }  
+      
+    });
+    return { codigo: 200, texto: 'Registro de asistencia guardado con éxito.' }
+
+  }
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
+
+/*
+  Funcion que retorna los rendimientos de una categoria (no es necesario verificar que exista ya que
+  se verifica en el routerCompetencias) con el siguiente formato:
+      competencia: {
+        categoria: String,
+        deporte: String,
+        nombre: String,
+        fecha_inicio: Date (String 'dd/mm/yyyy'),
+        fecha_fin: Date (String 'dd/mm/yyyy') || Null,
+        posiciones:  [
+          {
+            id: Number,
+            nombre: String,
+            atletas: [
+              {
+                cedula: String,
+                nombre: String,
+                estadisticas: [
+                  {
+                    id: Number,
+                    nombre: String,
+                    maximo: Number || Null,
+                    minimo: Number || Null,
+                    valor: Number || Null
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+*/
+async function obtenerRendimientos (id_deporte, id_categoria, id) {
+  try {
+    // validamos las ids
+    id_deporte = parseInt(id_deporte);
+    id_categoria = parseInt(id_categoria);
+    id = parseInt(id);
+    if (!validador.validarId(id).estado) return { codigo: 422, texto: validador.validarId(id).texto }
+    if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
+    if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
+    
+    let competencia = {};
+    // Buscamos los datos basicos de la competencia
+    let query = await bd.query(
+      `SELECT ca.nombre AS categoria, d.nombre AS deporte, co.nombre, TO_CHAR(co.fecha_inicio, 'dd/mm/yyyy') AS fecha_inicio,
+       TO_CHAR(co.fecha_fin, 'dd/mm/yyyy') AS fecha_fin, co.estatus FROM competencias co INNER JOIN categorias ca ON
+       ca.id = co.id_categoria AND ca.id_deporte = co.id_deporte INNER JOIN deportes d ON co.id_deporte = d.id
+       WHERE co.id = $1 AND co.id_deporte = $2 AND co.id_categoria = $3`,
+       [id, id_deporte, id_categoria]
+    );
+    query = query.rows[0];
+    
+    // Buscamos las posiciones del deporte y los atletas libres (sin posición)
+    competencia = {
+      categoria: query.categoria,
+      deporte: query.deporte,
+      nombre: query.nombre,
+      fecha_inicio: query.fecha_inicio,
+      fecha_fin: query.fecha_fin || null,
+      estatus: query.estatus,
+      atletas_libres: await bd.query(
+        `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido FROM atletas a
+        INNER JOIN inscripciones i ON i.cedula_atleta = a.cedula WHERE i.id_categoria = $1 AND i.id_deporte = $2
+        AND i.id_posicion IS NULL AND i.id_deporte_pos = $3 ORDER BY a.cedula`,
+        [id_categoria, id_deporte, id_deporte]
+      ),
+      posiciones: await bd.query(`SELECT p.id, p.nombre FROM posiciones p WHERE p.id_deporte = $1`, [id_deporte])
+    };
+    competencia.posiciones = competencia.posiciones.rows;
+    
+    // Para cada posicion vamos a buscar a los atletas que esten inscritos en la categoria con dicha posicion
+    competencia.posiciones = await Promise.all(competencia.posiciones.map(async posicion => {
+      let atletas = await bd.query(
+        `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido FROM atletas a
+         INNER JOIN inscripciones i ON i.cedula_atleta = a.cedula WHERE i.id_categoria = $1 AND i.id_deporte = $2
+         AND i.id_posicion = $3 AND i.id_deporte_pos = $4 ORDER BY a.cedula`,
+         [id_categoria, id_deporte, posicion.id, id_deporte]
+      );
+      // Para cada atleta buscaremos las estadisticas que tiene su posicion, en caso de que tenga
+      // registrado un rendimiento se coloca su valor, sino se coloca un NULL
+      return {
+        id: posicion.id,
+        nombre: posicion.nombre,
+        atletas: await Promise.all(atletas.rows.map(async atleta => {
+          let nombres = [
+            atleta.primer_nombre,
+            atleta.segundo_nombre || '',
+            atleta.primer_apellido,
+            atleta.segundo_apellido
+          ];
+          let estadisticas = await bd.query(
+            `SELECT e.id, e.nombre, e.maximo, e.minimo FROM estadisticas e
+             WHERE e.id_posicion = $1 AND e.id_deporte = $2 ORDER BY e.nombre`,
+            [posicion.id, id_deporte]
+          );
+          return {
+            cedula: atleta.cedula,
+            nombre: nombres.join(' ').replace(/ +/g, " "),
+            estadisticas: await Promise.all(estadisticas.rows.map(async estadistica => {
+              let valor = await bd.query(
+                `SELECT r.valor FROM rendimientos r WHERE r.cedula_atleta = $1 AND r.id_estadistica = $2
+                 AND r.id_posicion = $3 AND r.id_deporte_est = $4 AND r.id_competencia = $5
+                 AND r.id_categoria = $6 AND r.id_deporte_comp = $7`,
+                [atleta.cedula, estadistica.id, posicion.id, id_deporte, id, id_categoria, id_deporte]
+              );
+              return {
+                id: estadistica.id,
+                nombre: estadistica.nombre,
+                maximo: estadistica.maximo,
+                minimo: estadistica.minimo,
+                valor: valor.rowCount ? parseInt(valor.rows[0].valor) : null
+              }
+            }))
+          };
+        }))
+      }
+      
+    }));
+
+    // Juntamos los nombres de los atletas sin posicion
+    competencia.atletas_libres = competencia.atletas_libres.rows.map(atleta => {
+      let nombres = [
+        atleta.primer_nombre,
+        atleta.segundo_nombre || '',
+        atleta.primer_apellido,
+        atleta.segundo_apellido
+      ];
+      return {
+        cedula: atleta.cedula,
+        nombre: nombres.join(' ').replace(/ + /g, " ")
+      }
+    });
+
+
+    return { codigo: 200, competencia }
+  }
+  // Error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+  }
+}
 
 
 
@@ -273,5 +555,8 @@ module.exports = {
   obtenerCompetencias,
   crearCompetencia,
   editarCompetencia,
-  eliminarCompetencia
+  eliminarCompetencia,
+  obtenerParticipaciones,
+  guardarParticipaciones,
+  obtenerRendimientos
 }
