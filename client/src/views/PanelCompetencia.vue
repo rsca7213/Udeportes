@@ -65,26 +65,26 @@
                     </v-col>
                   </v-row>
                   <v-row v-for="posicion in competencia.posiciones" :key="posicion.id">
-                    <v-col cols="12" class="py-0">
+                    <v-col cols="12" class="py-0 px-1">
                       <v-row>
-                        <v-col>
+                        <v-col class="px-1">
                           <b class="indigo--text ml-6" v-text="posicion.nombre"> </b>
                         </v-col>
                       </v-row>
                     </v-col>
-                    <v-col cols="12" v-if="posicion.atletas.length">
+                    <v-col cols="12" v-if="posicion.atletas.length" class="px-1">
                       <v-row>
                         <v-col>
                           <v-expansion-panels accordion>
                             <v-expansion-panel v-for="atleta in posicion.atletas" :key="atleta.cedula" class="pa-0 ma-0">
-                              <v-expansion-panel-header>
+                              <v-expansion-panel-header class="px-4">
                                 <span> 
                                   <span class="indigo--text" v-text="atleta.cedula"> </span>
                                   <span v-text="atleta.nombre" class="ml-2"> </span>
                                 </span>
                               </v-expansion-panel-header>
                               <v-expansion-panel-content>
-                                <v-col v-for="estadistica in atleta.estadisticas" :key="estadistica.id" cols="12">
+                                <v-col v-for="estadistica in atleta.estadisticas" :key="estadistica.id" cols="12" class="px-1">
                                   <v-row> 
                                     <v-icon dense color="indigo"> mdi-poll-box </v-icon>
                                     <span v-text="estadistica.nombre" class="ml-1 indigo--text"> </span>
@@ -93,12 +93,12 @@
                                     <span v-text="estadistica.valor || 'N/A'" class="ml-6"> </span>
                                   </v-row>
                                 </v-col>
-                                <v-col cols="!2" v-if="!atleta.estadisticas.length"> 
+                                <v-col cols="!2" v-if="!atleta.estadisticas.length" class="px-1"> 
                                   <v-row>
                                     <span class="grey--text text--darken-1"> Sin estadisticas </span>
                                   </v-row>
                                 </v-col>
-                                <v-col class="px-0" v-else>
+                                <v-col v-else class="px-4">
                                   <EditarRendimiento :estadisticas="atleta.estadisticas" :id="$route.params.id"
                                   :id_deporte="$route.params.id_deporte" :id_categoria="$route.params.id_categoria"
                                   :cedula="atleta.cedula" @rendimientoEditado="getDataCompetencia()"
@@ -110,25 +110,25 @@
                         </v-col>
                       </v-row>
                     </v-col>
-                    <v-col cols="12" class="py-2 ml-6" v-else>
+                    <v-col cols="12" class="py-2 ml-6 px-1" v-else>
                       <v-row>
-                        <v-col>
+                        <v-col class="px-1">
                           <span class="grey--text grey--darken-1"> Sin Atletas </span>
                         </v-col>
                       </v-row>
                     </v-col>
                   </v-row>
                   <v-row v-if="competencia.atletas_libres.length">
-                    <v-col cols="12" class="py-0">
+                    <v-col cols="12" class="py-0 px-1">
                       <v-row>
-                        <v-col>
+                        <v-col class="px-1">
                           <b class="indigo--text ml-6"> Sin Posición </b>
                         </v-col>
                       </v-row>
                     </v-col>
-                    <v-col cols="12">
+                    <v-col cols="12 px-1">
                       <v-row v-for="atleta in competencia.atletas_libres" :key="atleta.cedula">
-                        <v-col class="ml-6">
+                        <v-col class="ml-4">
                           <span> 
                             <span class="indigo--text" v-text="atleta.cedula"> </span>
                             <span v-text="atleta.nombre" class="ml-2"> </span>
@@ -141,7 +141,7 @@
                 <v-col cols="12" xl="4" md="6" class="elevation-2 py-4 mt-3 px-4 px-sm-5 px-md-6 rounded-lg">
                   <v-container class="pt-0">
                     <v-row class="pt-0">
-                      <v-col class="pt-0">
+                      <v-col class="pt-0 px-1">
                         <v-select v-model="inputs.select" label="Posición o Atleta" prepend-icon="mdi-chart-areaspline"
                         clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
                         no-data-text="No hay datos" @change="datosRadar()" >
@@ -161,14 +161,14 @@
                 </v-col>
                 <v-col cols="12" xl="4" md="6" class="elevation-2 py-4 mt-3 px-4 px-sm-5 px-md-6 rounded-lg">
                   <v-row class="justify-center">
-                    <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+                    <v-col lg="11" sm="6" cols="12" class="mt-6 mt-lg-0">
                       <ApexChart type="radialBar" :options="asistenciaOptions" 
                       :series="[ratioAsistencias|| 0]"
                       class="elevation-4 p-4 rounded-lg grey lighten-4" />
                     </v-col>
                   </v-row>
                   <v-row class="justify-center">
-                    <v-col lg="11" sm="6" cols="11">
+                    <v-col lg="11" sm="6" cols="12">
                       <ApexChart type="radialBar" :options="inasistenciaOptions" 
                       :series="[ratioInasistencias || 0]"
                       class="elevation-4 p-4 rounded-lg grey lighten-4" />

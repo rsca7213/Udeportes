@@ -9,7 +9,8 @@
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Editar Rendimiento
+        <span class="d-none d-sm-flex"> Editar Rendimiento </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Rendimiento </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -43,7 +44,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="dialog = false">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>

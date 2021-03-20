@@ -5,7 +5,8 @@
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Gestionar Asistencia
+        <span class="d-none d-sm-flex"> Gestionar Asistencia </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Gestionar Asistencia </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -50,7 +51,7 @@
               <v-list-item-title v-text="item.nombre_completo" class="d-none d-sm-inline"> </v-list-item-title>
               <v-list-item-title v-text="item.nombre_completo" class="text-body-2 d-inline d-sm-none"> </v-list-item-title>
               <v-list-item-subtitle> 
-                <b> Nro. Cedula: </b>
+                <b class="hide-xxs mr-1"> Nro. Cedula: </b>
                 <span v-text="item.cedula"> </span>
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -75,7 +76,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="sendData()" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>

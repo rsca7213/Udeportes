@@ -466,8 +466,8 @@ async function obtenerRendimientos (id_deporte, id_categoria, id) {
       atletas_libres: await bd.query(
         `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido FROM atletas a
         INNER JOIN inscripciones i ON i.cedula_atleta = a.cedula WHERE i.id_categoria = $1 AND i.id_deporte = $2
-        AND i.id_posicion IS NULL AND i.id_deporte_pos = $3 ORDER BY a.cedula`,
-        [id_categoria, id_deporte, id_deporte]
+        AND i.id_posicion IS NULL AND i.id_deporte_pos IS NULL ORDER BY a.cedula`,
+        [id_categoria, id_deporte]
       ),
       posiciones: await bd.query(`SELECT p.id, p.nombre FROM posiciones p WHERE p.id_deporte = $1`, [id_deporte])
     };

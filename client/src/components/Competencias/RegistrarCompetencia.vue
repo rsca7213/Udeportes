@@ -4,12 +4,13 @@
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="primary" dark v-bind="attrs" v-on="on"> 
         <v-icon left> mdi-plus-circle </v-icon>
-        Registrar Competencia
+        Registrar Compete<span class="show-xxs-inline">...</span><span class="hide-xxs">ncia</span>
       </v-btn>
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Registrar Competencia
+        <span class="d-none d-sm-flex"> Registrar Competencia </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Registrar Competencia </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -29,14 +30,14 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col class="px-3">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre *" 
               prepend-icon="mdi-square-edit-outline" type="text" :rules="reglas.nombre" 
               validate-on-blur v-model.trim="inputs.nombre" name="nombre"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col class="px-3" cols="12">
               <v-menu ref="menuFechasInicio" v-model="menuFechasInicio" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -51,7 +52,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col class="px-3" cols="12">
               <v-menu ref="menuFechasFin" v-model="menuFechasFin" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -66,7 +67,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col class="px-3" cols="12">
               <v-select v-model="inputs.estatus" label="Estatus *" prepend-icon="mdi-clock"
               clear-icon="mdi-close" name="educacion" clearable :rules="reglas.estatus"
               :items="[{text: 'No iniciada', value: 'n'}, {text: 'En curso', value: 'e'}, 
@@ -80,7 +81,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>

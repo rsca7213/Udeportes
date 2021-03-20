@@ -41,5 +41,23 @@ export default {
 </script>
 
 <style>
+    @media only screen and (min-width: 340px) {
+    .hide-xxs {
+      display: inline-block;
+    }
 
+    .show-xxs-inline {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 340px) {
+    .show-xxs-inline {
+      display: inline-block;
+    }
+
+    .hide-xxs {
+      display: none;
+    }
+  }
 </style>

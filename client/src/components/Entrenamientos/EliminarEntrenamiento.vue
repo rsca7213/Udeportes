@@ -5,7 +5,8 @@
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Eliminar Entrenamiento
+        <span class="d-none d-sm-flex"> Eliminar Entrenamiento </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Entrenamiento </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title> 
@@ -26,7 +27,7 @@
         <v-spacer></v-spacer>
         <v-btn color="grey darken-1" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="error" @click="submit()" :loading="formEnviando">
           <v-icon left> mdi-delete </v-icon>

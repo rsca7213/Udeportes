@@ -3,7 +3,7 @@
     <v-row no-gutters>
       <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
         <v-row align="center">
-          <v-col cols="12">
+          <v-col cols="12" class="px-1">
             <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
             prepend-icon="mdi-magnify" type="text" v-model="busquedaCompetencia" name="busqueda"> </v-text-field>
           </v-col>
@@ -15,13 +15,13 @@
           </v-col>
         </v-row>
         <v-row class="d-flex d-md-none">
-          <v-col class="text-center" cols="12">
+          <v-col class="text-center px-0 px-sm-2" cols="12">
             <RegistrarCompetencia :id_deporte="id_deporte" :id_categoria="id_categoria"
-            @entrenamientoRegistrado="getCompetencias()" v-if="usuario.admin" />
+            @competenciaRegistrada="getCompetencias()" v-if="usuario.admin" />
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12"> 
+          <v-col cols="12" class="px-0 px-sm-2"> 
             <v-data-table :headers="atributosTabla" :items="competenciasData" :search="busquedaCompetencia" 
             no-data-text="No hay competencias registradas para esta categoria."
             no-results-text="No hay resultados para esta busqueda."
@@ -67,14 +67,14 @@
       </v-col>
       <v-col cols="12" lg="3" xl="4">
         <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+          <v-col lg="11" sm="6" cols="12" class="mt-6 mt-lg-0">
             <ApexChart type="radialBar" :options="chartOptions" 
             :series="[ratioVictorias || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />
           </v-col>
         </v-row>
         <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11">
+          <v-col lg="11" sm="6" cols="12">
             <ApexChart type="radialBar" :options="chartOptions2" 
             :series="[ratioDerrotas || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />

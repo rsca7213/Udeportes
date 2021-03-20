@@ -2,14 +2,15 @@
 <span>
   <v-dialog v-model="dialog" class="text-center" max-width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark v-bind="attrs" v-on="on"> 
+      <v-btn color="primary" dark v-bind="attrs" v-on="on" class="text-wrap"> 
         <v-icon left> mdi-plus-circle </v-icon>
-        Registrar Entrenamiento
+        <span>Registrar Entrena<span class="show-xxs-inline">...</span><span class="hide-xxs">miento</span></span>
       </v-btn>
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Registrar Entrenamiento
+        <span class="d-none d-sm-flex"> Registrar Entrenamiento </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Registrar Entrenamiento </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -29,7 +30,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="px-4">
               <v-menu ref="menuFechas" v-model="menuFechas" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -44,7 +45,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col class="px-4">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre" 
               prepend-icon="mdi-square-edit-outline" type="text" :rules="reglas.nombre" 
               validate-on-blur v-model.trim="inputs.nombre" name="nombre"> </v-text-field>
@@ -56,7 +57,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>

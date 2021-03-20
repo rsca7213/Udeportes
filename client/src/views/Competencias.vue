@@ -9,7 +9,7 @@
             <v-card-subtitle v-if="!categoria || !categoria.id_categoria"> 
               Para comenzar a gestionar las competencias, por favor selecciona una categoria. 
             </v-card-subtitle>
-            <v-card-subtitle> 
+            <v-card-subtitle v-else> 
               Puedes cambiar la categoria en cualquier momento.
             </v-card-subtitle>
             <v-container class="pt-0">

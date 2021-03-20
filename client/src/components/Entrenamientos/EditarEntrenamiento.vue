@@ -5,7 +5,8 @@
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Editar Entrenamiento
+        <span class="d-none d-sm-flex"> Editar Entrenamiento </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Entrenamiento </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -25,7 +26,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="px-4">
               <v-menu ref="menuFechas" v-model="menuFechas" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -40,7 +41,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col class="px-4">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre" 
               prepend-icon="mdi-square-edit-outline" type="text" :rules="reglas.nombre" 
               validate-on-blur v-model.trim="inputs.nombre" name="nombre"> </v-text-field>
@@ -52,7 +53,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>
