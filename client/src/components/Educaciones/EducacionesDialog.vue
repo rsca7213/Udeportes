@@ -8,10 +8,22 @@
     </template>
     <v-card rounded="md" style="border: 0px">
       <v-card-title>
-        <span v-if="step === 'R'"> Niveles Educativos </span>
-        <span v-if="step === 'C'"> Agregar Educación </span>
-        <span v-if="step === 'U'"> Editar Educación </span>
-        <span v-if="step === 'D'"> Eliminar Educación </span>
+        <span v-if="step === 'R'"> 
+          <span class="d-none d-sm-flex"> Niveles Educativos </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Niveles Educativos </b> 
+        </span>
+        <span v-if="step === 'C'"> 
+          <span class="d-none d-sm-flex"> Agregar Educación </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Agregar Educación </b> 
+        </span>
+        <span v-if="step === 'U'">
+          <span class="d-none d-sm-flex"> Editar Educación </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Educación </b> 
+        </span>
+        <span v-if="step === 'D'">
+          <span class="d-none d-sm-flex"> Eliminar Educación </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Educación </b> 
+        </span>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>

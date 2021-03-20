@@ -8,7 +8,8 @@
     </template>
     <v-card rounded="md" style="border: 0px">
       <v-card-title>
-        Atletas por Educación
+        <span class="d-none d-sm-flex"> Atletas por Educación </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Atletas por Educación </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
