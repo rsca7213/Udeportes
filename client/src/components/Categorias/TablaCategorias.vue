@@ -18,7 +18,7 @@
                             Crear Categoría
                         </v-btn>
                         <v-btn class="ml-3" color="indigo" dark @click="asignacion = true"> 
-                            <v-icon left> mdi-plus-circle </v-icon>
+                            <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
                         <v-btn class="ml-3" color="red" dark @click="destitucion = true"> 
@@ -36,7 +36,7 @@
                     </v-col>
                     <v-col class="text-center" cols="12">
                         <v-btn class="ml-3" color="indigo" dark @click="asignacion = true"> 
-                            <v-icon left> mdi-plus-circle </v-icon>
+                            <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
                     </v-col>
@@ -150,7 +150,7 @@
                     <v-spacer></v-spacer>
                     <v-btn color="grey darken-1" dark @click="eliminarCategoria = false">
                         <v-icon left> mdi-close </v-icon>
-                        Cancelar
+                        Cerrar
                     </v-btn>
                     <v-btn color="error" @click="eliminar_Categoria()">
                         <v-icon left> mdi-delete </v-icon>

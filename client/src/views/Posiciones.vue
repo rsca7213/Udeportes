@@ -4,23 +4,25 @@
             <v-card-title class="grey--text text--darken-2"> 
                 Posiciones de {{deporte.nombre}}
             </v-card-title>
-            <v-row class="mt-5" v-if="posiciones.length > 0" dense>
-                <v-col v-for="(posicion, index) in posiciones" :key="posicion.id" cols="12" sm="6" md="4" lg="3">
-                    <v-card shaped class="ma-3" elevation="8">
-                        <v-card :color="colores[index % 8]" height="150" elevation="0">
-                            <v-card-title class="white--text"> 
-                                <v-icon left color="white"> mdi-basketball </v-icon>
-                                <span v-text="posicion.nombre"> </span>
-                            </v-card-title>
-                        </v-card>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="black" class="pa-0 ma-0" x-small dark text fab><v-icon>mdi-file</v-icon> </v-btn>
-                            <v-btn color="primary" class="pa-0 ma-0" x-small dark text fab @click="ver_Posicion(posicion.id, 'editar')"><v-icon>mdi-pencil</v-icon> </v-btn>
-                            <v-btn color="red" class="pa-0 ma-0" x-small dark text fab @click="ver_Posicion(posicion.id, 'eliminar')"><v-icon>mdi-delete</v-icon> </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-col>
+            <v-row justify="center" class="ma-5" v-if="posiciones.length > 0">
+                <v-list outlined width="400">
+                    <template v-for="(posicion, index) in posiciones">
+                        <v-list-item two-line :key="posicion.id">
+                            <v-list-item-icon class="d-none d-sm-flex">
+                                <v-icon color="indigo"> mdi-source-pull </v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title v-text="posicion.nombre"> </v-list-item-title>
+                            </v-list-item-content>
+                            <div>
+                                <v-icon color="primary"> mdi-chart-line </v-icon>
+                                <v-icon color="primary" @click="ver_Posicion(posicion.id, 'editar')"> mdi-pencil </v-icon>
+                                <v-icon color="error" @click="ver_Posicion(posicion.id, 'eliminar')"> mdi-delete </v-icon>
+                            </div>
+                        </v-list-item>
+                        <v-divider v-if="index < posiciones.length -1" :key="index"></v-divider>
+                    </template>
+                </v-list>
             </v-row>
             <v-card-subtitle class="grey--text text--darken-2" v-else>
                 No se encontraron posiciones en {{deporte.nombre}}.
@@ -89,7 +91,7 @@
                         <v-spacer></v-spacer>
                         <v-btn color="grey darken-1" dark @click="eliminarPosicion = false">
                             <v-icon left> mdi-close </v-icon>
-                            Cancelar
+                            Cerrar
                         </v-btn>
                         <v-btn color="error" @click="eliminar_Posicion()">
                             <v-icon left> mdi-delete </v-icon>
@@ -192,7 +194,6 @@ export default {
                     if (res.data.codigo === 200){
                         this.posicion = res.data.posicion;
                     }
-                    console.log(this.posicion);
                 })
             } catch (error) {
                 console.log(error);

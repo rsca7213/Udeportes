@@ -28,6 +28,8 @@ const routerPosiciones = require('./routes/routerPosiciones.js');
 app.use('/api/posiciones', routerPosiciones);
 const routerCategorias = require('./routes/routerCategorias.js');
 app.use('/api/categorias', routerCategorias);
+const routerInscripciones = require('./routes/routerInscripciones.js');
+app.use('/api/inscripciones', routerInscripciones);
 const routerAsignaciones = require('./routes/routerAsignaciones.js');
 app.use('/api/asignaciones', routerAsignaciones);
 const routerEntrenamientos = require('./routes/routerEntrenamientos.js');

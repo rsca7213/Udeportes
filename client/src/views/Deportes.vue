@@ -126,7 +126,7 @@
                     <v-spacer></v-spacer>
                     <v-btn color="grey darken-1" dark @click="eliminarDeporte = false">
                         <v-icon left> mdi-close </v-icon>
-                        Cancelar
+                        Cerrar
                     </v-btn>
                     <v-btn color="error" @click="eliminar_Deporte()">
                         <v-icon left> mdi-delete </v-icon>

@@ -22,7 +22,7 @@ async function crearCategoria (datos) {
     try {
         await bd.query(
             `INSERT INTO categorias (id, id_deporte, nombre, fecha_registro, genero) VALUES 
-            (nextval('categorias_id_seq'),$1,$2,$3,$4)`,
+            (nextval('categorias_id_seq'),$1,$2,TO_DATE($3,'DD/MM/YYYY'),$4)`,
             [datos.params, datos.body.nombre, datos.registro, datos.body.genero]
         ); 
         let categoria = await bd.query(
