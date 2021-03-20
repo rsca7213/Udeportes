@@ -1,10 +1,15 @@
 <template>
-    <v-container>
-        <v-card class="px-1 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
+    <v-container class="px-0">
+        <v-card class=" py-4 login-card" color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="grey--text text--darken-2"> 
                 Categorías de {{deporte.nombre}}  
+                <v-spacer class="d-none d-sm-flex"></v-spacer>
+                <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/deportes')">
+                    <v-icon left> mdi-arrow-left </v-icon>
+                    Regresar a deportes
+                </v-btn>
             </v-card-title>
-            <v-container>
+            <v-container class="px-2">
                 <v-row align="center">
                     <v-col cols="12">
                     <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -21,27 +26,27 @@
                             <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
-                        <v-btn class="ml-3" color="red" dark @click="destitucion = true"> 
+                        <v-btn class="mx-3" color="red" dark @click="destitucion = true"> 
                             <v-icon left> mdi-delete </v-icon>
                             Destituir Entrenador
                         </v-btn>
                     </v-col>
                 </v-row>
                 <v-row class="d-flex d-md-none">
-                    <v-col class="text-center" cols="12">
+                    <v-col class="text-center px-1" cols="12">
                         <v-btn color="primary" dark @click="crearCategoria = true"> 
                             <v-icon left> mdi-plus-circle </v-icon>
                             Crear Categoría
                         </v-btn>
                     </v-col>
-                    <v-col class="text-center" cols="12">
-                        <v-btn class="ml-3" color="indigo" dark @click="asignacion = true"> 
+                    <v-col class="text-center px-1" cols="12">
+                        <v-btn color="indigo" dark @click="asignacion = true"> 
                             <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
                     </v-col>
-                    <v-col class="text-center" cols="12">
-                        <v-btn class="ml-3" color="red" dark @click="destitucion = true"> 
+                    <v-col class="text-center px-1" cols="12">
+                        <v-btn color="red" dark @click="destitucion = true"> 
                             <v-icon left> mdi-delete </v-icon>
                             Destituir Entrenador
                         </v-btn>
@@ -55,6 +60,10 @@
                     fixed-header
                     :loading="tablaCargando"
                 >
+                    <template v-slot:item.entrenador="{ item }"> 
+                        <span class="grey--text" v-if="item.entrenador === 'Sin asignar'"> Sin asignar </span>
+                        <span v-else v-text="item.entrenador"> </span>
+                    </template>
                     <template v-slot:item.acciones="{ item }">
                         <v-icon dense color="primary" @click="ver_Categoria(item, 'editar')"> mdi-pencil </v-icon>
                         <v-icon dense color="red" @click="ver_Categoria(item, 'eliminar')"> mdi-delete </v-icon>
@@ -67,7 +76,8 @@
         <v-dialog v-model="crearCategoria" class="text-center" max-width="450">
             <v-card rounded="md">
                 <v-card-title>
-                    Crear Categoría
+                    <span class="d-none d-sm-flex"> Crear Categoría </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Crear Categoría </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="crearCategoria = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -78,11 +88,11 @@
                 </v-card-subtitle>
                 <v-form ref="crearForm" @submit.prevent="crear_Categoria()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre Categoria *"
+                        <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre de Categoria *"
                         prepend-icon="mdi-account-edit-outline" type="text" :rules="reglasNombre"
                         validate-on-blur v-model="categoriaCrear.nombre" name="nombre"> </v-text-field>
                         <v-radio-group v-model="categoriaCrear.genero" row prepend-icon="mdi-human-male-female" 
-                        name="genero" mandatory label="*">
+                        name="genero" mandatory>
                             <v-radio label="Masculino" value="m"> </v-radio>
                             <v-radio label="Femenino" value="f"> </v-radio>
                             <v-radio label="Unisex" value="u"> </v-radio>
@@ -100,7 +110,8 @@
         <v-dialog v-model="editarCategoria" class="text-center" max-width="450">
             <v-card rounded="md">
                 <v-card-title>
-                    Editar Categoría
+                    <span class="d-none d-sm-flex"> Editar Categoría </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Categoría </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="editarCategoria = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -133,7 +144,8 @@
         <v-dialog v-model="eliminarCategoria" class="text-center" max-width="600">
             <v-card rounded="md">
                 <v-card-title>
-                    Eliminar Categoría
+                    <span class="d-none d-sm-flex"> Eliminar Categoría </span>
+                        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Categoría </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="eliminarCategoria = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title> 
@@ -164,7 +176,8 @@
         <v-dialog v-model="asignacion" class="text-center" max-width="450">
             <v-card rounded="md">
                 <v-card-title>
-                    Asignar entrenador
+                    <span class="d-none d-sm-flex"> Asignar Entrenador </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Asignar Entrenador </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="cerrar('asignar')"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -201,7 +214,8 @@
         <v-dialog v-model="destitucion" class="text-center" max-width="450">
             <v-card rounded="md">
                 <v-card-title>
-                    Destituir entrenador
+                    <span class="d-none d-sm-flex"> Destituir Entrenador </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Destituir Entrenador </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="cerrar('destituir')"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -281,7 +295,7 @@ export default {
             },
             {
                 text: 'Nombre de Categoría',
-                align: 'center',
+                align: 'start',
                 sortable: true,
                 filterable: true,
                 value: 'nombre',
@@ -289,14 +303,16 @@ export default {
             },
             { 
                 text: 'Entrenador',
-                align: 'center',
-                sortable: false,
+                align: 'start',
+                sortable: true,
+                filterable: true,
                 value: 'entrenador',
                 class: 'primary--text font-weight-bold'
             },
             { 
                 text: 'Género',
-                sortable: false,
+                sortable: true,
+                filterable: true,
                 value: 'genero',
                 class: 'primary--text font-weight-bold',
                 align: 'center',

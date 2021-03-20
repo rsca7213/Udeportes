@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-container>
-      <v-row class="" align="start">
-        <v-col cols="12 "> 
+    <v-container class="px-0">
+      <v-row align="start">
+        <v-col cols="12" class="px-0"> 
           <v-card color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
               Editar Perfil

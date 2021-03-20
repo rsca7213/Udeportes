@@ -8,7 +8,8 @@
       </template>
       <v-card rounded="md">
         <v-card-title>
-          Eliminar Usuario
+          <span class="d-none d-sm-flex"> Eliminar Usuario </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Usuario </b>
           <v-spacer> </v-spacer>
           <v-btn icon @click="dialog_eliminar_usuario = false"><v-icon> mdi-close </v-icon></v-btn>
         </v-card-title> 
@@ -29,9 +30,9 @@
           <v-spacer></v-spacer>
           <v-btn color="grey darken-1" class="mb-2" dark @click="cerrarEliminarUsuario()">
             <v-icon left> mdi-close </v-icon>
-            Cancelar
+            Cerrar
           </v-btn>
-          <v-btn color="error" class="mr-2 mb-2" :loading="form_cargando" @click="eliminarUsuario()">
+          <v-btn color="error" class="mr-1 mb-2" :loading="form_cargando" @click="eliminarUsuario()">
             <v-icon left> mdi-delete </v-icon>
             Eliminar
           </v-btn>

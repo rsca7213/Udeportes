@@ -5,11 +5,12 @@
     </v-card-title>
     <v-container>
       <v-row align="center">
-        <v-col cols="12">
+        <v-col cols="12" class="px-2">
           <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
           prepend-icon="mdi-magnify" type="text" v-model="search" name="busqueda"> </v-text-field>
         </v-col>
       </v-row>
+      <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm"/>
       <v-data-table :headers="columnas_tabla" :items="usuarios" :search="search"
         no-results-text="No hay resultados para esta búsqueda."
         loading-text="Cargando datos..."
@@ -17,8 +18,13 @@
         fixed-header
         :loading="tablaCargando"
       >
-      <template v-slot:top>
-        <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm"/>
+      <template v-slot:item.fecha_nacimiento="{ item }"> 
+        <span class="grey--text" v-if="!item.fecha_nacimiento"> N/A </span>
+        <span v-else v-text="item.fecha_nacimiento"> </span>
+      </template>
+      <template v-slot:item.telefono="{ item }"> 
+        <span class="grey--text" v-if="!item.telefono"> N/A </span>
+        <span v-else v-text="item.telefono"> </span>
       </template>
       <template v-slot:item.acciones="{ item }">
         <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">

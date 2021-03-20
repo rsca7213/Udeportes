@@ -30,7 +30,8 @@
         <v-dialog  v-model="crearDeporte" max-width="450px">
             <v-card>
                 <v-card-title>
-                    Crear Deporte
+                    <span class="d-none d-sm-flex"> Crear Deporte </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Crear Deporte </b>
                     <v-spacer />
                     <v-btn icon @click="crearDeporte=false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -48,36 +49,37 @@
         </v-dialog>
         
         <!-- Dialog para configurar el deporte (posiciones y categorias) -->
-        <v-dialog  v-model="configDeporte" max-width="450px">
+        <v-dialog  v-model="configDeporte" max-width="400px">
             <v-card>
                 <v-card-title>
-                    Editar Deporte
+                    <span class="d-none d-sm-flex"> Configurar Deporte </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Configurar Deporte </b>
                     <v-spacer />
                     <v-btn icon @click="configDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-col>
-                    <v-card elevation="11" @click="$router.push(`/deporte/${deporte.id}/posiciones`);">
+                    <v-card elevation="2" shaped class="primary" @click="$router.push(`/deporte/${deporte.id}/posiciones`);">
                         <div class="d-flex flex-no-wrap justify-space-between">
-                            <v-card-title class="align-center">Posiciones</v-card-title>
-                            <v-avatar class="ma-3" size="100">
+                            <v-card-title class="align-center white--text text-button">Posiciones</v-card-title>
+                            <v-avatar class="ma-3" size="60">
                                 <v-img src="../assets/deportes/posiciones.png"></v-img>
                             </v-avatar>
                         </div>
                     </v-card>
                     <br>
-                    <v-card elevation="11" @click="$router.push(`/deporte/${deporte.id}/categorias`);">
+                    <v-card elevation="2" shaped class="primary" @click="$router.push(`/deporte/${deporte.id}/categorias`);">
                         <div class="d-flex flex-no-wrap justify-space-between">
-                            <v-card-title class="align-center">Categorias</v-card-title>
-                            <v-avatar class="ma-3" size="100">
+                            <v-card-title class="align-center white--text text-button">Categorias</v-card-title>
+                            <v-avatar class="ma-3" size="60">
                                 <v-img src="../assets/deportes/categorias.png"></v-img>
                             </v-avatar>
                         </div>
                     </v-card>
                     <br>
-                    <v-card elevation="11">
+                    <v-card elevation="2" shaped class="primary">
                         <div class="d-flex flex-no-wrap justify-space-between">
-                            <v-card-title class="align-center">Inscripciones</v-card-title>
-                            <v-avatar class="ma-3" size="100">
+                            <v-card-title class="align-center white--text text-button">Inscripciones</v-card-title>
+                            <v-avatar class="ma-3" size="60">
                                 <v-img src="../assets/deportes/entrenadores.png"></v-img>
                             </v-avatar>
                         </div>
@@ -90,7 +92,8 @@
         <v-dialog  v-model="editarDeporte" max-width="450px">
             <v-card>
                 <v-card-title>
-                    Editar Nombre
+                    <span class="d-none d-sm-flex"> Editar Nombre </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Nombre </b>
                     <v-spacer />
                     <v-btn icon @click="editarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
@@ -111,7 +114,8 @@
         <v-dialog v-model="eliminarDeporte" class="text-center" max-width="600">
             <v-card rounded="md">
                 <v-card-title>
-                    Eliminar Deporte
+                    <span class="d-none d-sm-flex"> Eliminar Deporte </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Deporte </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="eliminarDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title> 

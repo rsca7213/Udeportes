@@ -36,8 +36,8 @@ async function obtenerAtletas () {
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         genero: atleta.genero,
         edad: `${helper_edad(atleta.fecha_nacimiento)} ${helper_edad(atleta.fecha_nacimiento) === 1 ? 'Año' : 'Años'}`,
-        correo: atleta.correo || 'Sin correo',
-        educacion: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada'
+        correo: atleta.correo || '',
+        educacion: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : ''
       }
     });
 

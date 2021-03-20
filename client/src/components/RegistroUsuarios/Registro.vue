@@ -5,7 +5,8 @@
         <v-col cols="12 px-0 py-0"> 
           <v-card rounded="md">
             <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
-              {{mensaje_form}}
+              <span class="d-none d-sm-flex"> {{ mensaje_form }} </span>
+              <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> {{ mensaje_form }} </b>
               <v-spacer> </v-spacer>
               <v-btn icon @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})"><v-icon> mdi-close </v-icon></v-btn>
             </v-card-title>
@@ -40,8 +41,8 @@
               </v-form>
               <v-card-actions class="mt-4 d-flex justify-center justify-sm-end flex-column flex-sm-row">
                 <v-btn class="mb-2" color="error" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
-                    <v-icon left> mdi-close </v-icon>
-                    Cancelar
+                  <v-icon left> mdi-close </v-icon>
+                  Cerrar
                 </v-btn>
                 <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
                   <v-icon left> mdi-check-circle </v-icon>
@@ -73,7 +74,7 @@
               <v-card-actions class="d-flex justify-center justify-sm-end mt-2">
                 <v-btn color="error" dark @click="confirmar_registro = false">
                   <v-icon left> mdi-close </v-icon>
-                  Regresar
+                  Volver
                 </v-btn>
                 <v-btn color="secondary" @click="submit()" :disabled="!claveValida" :loading="formCargando">
                   <v-icon left> mdi-check-circle </v-icon>

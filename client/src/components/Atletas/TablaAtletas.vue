@@ -38,6 +38,14 @@
           fixed-header
           :loading="tablaCargando"
           >
+            <template v-slot:item.correo="{ item }"> 
+              <span class="grey--text" v-if="!item.correo"> No especificado  </span>
+              <span v-else v-text="item.correo"></span>
+            </template>
+            <template v-slot:item.educacion="{ item }"> 
+              <span class="grey--text" v-if="!item.educacion"> No especificada </span>
+              <span v-else v-text="item.educacion"></span>
+            </template>
             <template v-slot:item.acciones="{ item }">
               <v-icon dense color="primary" @click="$router.push(`/atletas/${item.cedula}`)"> mdi-eye </v-icon>
               <EditarAtleta :cedula="item.cedula" @atletaEditado="obtenerAtletas()" />

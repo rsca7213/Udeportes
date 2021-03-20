@@ -4,12 +4,14 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" class="mr-2 mb-2" v-bind="attrs" v-on="on">
           <v-icon left> mdi-key-variant </v-icon>
-          Cambiar Contraseña
+          <span class="d-none d-sm-inline-block mr-1"> Cambiar </span>
+          Contraseña
         </v-btn>
       </template>
       <v-card rounded="md">
         <v-card-title>
-          Cambiar Contraseña
+          <span class="d-none d-sm-flex"> Cambiar Contraseña </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Cambiar Contraseña </b>
           <v-spacer> </v-spacer>
           <v-btn icon @click="dialog_editar_clave = false"><v-icon> mdi-close </v-icon></v-btn>
         </v-card-title> 
@@ -29,11 +31,11 @@
           <v-spacer></v-spacer>
           <v-btn color="grey darken-1" class="mb-2" dark @click="cerrarEditarClave()">
             <v-icon left> mdi-close </v-icon>
-            Cancelar
+            Cerrar
           </v-btn>
           <v-btn color="secondary" class="mr-2 mb-2" :disabled="!clave_valida" :loading="form_cargando" @click="editarClave()">
             <v-icon left> mdi-check-circle </v-icon>
-            Actualizar
+            Guardar 
           </v-btn>
         </v-card-actions>
       </v-card>

@@ -3,26 +3,33 @@
         <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
             <v-card-title class="grey--text text--darken-2"> 
                 Posiciones de {{deporte.nombre}}
+                <v-spacer class="d-none d-sm-flex"></v-spacer>
+                <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/deportes')">
+                    <v-icon left> mdi-arrow-left </v-icon>
+                    Regresar a deportes
+                </v-btn>
             </v-card-title>
-            <v-row justify="center" class="ma-5" v-if="posiciones.length > 0">
-                <v-list outlined width="400">
-                    <template v-for="(posicion, index) in posiciones">
-                        <v-list-item two-line :key="posicion.id">
-                            <v-list-item-icon class="d-none d-sm-flex">
-                                <v-icon color="indigo"> mdi-source-pull </v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="posicion.nombre"> </v-list-item-title>
-                            </v-list-item-content>
-                            <div>
-                                <v-icon color="primary"> mdi-chart-line </v-icon>
-                                <v-icon color="primary" @click="ver_Posicion(posicion.id, 'editar')"> mdi-pencil </v-icon>
-                                <v-icon color="error" @click="ver_Posicion(posicion.id, 'eliminar')"> mdi-delete </v-icon>
-                            </div>
-                        </v-list-item>
-                        <v-divider v-if="index < posiciones.length -1" :key="index"></v-divider>
-                    </template>
-                </v-list>
+            <v-row justify="center" class="my-2" v-if="posiciones.length > 0">
+                <v-col cols="12" xl="6" lg="7" md="9" sm="11">
+                    <v-list outlined>
+                        <template v-for="(posicion, index) in posiciones">
+                            <v-list-item :key="posicion.id">
+                                <v-list-item-icon class="d-none d-sm-flex">
+                                    <v-icon color="indigo"> mdi-source-pull </v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    <v-list-item-title v-text="posicion.nombre"> </v-list-item-title>
+                                </v-list-item-content>
+                                <div>
+                                    <v-icon color="primary"> mdi-chart-line </v-icon>
+                                    <v-icon color="primary" @click="ver_Posicion(posicion.id, 'editar')"> mdi-pencil </v-icon>
+                                    <v-icon color="error" @click="ver_Posicion(posicion.id, 'eliminar')"> mdi-delete </v-icon>
+                                </div>
+                            </v-list-item>
+                            <v-divider v-if="index < posiciones.length -1" :key="index + 'a'"></v-divider>
+                        </template>
+                    </v-list>
+                </v-col>
             </v-row>
             <v-card-subtitle class="grey--text text--darken-2" v-else>
                 No se encontraron posiciones en {{deporte.nombre}}.
@@ -32,7 +39,8 @@
             <v-dialog  v-model="crearPosicion" max-width="450px">
                 <v-card>
                     <v-card-title>
-                        Crear Posición
+                        <span class="d-none d-sm-flex"> Crear Posición </span>
+                        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Crear Posición </b>
                         <v-spacer />
                         <v-btn icon @click="crearPosicion=false"><v-icon> mdi-close </v-icon></v-btn>
                     </v-card-title>
@@ -53,7 +61,8 @@
             <v-dialog  v-model="editarPosicion" max-width="450px">
                 <v-card>
                     <v-card-title>
-                        Editar Nombre
+                        <span class="d-none d-sm-flex"> Editar Nombre </span>
+                        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Nombre </b>
                         <v-spacer />
                         <v-btn icon @click="editarPosicion = false"><v-icon> mdi-close </v-icon></v-btn>
                     </v-card-title>
@@ -74,7 +83,8 @@
             <v-dialog v-model="eliminarPosicion" class="text-center" max-width="600">
                 <v-card rounded="md">
                     <v-card-title>
-                        Eliminar Posición
+                        <span class="d-none d-sm-flex"> Eliminar Posición </span>
+                        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Eliminar Posición </b>
                         <v-spacer> </v-spacer>
                         <v-btn icon @click="eliminarPosicion = false"><v-icon> mdi-close </v-icon></v-btn>
                     </v-card-title> 
