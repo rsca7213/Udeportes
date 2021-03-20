@@ -9,7 +9,8 @@
     </template>
     <v-card rounded="md">
       <v-card-title>
-        Registrar Atleta
+        <span class="d-none d-sm-flex"> Registrar Atleta </span>
+        <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Registrar Atleta </b>
         <v-spacer> </v-spacer>
         <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
       </v-card-title>
@@ -29,19 +30,19 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col class="px-3">
               <v-text-field clear-icon="mdi-close" clearable counter="256" label="Correo Electrónico" 
               prepend-icon="mdi-email" type="text" :rules="reglas.correo" 
               validate-on-blur v-model.trim="inputs.correo" name="correo"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
               prepend-icon="mdi-card-account-details" type="text" :rules="reglas.cedula"
               validate-on-blur v-model.trim="inputs.cedula" name="cedula"> </v-text-field>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="13" label="Teléfono"
               prepend-icon="mdi-cellphone" type="text" :rules="reglas.telefono"
               validate-on-blur v-model.trim="inputs.telefono" name="telefono"
@@ -49,38 +50,38 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Nombre *"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido"
               validate-on-blur v-model.trim="inputs.primer_nombre" name="primer_nombre"> </v-text-field>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Nombre" 
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.segundo_nombre" 
               validate-on-blur v-model.trim="inputs.segundo_nombre" name="segundo_nombre"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Primer Apellido *"
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido"
               validate-on-blur v-model.trim="inputs.primer_apellido" name="primer_apellido"> </v-text-field>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable counter="50" label="Segundo Apellido *" 
               prepend-icon="mdi-account-edit-outline" type="text" :rules="reglas.nombre_apellido" 
               validate-on-blur v-model.trim="inputs.segundo_apellido" name="segundo_apellido"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-radio-group v-model="inputs.genero" row prepend-icon="mdi-human-male-female" 
-              name="genero" mandatory label="*">
+              name="genero" mandatory>
                 <v-radio label="Masculino" value="m"> </v-radio>
                 <v-radio label="Femenino" value="f"> </v-radio>
               </v-radio-group>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-menu ref="menuFechas" v-model="menuFechas" :close-on-content-click="false" 
               transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -95,13 +96,13 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-select v-model="inputs.id_educacion" label="Educación" prepend-icon="mdi-school"
               clear-icon="mdi-close" name="educacion" clearable
               :loading="educacionCargando" :items="itemsEducacion" :disabled="educacionCargando">
               </v-select>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable 
               :label="`${inputs.id_educacion ? itemsEducacion.filter(item => item.value == inputs.id_educacion)[0].etapa : 'Etapa'}`" 
               :disabled="!inputs.id_educacion"
@@ -111,12 +112,12 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Nombre de Beca"
               prepend-icon="mdi-sale" type="text" :rules="reglas.nombre_beca"
               validate-on-blur v-model.trim="inputs.nombre_beca" name="nombre_beca"> </v-text-field>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Porcentaje (%)" :disabled="!inputs.nombre_beca"
               prepend-icon="mdi-percent" type="text" :rules="reglas.porcentaje_beca"
               validate-on-blur v-model.number.trim="inputs.porcentaje_beca" name="porcentaje_beca"
@@ -129,7 +130,7 @@
         <v-spacer></v-spacer>
         <v-btn color="red" dark @click="clearDialog()">
           <v-icon left> mdi-close </v-icon>
-          Cancelar
+          Cerrar
         </v-btn>
         <v-btn color="secondary" @click="submit()" :disabled="!datosValidos" :loading="formEnviando">
           <v-icon left> mdi-check-circle </v-icon>

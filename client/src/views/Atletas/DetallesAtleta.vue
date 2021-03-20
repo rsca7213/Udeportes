@@ -28,7 +28,7 @@
             </v-container>
             <v-container v-else fluid> 
               <v-row>
-                <v-col cols="12" md="4">
+                <v-col cols="12" md="4" class="px-1 px-sm-2">
                   <v-card shaped class="pa-3" color="#F5F5F5"> 
                     <v-card-title class="px-0">
                       <v-col class="px-1 grey--text text--darken-2"> Datos Básicos </v-col>
@@ -109,7 +109,7 @@
                     </v-row>
                   </v-card>
                 </v-col>
-                <v-col cols="12" md="4">
+                <v-col cols="12" md="4" class="px-1 px-sm-2">
                   <v-card shaped class="pa-3" color="#F5F5F5">
                     <v-card-title class="px-0">
                       <v-col class="px-1 grey--text text--darken-2"> Categorias del Atleta </v-col>
@@ -131,21 +131,21 @@
                     </div>
                   </v-card>
                 </v-col>
-                <v-col cols="12" md="4">
+                <v-col cols="12" md="4" class="px-1 px-sm-2">
                   <v-card shaped class="pa-3" color="#F5F5F5">
                     <v-card-title class="px-0">
                       <v-col class="px-1 grey--text text--darken-2"> % Asistencia </v-col>
                     </v-card-title>
                     <v-row>
                       <v-col class="d-flex justify-center">
-                        <ApexChart width="400" type="radialBar" :options="chartOptions" 
+                        <ApexChart type="radialBar" :options="chartOptions" 
                         :series="[atleta.participaciones.entrenamientos.ratio]" 
                         class="elevation-4 p-4 rounded-lg grey lighten-4" />
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col class="d-flex justify-center">
-                        <ApexChart width="400" type="radialBar" :options="chartOptions2" 
+                        <ApexChart type="radialBar" :options="chartOptions2" 
                         :series="[atleta.participaciones.competencias.ratio]" 
                         class="elevation-4 p-4 rounded-lg grey lighten-4" />
                       </v-col>
@@ -213,14 +213,6 @@ export default {
             enabled: true
           }
         },
-        responsive: [{
-          breakpoint: 1550,
-          options: {
-            chart: {
-              width: 300
-            }
-          }
-        }],
         title: {
           text: 'Entrenamientos',
           align: 'center',
@@ -279,14 +271,6 @@ export default {
             enabled: true
           }
         },
-        responsive: [{
-          breakpoint: 1550,
-          options: {
-            chart: {
-              width: 300
-            }
-          }
-        }],
         title: {
           text: 'Competencias',
           align: 'center',

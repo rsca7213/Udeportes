@@ -5,7 +5,7 @@
     </v-card-title>
     <v-container>
       <v-row align="center">
-        <v-col cols="12">
+        <v-col cols="12" class="px-2">
           <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
           prepend-icon="mdi-magnify" type="text" v-model="busquedaAtleta" name="busqueda"> </v-text-field>
         </v-col>
@@ -29,7 +29,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12"> 
+        <v-col cols="12" class="px-1"> 
           <v-data-table :headers="atributosTabla" :items="itemsTabla" :search="busquedaAtleta" 
           no-data-text="No hay atletas registrados en el sistema."
           no-results-text="No hay resultados para esta busqueda."

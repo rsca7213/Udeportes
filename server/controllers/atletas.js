@@ -363,14 +363,24 @@ async function obtenerDatosCompletosAtleta (cedula) {
       // Buscamos las inscripciones del atleta (retornando un arreglo que contiene objetos con los
       // siguientes datos objeto = { categoria, deporte, posicion } )
       atleta.categorias = await bd.query(
-        `SELECT c.nombre AS categoria, d.nombre AS deporte, p.nombre AS posicion 
+        `SELECT c.nombre AS categoria, d.nombre AS deporte, i.id_posicion AS id_posicion
          FROM inscripciones i INNER JOIN categorias c
          ON i.id_categoria = c.id INNER JOIN deportes d ON d.id = c.id_deporte
-         INNER JOIN posiciones p ON p.id_deporte = d.id
          WHERE i.cedula_atleta = $1`,
         [cedula]
       );
       atleta.categorias = atleta.categorias.rows;
+
+      // Buscamos la posicion del atleta si la tiene, sino se le asigna libre a la posicion
+      atleta.categorias = await Promise.all(atleta.categorias.map(async c => {
+        let pos = await bd.query(`SELECT p.nombre FROM posiciones p WHERE p.id = $1`, [c.id_posicion]);
+        pos = pos.rows;
+        return {
+          categoria: c.categoria,
+          deporte: c.deporte,
+          posicion: pos.length ? pos[0].nombre : 'Libre' 
+        }
+      }));
 
       // Buscamos las participaciones del atleta (participaciones tanto en competencias como entrenamientos)
       atleta.participaciones = {

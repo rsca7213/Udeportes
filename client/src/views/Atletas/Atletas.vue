@@ -3,7 +3,7 @@
     <Cargador v-if="cargando" /> 
     <v-container v-else> 
       <v-row>
-        <v-col cols="12"> 
+        <v-col cols="12" class="px-2"> 
           <TablaAtletas />
         </v-col>
       </v-row>
