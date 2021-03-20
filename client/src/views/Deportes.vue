@@ -80,7 +80,7 @@
                         <div class="d-flex flex-no-wrap justify-space-between">
                             <v-card-title class="align-center white--text text-button">Inscripciones</v-card-title>
                             <v-avatar class="ma-3" size="60">
-                                <v-img src="../assets/deportes/entrenadores.png"></v-img>
+                                <v-img src="../assets/deportes/inscripciones.png"></v-img>
                             </v-avatar>
                         </div>
                     </v-card>
