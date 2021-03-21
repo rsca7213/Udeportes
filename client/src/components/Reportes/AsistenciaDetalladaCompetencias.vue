@@ -319,7 +319,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [70, 'auto', 'auto', 'auto' ],
+              widths: [80, 130, '*', 70 ],
               body: this.datosReporte()
             },
           },
