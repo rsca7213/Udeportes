@@ -9,7 +9,7 @@
             </v-card-title>
             <div v-if="menu_reportes === 'menu'">
               <v-card-text>
-                <v-expansion-panels class="px-8" v-if="true" accordion>
+                <v-expansion-panels class="px-0 px-sm-8" v-if="true" accordion>
                   <v-expansion-panel :disabled="false">
                     <v-expansion-panel-header> 
                       <span>
@@ -18,15 +18,15 @@
                       </span>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
-                      <v-list-item-group v-model="asistencia_general" color="indigo">
+                      <v-list-item-group color="indigo">
                         <v-list dense>
                           <v-list-item two-line v-for="(item, index) in reportes_asistencia" :key="index" @click="cambiarVista(item.nombre)"> 
                             <v-list-item-content class="text-caption">
-                              <v-list-item-title> 
+                              <v-list-item-title class="text-wrap d-flex justify-space-around justify-sm-start"> 
                                 <v-icon color="indigo" left> mdi-clipboard-text-outline </v-icon>
                                 <span class="subtitle-2" v-text="item.nombre"></span>
                               </v-list-item-title>
-                              <v-list-item-subtitle class="pl-8"> 
+                              <v-list-item-subtitle class="pl-8 text-wrap"> 
                                 <span v-text="item.descripcion"></span>
                               </v-list-item-subtitle>
                             </v-list-item-content>
@@ -35,12 +35,12 @@
                       </v-list-item-group>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
-                  <v-expansion-panel :disabled="false">
-                    <v-expansion-panel-header> 
+                  <v-expansion-panel class="justify-start" :disabled="false">
+                    <v-expansion-panel-header>
                       <span>
                         <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
                         <span class="subtitle-1">Nóminas de Equipos y Competencias</span>
-                      </span>
+                      </span>    
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                       <v-list-item-group color="indigo">
@@ -81,65 +81,22 @@
                     no-data-text="No tiene categorias asignadas" @change="datosEquipo()">
                     </v-select>
                   </v-col>
-                  <v-col v-if="categoria && categoria.id_categoria && menu_reportes==='Nómina de Competencia'" class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
-                    <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy"
-                    clear-icon="mdi-close" name="competencias" clearable 
-                    no-data-text="No hay competencias a mostrar">
-                    </v-select>
-                  </v-col>
-                </v-row>
-                <v-row class="justify-center">
-                  <v-col cols=12 lg=9 md=10>
-                    <v-row>
-                      <v-col cols="12" sm="4" md="4" lg="4">
-                        <span class="my-0 pt-0 pl-md-12">Entrenamientos</span>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="my-0 pt-0 pl-md-10" label="Seleccionar Todos"></v-checkbox>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-                <v-row class="justify-center">
-                  <v-col cols=12 lg=9 md=10>
-                    <v-row class="">
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="Entrenamiento de resistencia 14/03/2020"></v-checkbox>       
-                      </v-col>
-                      <v-col class="py-0" cols="12" sm="4" md="4" lg="4">
-                        <v-checkbox class="pl-3 py-0 pl-md-10" label="14/03/2020"></v-checkbox>       
-                      </v-col>
-                    </v-row>
-                  </v-col>
                 </v-row>
                 <v-row v-if="!categoria || !categoria.id_categoria">
                   <v-col class="grey--text text-center"> Selecciona una categoría para generar el reporte. </v-col>
                 </v-row>
-                <v-row v-else-if="(!competencia || !competencia.id_competencia) && menu_reportes==='Nómina de Competencia'">
-                  <v-col class="grey--text text-center"> Selecciona una competencia para generar el reporte. </v-col>
+                <v-row v-else-if="categoria_cargando"> 
+                  <v-col class="px-6 mx-5">
+                    <v-progress-linear indeterminate color="primary"> </v-progress-linear>
+                  </v-col>
                 </v-row>
                 <div>
                   <NominaEquipo v-if="categoria!==null && categoria.id_categoria && menu_reportes==='Nómina de Equipo'" :categoria="categoria" :equipo="equipo"/>
-                  <NominaCompetencia v-else-if="categoria!==null && categoria.id_categoria && competencia && competencia.id_competencia && menu_reportes==='Nómina de Competencia'" :competencia="competencia"/>
+                  <NominaCompetencia v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Nómina de Competencia'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaGeneralEntrenamientos v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia General a Entrenamientos'" :categoria="categoria" :equipo="equipo"/>
+                  <AsistenciaGeneralCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia General a Competencias'" :categoria="categoria" :equipo="equipo"/>
+                  <AsistenciaDetalladaEntrenamientos v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Entrenamientos en Detalle'" :categoria="categoria" :equipo="equipo"/>
+                  <AsistenciaDetalladaCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Competencias en Detalle'" :categoria="categoria" :equipo="equipo"/>
                 </div>
               </v-container>
             </div>
@@ -154,6 +111,9 @@
 import NominaEquipo from './NominaEquipo';
 import NominaCompetencia from './NominaCompetencia';
 import AsistenciaGeneralEntrenamientos from './AsistenciaGeneralEntrenamientos';
+import AsistenciaDetalladaEntrenamientos from './AsistenciaDetalladaEntrenamientos';
+import AsistenciaDetalladaCompetencias from './AsistenciaDetalladaCompetencias';
+import AsistenciaGeneralCompetencias from './AsistenciaGeneralCompetencias';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
@@ -161,22 +121,20 @@ export default {
   components: {
     NominaEquipo,
     NominaCompetencia,
-    AsistenciaGeneralEntrenamientos
+    AsistenciaGeneralEntrenamientos,
+    AsistenciaGeneralCompetencias,
+    AsistenciaDetalladaEntrenamientos,
+    AsistenciaDetalladaCompetencias
   },
   data() {
     return {
-      asistencia_general: 1,
       /* UI handlers*/
       card_title: 'Reportes',
       menu_reportes: 'menu',
-      deportes_cargando: true,
+      categoria_cargando: true,
       categoria: {
         id_categoria: 0,
         id_deporte: 0
-      },
-      competencia: {
-        id_competencia: 0,
-        nombre_competencia: ''
       },
       equipo: '',
       // Data para el select de deportes, rellenado en mounted()
@@ -188,16 +146,16 @@ export default {
           descripcion: 'Consulta la asistencia a todos los entrenamientos de un equipo',
         },
         {
-          nombre: 'Asistencia a Entrenamientos',
-          descripcion: 'Consulta la asistencia a todos los entrenamientos de un equipo dentro de un rango de fechas',
+          nombre: 'Asistencia a Entrenamientos en Detalle',
+          descripcion: 'Consulta la asistencia de un entrenamiento de un equipo en detalle',
         },
         {
           nombre: 'Asistencia General a Competencias',
           descripcion: 'Consulta la asistencia a todos los competencias de un equipo',
         },
         {
-          nombre: 'Asistencia a Competencias',
-          descripcion: 'Consulta la asistencia a todos los competencias de un equipo dentro de un rango de fechas',
+          nombre: 'Asistencia a Competencias en Detalle',
+          descripcion: 'Consulta la asistencia de una competencia de un equipo en detalle',
         }
       ],
       //Información de nóminas de equipo y competencias de atletas
@@ -214,41 +172,17 @@ export default {
     }
   },
   methods: {
-    //método que genera el reporte
-    /*getReporte(){
-      if(this.menu_reportes === 'Asistencia General a Entrenamientos'){
-        console.log('aqui no');
-      }
-      else if(this.menu_reportes === 'Asistencia a Entrenamientos'){
-        console.log('aqui no');
-      }
-      else if(this.menu_reportes === 'Asistencia General a Competencias'){
-        console.log('aqui no');
-      }
-      else if(this.menu_reportes === 'Nómina de Equipo'){
-        console.log(this.menu_reportes);
-      }
-      else if(this.menu_reportes === 'Nómina de Asistencia'){
-        console.log('aqui no');
-      }
-    },*/
     //método encargado de cambiar la vista de los reportes
     cambiarVista(titulo){
       this.categoria={
         id_categoria:0,
-        id_competencia:0
       }
-      this.competencia.id_competencia=0;
-      this.competencia.nombre_competencia='';
       this.card_title = titulo;
       (titulo === 'Reportes')? this.menu_reportes = 'menu': this.menu_reportes = titulo;
       
     },
     //método para obtener el nombre del deporte y de la categoría para mostrarlo en el reporte
     datosEquipo(){
-
-      this.competencia.id_competencia=0;
-      this.competencia.nombre_competencia='';
 
       let nombre_deporte='';
       let nombre_categoria= '';
@@ -277,8 +211,7 @@ export default {
     },
   },
   async mounted() {
-    // Ocultamos el componente y desplegamos el componente Cargador hasta que termine el proceso
-    this.cargando = true;
+    this.categoria_cargando = true;
     // Solicitud GET
     await axios.get(`${server_url}/entrenamientos/categorias`, { withCredentials: true })
       .then((res) => {
@@ -304,7 +237,7 @@ export default {
             });
           });
           // Mostramos el componente al tener listo el select box
-          this.cargando = false;
+          this.categoria_cargando = false;
         }
       })
       .catch((err) => {

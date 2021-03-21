@@ -1,51 +1,75 @@
 <template>
-  <v-container>
-    <v-row no-gutters>
-      <v-col cols="12" lg="8" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
-        <v-alert text color="error" dense v-if="mensaje_error">
-          <v-icon color="error"> mdi-alert </v-icon>
-          <span v-text="mensaje_error" class="ml-1"> </span>
-        </v-alert>
-        <v-row align="center">
-          <v-col cols="12">
-            <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
-            prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
+  <div>
+    <v-container>
+      <v-row class="justify-center" v-if="items_competencias.length">
+        <v-row class="justify-center">
+          <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
+            <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias"
+            clear-icon="mdi-close" name="periodo" clearable>
+            </v-select>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="12"> 
-            <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
-            no-data-text="No hay atletas registrados para esta categoria."
-            no-results-text="No hay resultados para esta búsqueda."
-            loading-text="Cargando datos..."
-            locale="es-VE"
-            fixed-header
-            :loading="tabla_cargando"
-            >
-            </v-data-table>
+        <v-col cols=12 v-if="items_competencias.length">
+          <v-row v-if="!competencia">
+            <v-col class="grey--text text-center"> Selecciona una competencia para generar el reporte. </v-col>
+          </v-row>
+          <v-row v-if="competencias_cargando"> 
+            <v-col class="px-6 mx-5">
+              <v-progress-linear indeterminate color="primary"> </v-progress-linear>
+            </v-col>
+          </v-row>
+          <v-row v-else-if="!competencias_cargando && !items_competencias.length">
+            <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row v-if="competencia" no-gutters>
+        <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
+          <v-alert text color="error" dense v-if="mensaje_error">
+            <v-icon color="error"> mdi-alert </v-icon>
+            <span v-text="mensaje_error" class="ml-1"> </span>
+          </v-alert>
+          <v-row align="center">
+            <v-col cols="12">
+              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12"> 
+              <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
+              no-data-text="No hay atletas registrados para esta competencia."
+              no-results-text="No hay resultados para esta búsqueda."
+              loading-text="Cargando datos..."
+              locale="es-VE"
+              fixed-header
+              :loading="tabla_cargando"
+              >
+              </v-data-table>
+              
+            </v-col>
             
-          </v-col>
-          
-        </v-row>
-      </v-col>
-      <v-col cols="12" lg="4" xl="4">
-        <v-row class="justify-center" v-if="chartData.length">
-          <v-col lg="11" sm="8" md="10" cols="11" class="mt-6 mt-lg-0 d-flex justify-center">
-            <ApexChart height="270" type="donut" :options="chartOptions" :series="chartData" class="elevation-4  rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-      </v-col>
-      
-    </v-row>
-    <v-row>
-      <v-col cols="12" lg="8" xl="8" class="d-flex justify-end">
-        <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
-          Generar Reporte
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
+          </v-row>
+        </v-col>
+        <v-col cols="12" lg="3" xl="4">
+          <v-row class="justify-center" v-if="chartData.length">
+            <v-col lg="11" sm="8" md="10" cols="11" class="mt-6 mt-lg-0 d-flex justify-center">
+              <ApexChart height="270" type="donut" :options="chartOptions" :series="chartData" class="elevation-4  rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+        </v-col>
+        
+      </v-row>
+      <v-row>
+        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+          <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
+            <v-icon>mdi-download</v-icon>
+            Generar Reporte
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -61,7 +85,8 @@ export default {
     ApexChart
   },
   props:{
-    competencia: {},
+    categoria: {},
+    equipo: {}
   },
   data() {
     return {
@@ -71,6 +96,9 @@ export default {
       busqueda_atleta: '',
       atletas: [],
       mensaje_error: '',
+      items_competencias: [],
+      competencias_cargando: false,
+      competencia: false,
       equipo_reporte: {
         nombre_equipo: '',
         nombre_categoria: ''
@@ -94,22 +122,6 @@ export default {
           class: 'primary--text font-weight-bold'
         },
         {
-          text: 'Género',
-          align: 'start',
-          sortable: true,
-          filterable: true,
-          value: 'genero',
-          class: 'primary--text font-weight-bold'
-        },
-        {
-          text: 'Edad',
-          align: 'start',
-          sortable: true,
-          filterable: true,
-          value: 'edad',
-          class: 'primary--text font-weight-bold'
-        },
-        {
           text: 'Correo Electrónico',
           align: 'start',
           sortable: true,
@@ -118,7 +130,7 @@ export default {
           class: 'primary--text font-weight-bold'
         },
         {
-          text: 'Educación (Etapa)',
+          text: 'Educación',
           align: 'start',
           sortable: true,
           filterable: true,
@@ -178,9 +190,19 @@ export default {
 
   watch: {
     //método que se ejecuta cada vez que cambia la categoría(se selecciona otro valor en el select de equipos)
+    categoria(){
+      this.atletas=[];
+      this.ratioAsistencias = 0;
+      this.ratioInasistencias = 0;
+      this.competencia = false;
+      this.getCompetencias();
+    },
     competencia(){
       this.chartData=[];
-      this.getAtletas();
+      this.atletas=[];
+      this.ratioAsistencias = 0;
+      this.ratioInasistencias = 0;
+      if(this.competencia && this.competencia.id_competencia) this.getAtletas();
     }
   },
 
@@ -201,13 +223,17 @@ export default {
               },
             ],
             
-          },  
-          {text: [{text:'Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.nombre}`}], fontSize: 14, margin: [ 0, 10, 0, 20 ]},
+          },
+          {text: [{text:'Nómina de Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.info_competencia}`}], fontSize: 14, margin: [ 0, 10, 0, 0 ]},
+          {text: [{text:'Equipo: ', bold:true, color: '#2196F3'},{text:`${this.equipo}`}], fontSize: 14, margin: [ 0, 10, 0, 0 ]},
+          {text: [{text:'Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.info_competencia}`}], fontSize: 14, margin: [ 0, 5, 0, 20 ]},
+  
           {
             layout: 'lightHorizontalLines',
         
             table: {
               headerRows:1,
+              widths: [60, 'auto', 'auto', 'auto' ],
               body: this.datos_reporte()
             }
           },
@@ -218,23 +244,26 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Nómina Equipo ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Nómina Competencia ${this.equipo} ${this.competencia.info_competencia}`);
     },
     //datos que contendrá el reporte
     datos_reporte(){
       let reporte_body = [];
       reporte_body.push([
-         { text: 'Nro Cédula', bold: true, color:'#2196F3' },
+         { text: 'Nro Cédula', bold: true, color:'#2196F3', alignment: 'right' },
          { text: 'Nombre Completo', bold: true, color:'#2196F3' },
-         { text: 'Género', bold: true, color:'#2196F3' },
-         { text: 'Edad', bold: true, color:'#2196F3' },
          { text: 'Correo Electrónico', bold: true, color:'#2196F3' },
-         { text: 'Educación(Etapa)', bold: true, color:'#2196F3' },
+         { text: 'Educación', bold: true, color:'#2196F3' },
       ]);
 
       //todos los atletas del reporte
       this.atletas.forEach((atleta) =>{
-        reporte_body.push([`${atleta.cedula}`, `${atleta.nombre_completo}`,`${atleta.genero}`,`${atleta.edad}`,`${atleta.correo}`,`${atleta.educacion}`])
+        reporte_body.push([
+          {text: `${atleta.cedula}`, alignment: 'right'},
+          {text: `${atleta.nombre_completo}`},
+          {text: `${atleta.correo}`},
+          {text: `${atleta.educacion}`}
+        ])
       });
       
       return reporte_body;
@@ -242,7 +271,7 @@ export default {
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas() {
       this.tabla_cargando = true;
-      await axios.get(`${server_url}/reportes/nomina/competencia/${this.competencia}`, { withCredentials: true } )
+      await axios.get(`${server_url}/reportes/nomina/competencia/${this.categoria.id_deporte}/${this.categoria.id_categoria}/${this.competencia.id_competencia}`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
           if (res.status === 200) {
@@ -281,9 +310,46 @@ export default {
         });
       this.tabla_cargando = false;
     }, 
+    async getCompetencias() {
+      // Colocamos el loader
+      this.competencias_cargando = true;
+      this.items_competencias = [];
+      // Request GET
+      await axios.get(`${server_url}/competencias/${this.categoria.id_deporte}/${this.categoria.id_categoria}`, { withCredentials: true } )
+        .then((res) => {
+          // En caso de exito
+          if (res.status === 200) {
+            // Asignamos la data obtenida a la variable entrenamientos
+            res.data.forEach(competencia => {
+              // Para cada competencia del equipo
+              this.items_competencias.push({
+                  text: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`,
+                  value: {
+                    id_competencia: competencia.id,
+                    info_competencia: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`
+                  }
+                });
+            });
+            //this.calcularRatios();
+          }
+        })
+        .catch((err) => {
+          try {
+            // errores
+            if (err.response.status) this.mensajeError = err.response.data;
+          }
+          catch (error) {
+            // Servidor no disponible
+            this.mensajeError = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+            console.warn('Warning: No response status was found, is the server running? ');
+          }
+        });
+      // Quitamos el loader
+      this.competencias_cargando = false;
+    },
   },
   mounted() {
-    this.getAtletas();
+    this.getCompetencias();
   }
 
 }
