@@ -121,7 +121,7 @@ async function listarUsuarios(){
 /*
   Función encargada de editar un usuario en la base de datos con la cédula especificada
 */
-async function editarUsuario(datos_usuario){
+async function editarUsuario(datos_usuario, perfil=null){
   try {
 
     // Hacemos trim de los datos String para eliminar espacios innecesarios,
@@ -169,22 +169,42 @@ async function editarUsuario(datos_usuario){
     //actualizar
     // Si no hay ningun usuario con datos únicos ya tomados, realizamos el UPDATE de los datos
     // para los valores NULLABLE se insertara el valor (si existe) o NULL en caso de que no se hayan colocado
-    await bd.query(
-      `UPDATE usuarios SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3,
-        fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'),segundo_nombre = $5, correo = $6,
-        telefono = $7, rol = $8 WHERE cedula = $9`, 
-      [
-        datos_usuario.primer_nombre,
-        datos_usuario.primer_apellido,
-        datos_usuario.segundo_apellido,
-        datos_usuario.fecha_nacimiento || null,
-        datos_usuario.segundo_nombre || null,
-        datos_usuario.correo.toLowerCase(),
-        datos_usuario.telefono || null,
-        datos_usuario.rol,
-        datos_usuario.cedula
-      ]
-    );
+    //si se va a editar el perfil del usuario no se agrega el rol al update
+    if(perfil){
+      await bd.query(
+        `UPDATE usuarios SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3,
+          fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'),segundo_nombre = $5, correo = $6,
+          telefono = $7 WHERE cedula = $8`, 
+        [
+          datos_usuario.primer_nombre,
+          datos_usuario.primer_apellido,
+          datos_usuario.segundo_apellido,
+          datos_usuario.fecha_nacimiento || null,
+          datos_usuario.segundo_nombre || null,
+          datos_usuario.correo.toLowerCase(),
+          datos_usuario.telefono || null,
+          datos_usuario.cedula
+        ]
+      );
+    }
+    else{
+      await bd.query(
+        `UPDATE usuarios SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3,
+          fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'),segundo_nombre = $5, correo = $6,
+          telefono = $7, rol = $8 WHERE cedula = $9`, 
+        [
+          datos_usuario.primer_nombre,
+          datos_usuario.primer_apellido,
+          datos_usuario.segundo_apellido,
+          datos_usuario.fecha_nacimiento || null,
+          datos_usuario.segundo_nombre || null,
+          datos_usuario.correo.toLowerCase(),
+          datos_usuario.telefono || null,
+          datos_usuario.rol,
+          datos_usuario.cedula
+        ]
+      );
+    }
 
     // Luego del update retornamos un codigo de exito 200
     return { codigo: 200, texto: 'Usuario editado exitosamente' };

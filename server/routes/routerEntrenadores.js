@@ -79,4 +79,17 @@ router.route('/clave/:cedula')
   } 
 });
 
+router.route('/perfil/:cedula')
+//ruta encargada de actualizar el perfil de un usuario
+.put(mw_token, async(req, res) => {
+  try{
+    let result = await usuarios.editarUsuario(req.body, true);
+    res.send(result);
+  }
+  catch(error){
+    if (process.env.NODE_ENV === 'development') console.error(error);
+      res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+  } 
+})
+
 module.exports = router;

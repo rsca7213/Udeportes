@@ -27,7 +27,7 @@
                     <v-col cols=12 :sm="(item.nombre === 'Correo')? 12:6" v-for="item in datos_usuario" :key="item.cedula">
                       <v-text-field v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :disabled="(item.variable_asociada==='cedula')? true:false"
                       :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
-                      <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]"></v-select>
+                      <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]" :disabled="true"></v-select>
                       <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]" @click:clear="fecha=''"></v-text-field>
@@ -40,7 +40,7 @@
               </v-form>
               <v-card-actions class="mt-4 d-flex justify-end">
                 <EditarClavePerfil :cedula_usuario="inputs.cedula" @editarClave="editarClave"/>
-                <v-btn color="secondary" class="mr-2 mb-2" :disabled="!credenciales_validas" :loading="form_cargando" @click="editarUsuario()">
+                <v-btn color="secondary" class="mr-2 mb-2" :disabled="!credenciales_validas" :loading="form_cargando" @click="editarPerfil()">
                   <v-icon left> mdi-check-circle </v-icon>
                   Editar
                 </v-btn>
@@ -291,7 +291,7 @@ export default {
       this.props_exito_dialog = evento;
     },
     //método para editar usuarios
-    async editarUsuario(){
+    async editarPerfil(){
       if(this.$refs.form.validate()) {
         this.mensaje_error = '';
         this.form_cargando = true;
@@ -301,7 +301,7 @@ export default {
           de error que específica que sucedió
         */
         await axios
-          .put(`${server_url}/entrenadores/${this.inputs.cedula}`, this.inputs, { withCredentials: true })
+          .put(`${server_url}/entrenadores/perfil/${this.inputs.cedula}`, this.inputs, { withCredentials: true })
           .then((res) => {
             if (res.data.codigo === 200) {
               this.form_cargando = false;

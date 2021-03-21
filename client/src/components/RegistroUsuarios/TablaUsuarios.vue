@@ -10,7 +10,7 @@
           prepend-icon="mdi-magnify" type="text" v-model="search" name="busqueda"> </v-text-field>
         </v-col>
       </v-row>
-      <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="formTitle" :usuario="editar_usuario" @cerrarForm="cerrarForm"/>
+      <RegistroUsuarios :dialog_editar="dialog_editar" :mensaje_form="titulo_form" :usuario="editar_usuario" @cerrarForm="cerrarForm"/>
       <v-data-table :headers="columnas_tabla" :items="usuarios" :search="search"
         no-results-text="No hay resultados para esta búsqueda."
         loading-text="Cargando datos..."
@@ -123,7 +123,8 @@ export default {
         },
       ],
       usuarios: [],
-      editedIndex: -1,
+      //variable para saber el titulo del form
+      flag_editar: -1,
       //variable encargada de mostrar el estado de las confirmaciones exitosas
       exito_dialog: false,
       //estado de la operación y mensaje a mostrar en el dialog de éxito
@@ -132,18 +133,14 @@ export default {
       editar_usuario: {},
       //cédula del usuario que se encuentra logeado en el sistema
       usuario_sesion_cedula: '',
+      //titulo formulario de registro/edicion
+      titulo_form: 'Registrar Usuario'
     }
-  },
-  computed: {
-    formTitle () {
-        return this.editedIndex === -1 ? 'Registrar Usuario' : 'Editar Usuario'
-    },
   },
   methods: {
     editItem (item) {
-      this.editedIndex = this.usuarios.indexOf(item);
+      this.titulo_form='Editar Usuario';
       this.editar_usuario = Object.assign({}, item);
-      //this.cedula_usuario = this.editar_usuario.cedula;
       this.dialog_editar = true;
     },
 
@@ -162,6 +159,7 @@ export default {
     },
     //luego de que se cierra el formulario de registro se limpian los datos del registro
     cerrarForm(evento){
+      this.titulo_form = 'Registrar Usuario';
       this.editar_usuario = {};
       this.dialog_editar=false;
       if(evento.estatus_operacion != null){

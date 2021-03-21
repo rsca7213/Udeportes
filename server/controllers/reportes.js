@@ -439,6 +439,50 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
   }
 }
 
+async function atletasBeca () {
+  try {
+ 
+    // Se buscan los atletas que poseen una beca
+    let atletas = await bd.query(
+      `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
+       a.nombre_beca, a.porcentaje_beca, e.nombre AS educacion, 
+       CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
+       THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
+       FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
+       WHERE nombre_beca IS NOT NULL`, 
+    );
+
+    atletas = atletas.rows;
+
+    // Transformamos la data a la requerida
+    atletas = atletas.map((atleta) => {
+      let nombres = [
+        atleta.primer_nombre,
+        atleta.segundo_nombre || '',
+        atleta.primer_apellido,
+        atleta.segundo_apellido
+      ];
+      return {
+        cedula: atleta.cedula,
+        nombre_completo: nombres.join(' ').replace(/ +/g, " "),
+        beca: `${atleta.nombre_beca} (${atleta.porcentaje_beca} %)`,
+        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
+      }
+    });
+
+    // si existen los atletas se retornan en forma de array con un HTTP 200
+    return { codigo: 200, atletas }
+    
+
+  }
+  // En caso de error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+}
+
 
 
 module.exports = {
@@ -448,4 +492,5 @@ module.exports = {
   asistenciaGeneralCompetencias,
   asistenciaDetalladaEntrenamientos,
   asistenciaDetalladaCompetencias,
+  atletasBeca
 }

@@ -22,7 +22,7 @@
                         <v-list dense>
                           <v-list-item two-line v-for="(item, index) in reportes_asistencia" :key="index" @click="cambiarVista(item.nombre)"> 
                             <v-list-item-content class="text-caption">
-                              <v-list-item-title class="text-wrap d-flex justify-space-around justify-sm-start"> 
+                              <v-list-item-title class="text-wrap d-flex justify-start"> 
                                 <v-icon color="indigo" left> mdi-clipboard-text-outline </v-icon>
                                 <span class="subtitle-2" v-text="item.nombre"></span>
                               </v-list-item-title>
@@ -60,11 +60,36 @@
                       </v-list-item-group>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
+                  <v-expansion-panel v-if="rol_usuario==='Administrador'">
+                    <v-expansion-panel-header> 
+                      <span>
+                        <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
+                        <span class="subtitle-1">Reportes de Atletas</span>
+                      </span>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <v-list-item-group color="indigo">
+                        <v-list dense>
+                          <v-list-item two-line v-for="(item, index) in reportes_atletas" :key="index" @click="cambiarVista(item.nombre)"> 
+                            <v-list-item-content class="text-caption">
+                              <v-list-item-title> 
+                                <v-icon color="indigo" left> mdi-clipboard-text-outline </v-icon>
+                                <span class="subtitle-2" v-text="item.nombre"></span>
+                              </v-list-item-title>
+                              <v-list-item-subtitle class="pl-8"> 
+                                <span v-text="item.descripcion"></span>
+                              </v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-list-item-group>
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
                 </v-expansion-panels>
               </v-card-text>
             </div>
             <div v-else-if="menu_reportes !=='menu'">
-              <v-card-subtitle class="pl-11 py-2">
+              <v-card-subtitle class="pl-11 py-2" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                 Puedes cambiar la categoria en cualquier momento.
               </v-card-subtitle>
               <div class="text-center">
@@ -74,7 +99,7 @@
                 </v-btn>
               </div>
               <v-container class="pt-0">
-                <v-row class="pt-0 justify-center">
+                <v-row class="pt-0 justify-center" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                   <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
                     <v-select v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
                     clear-icon="mdi-close" name="categoria" clearable :items="items_deportes"
@@ -82,7 +107,7 @@
                     </v-select>
                   </v-col>
                 </v-row>
-                <v-row v-if="!categoria || !categoria.id_categoria">
+                <v-row v-if="(!categoria || !categoria.id_categoria) && !reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                   <v-col class="grey--text text-center"> Selecciona una categoría para generar el reporte. </v-col>
                 </v-row>
                 <v-row v-else-if="categoria_cargando"> 
@@ -97,6 +122,7 @@
                   <AsistenciaGeneralCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia General a Competencias'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaDetalladaEntrenamientos v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Entrenamientos en Detalle'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaDetalladaCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Competencias en Detalle'" :categoria="categoria" :equipo="equipo"/>
+                  <AtletasConBeca v-if="menu_reportes === 'Reporte de Atletas con Beca'"/>
                 </div>
               </v-container>
             </div>
@@ -114,6 +140,7 @@ import AsistenciaGeneralEntrenamientos from './AsistenciaGeneralEntrenamientos';
 import AsistenciaDetalladaEntrenamientos from './AsistenciaDetalladaEntrenamientos';
 import AsistenciaDetalladaCompetencias from './AsistenciaDetalladaCompetencias';
 import AsistenciaGeneralCompetencias from './AsistenciaGeneralCompetencias';
+import AtletasConBeca from './AtletasConBeca';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
@@ -124,7 +151,8 @@ export default {
     AsistenciaGeneralEntrenamientos,
     AsistenciaGeneralCompetencias,
     AsistenciaDetalladaEntrenamientos,
-    AsistenciaDetalladaCompetencias
+    AsistenciaDetalladaCompetencias,
+    AtletasConBeca
   },
   data() {
     return {
@@ -136,6 +164,8 @@ export default {
         id_categoria: 0,
         id_deporte: 0
       },
+      //rol de usuario para mostrar solo las opciones de reportes respectivas
+      rol_usuario: '',
       equipo: '',
       // Data para el select de deportes, rellenado en mounted()
       items_deportes: [],
@@ -168,6 +198,13 @@ export default {
           nombre: 'Nómina de Competencia',
           descripcion: 'Consulta todos los atletas de una competencia',
         },
+      ],
+      //Información de reportes de atletas
+      reportes_atletas : [
+        {
+          nombre: 'Reporte de Atletas con Beca',
+          descripcion: 'Consulta todos los atletas que poseen una beca'
+        }
       ]
     }
   },
@@ -213,6 +250,14 @@ export default {
   async mounted() {
     this.categoria_cargando = true;
     // Solicitud GET
+    await axios
+      .get(`${server_url}/perfil?data=completa`, { withCredentials: true })
+      .then((res) => {
+        if (res.status === 200) 
+          this.rol_usuario = (res.data.usuario.rol==='a')? 'Administrador' : 'Entrenador';
+          
+      })
+      .catch(() => { });
     await axios.get(`${server_url}/entrenamientos/categorias`, { withCredentials: true })
       .then((res) => {
         // En caso de exito
