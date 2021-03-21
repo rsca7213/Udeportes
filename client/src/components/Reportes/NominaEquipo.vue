@@ -107,7 +107,7 @@ export default {
           align: 'start',
           sortable: true,
           filterable: true,
-          value: 'educacion',
+          value: 'educacion_etapa',
           class: 'primary--text font-weight-bold'
         },
       ],
@@ -193,7 +193,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [60, 'auto', 'auto', 'auto' ],
+              widths: [70, 120, 120, '*' ],
               body: this.datos_reporte()
             }
           },
@@ -210,19 +210,19 @@ export default {
     datos_reporte(){
       let reporte_body = [];
       reporte_body.push([
-         { text: 'Nro Cédula', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
-         { text: 'Nombre Completo', bold: true, color:'#2196F3', fontSize: 10 },
-         { text: 'Correo Electrónico', bold: true, color:'#2196F3', fontSize: 10 },
-         { text: 'Educación', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Nro Cédula', bold: true, color:'#2196F3', alignment:'right'},
+         { text: 'Nombre Completo', bold: true, color:'#2196F3' },
+         { text: 'Correo Electrónico', bold: true, color:'#2196F3' },
+         { text: 'Educación', bold: true, color:'#2196F3' },
       ]);
 
       //todos los atletas del reporte
       this.atletas.forEach((atleta) =>{
         reporte_body.push([
-          { text: `${atleta.cedula}`, alignment: 'right'},
+          { text: `${atleta.cedula}`, alignment:'right'},
           { text: `${atleta.nombre_completo}`},
           { text: `${atleta.correo}`},
-          { text: `${atleta.educacion}`},
+          { text: `${atleta.educacion_etapa}`},
         ]);
       });
       

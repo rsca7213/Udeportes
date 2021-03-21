@@ -103,7 +103,6 @@ router.route('/atletas/beca')
     Array[] o retorna un error con un codigo 500
   */
   .get(mw_token, mw_rol, async (req, res) => {
-    console.log('hola');
     let data = await reportes.atletasBeca();
     res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
   })

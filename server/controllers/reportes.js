@@ -19,7 +19,8 @@ async function nominaEquipo (id_categoria) {
     let atletas = await bd.query(
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, 
       TO_CHAR(a.fecha_nacimiento, 'dd/mm/yyyy') AS fecha_nacimiento, a.correo, i.id_categoria,
-      e.nombre AS educacion
+      e.nombre AS educacion, CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
+      THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
       FROM inscripciones i, atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
       where a.cedula = i.cedula_atleta AND i.id_categoria = $1;`,
        [id_categoria] 
@@ -39,7 +40,8 @@ async function nominaEquipo (id_categoria) {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         correo: atleta.correo || 'Sin correo',
-        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada'
+        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
       }
     });
     
@@ -76,10 +78,12 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
     let atletas = await bd.query(
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, 
       TO_CHAR(a.fecha_nacimiento, 'dd/mm/yyyy') AS fecha_nacimiento, a.correo, i.id_categoria,
-      e.nombre AS educacion
+      e.nombre AS educacion, CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
+      THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
       FROM inscripciones i, participaciones p, atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
-      WHERE a.cedula = i.cedula_atleta AND $1 = p.id_deporte AND
-      $2 = p.id_categoria AND $3 = p.id_competencia;`,
+      WHERE a.cedula = i.cedula_atleta AND p.asistencia IS NOT NULL AND i.cedula_atleta = p.cedula_atleta AND
+      i.id_categoria = p.id_categoria AND i.id_deporte = p.id_deporte
+      AND $1 = p.id_deporte_comp AND $2 = p.id_categoria_comp AND $3 = p.id_competencia;`,
        [id_deporte, id_categoria, id_competencia] 
     );
 
@@ -97,7 +101,8 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         correo: atleta.correo || 'Sin correo',
-        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada'
+        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
       }
     });
     

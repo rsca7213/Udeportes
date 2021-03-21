@@ -134,7 +134,7 @@ export default {
           align: 'start',
           sortable: true,
           filterable: true,
-          value: 'educacion',
+          value: 'educacion_etapa',
           class: 'primary--text font-weight-bold'
         },
       ],
@@ -233,7 +233,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [60, 'auto', 'auto', 'auto' ],
+              widths: [70, 120, 120, '*' ],
               body: this.datos_reporte()
             }
           },
@@ -262,7 +262,7 @@ export default {
           {text: `${atleta.cedula}`, alignment: 'right'},
           {text: `${atleta.nombre_completo}`},
           {text: `${atleta.correo}`},
-          {text: `${atleta.educacion}`}
+          {text: `${atleta.educacion_etapa}`}
         ])
       });
       
