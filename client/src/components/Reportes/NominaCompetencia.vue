@@ -13,15 +13,15 @@
           <v-row v-if="!competencia">
             <v-col class="grey--text text-center"> Selecciona una competencia para generar el reporte. </v-col>
           </v-row>
-          <v-row v-if="competencias_cargando"> 
-            <v-col class="px-6 mx-5">
-              <v-progress-linear indeterminate color="primary"> </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row v-else-if="!competencias_cargando && !items_competencias.length">
-            <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
-          </v-row>
         </v-col>
+      </v-row>
+      <v-row v-if="competencias_cargando"> 
+        <v-col class="px-6 mx-5">
+          <v-progress-linear indeterminate color="primary"> </v-progress-linear>
+        </v-col>
+      </v-row>
+      <v-row v-else-if="!competencias_cargando && !items_competencias.length">
+        <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
       </v-row>
       <v-row v-if="competencia" no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
@@ -60,7 +60,7 @@
         </v-col>
         
       </v-row>
-      <v-row>
+      <v-row v-if="items_competencias.length">
         <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
           <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
             <v-icon>mdi-download</v-icon>
