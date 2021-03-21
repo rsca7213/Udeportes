@@ -24,58 +24,60 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-row v-if="competencia" no-gutters>
-      <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
-        <v-alert text color="error" dense v-if="mensaje_error">
-          <v-icon color="error"> mdi-alert </v-icon>
-          <span v-text="mensaje_error" class="ml-1"> </span>
-        </v-alert>
-        <v-row align="center">
-          <v-col cols="12">
-            <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
-            prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12"> 
-            <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
-            no-data-text="No hay atletas que hayan asistido a esta competencia"
-            no-results-text="No hay resultados para esta búsqueda."
-            loading-text="Cargando datos..."
-            locale="es-VE"
-            fixed-header
-            :loading="tabla_cargando"
-            >
-            </v-data-table>
-            
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="12" lg="3" xl="4">
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
-            <ApexChart type="radialBar" :options="chartOptions" 
-            :series="[ratioAsistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11">
-            <ApexChart type="radialBar" :options="chartOptions2" 
-            :series="[ratioInasistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
-        <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
-          Generar Reporte
-        </v-btn>
-      </v-col>
-    </v-row>
+    <div  v-if="competencia">
+      <v-row no-gutters>
+        <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
+          <v-alert text color="error" dense v-if="mensaje_error">
+            <v-icon color="error"> mdi-alert </v-icon>
+            <span v-text="mensaje_error" class="ml-1"> </span>
+          </v-alert>
+          <v-row align="center">
+            <v-col cols="12">
+              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12"> 
+              <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
+              no-data-text="No hay atletas que hayan asistido a esta competencia"
+              no-results-text="No hay resultados para esta búsqueda."
+              loading-text="Cargando datos..."
+              locale="es-VE"
+              fixed-header
+              :loading="tabla_cargando"
+              >
+              </v-data-table>
+              
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="12" lg="3" xl="4">
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+              <ApexChart type="radialBar" :options="chartOptions" 
+              :series="[ratioAsistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11">
+              <ApexChart type="radialBar" :options="chartOptions2" 
+              :series="[ratioInasistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+          <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
+            <v-icon>mdi-download</v-icon>
+            Generar Reporte
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 

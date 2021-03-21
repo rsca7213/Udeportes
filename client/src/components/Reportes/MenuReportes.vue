@@ -101,14 +101,14 @@
               <v-container class="pt-0">
                 <v-row class="pt-0 justify-center" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                   <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
-                    <v-select v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
+                    <v-select class="mb-4" v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
                     clear-icon="mdi-close" name="categoria" clearable :items="items_deportes"
-                    no-data-text="No tiene categorias asignadas" @change="datosEquipo()">
+                    no-data-text="No tiene categorias asignadas" @change="datosEquipo()" hide-details>
                     </v-select>
                   </v-col>
                 </v-row>
                 <v-row v-if="(!categoria || !categoria.id_categoria) && !reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
-                  <v-col class="grey--text text-center"> Selecciona una categoría para generar el reporte. </v-col>
+                  <v-col class="grey--text text-center pt-0"> Selecciona una categoría para generar el reporte. </v-col>
                 </v-row>
                 <v-row v-else-if="categoria_cargando"> 
                   <v-col class="px-6 mx-5">

@@ -5,77 +5,79 @@
         <v-row class="justify-center">
           <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
             <v-select v-model="entrenamiento" label="Entrenamientos" prepend-icon="mdi-clipboard-text" :items="items_entrenamientos"
-            clear-icon="mdi-close" name="periodo" clearable>
+            clear-icon="mdi-close" name="periodo" clearable hide-details>
             </v-select>
           </v-col>
         </v-row>
         <v-col cols=12 v-if="items_entrenamientos.length">
           <v-row v-if="!entrenamiento">
-            <v-col class="grey--text text-center"> Selecciona un entrenamiento para generar el reporte. </v-col>
-          </v-row>
-          <v-row v-if="entrenamientos_cargando"> 
-            <v-col class="px-6 mx-5">
-              <v-progress-linear indeterminate color="primary"> </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row v-else-if="!entrenamientos_cargando && !items_entrenamientos.length">
-            <v-col class="grey--text text-center"> No hay entrenamientos para esta categoria. </v-col>
+            <v-col class="grey--text text-center mt-2"> Selecciona un entrenamiento para generar el reporte. </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-container>
-    <v-row v-if="entrenamiento" no-gutters>
-      <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
-        <v-alert text color="error" dense v-if="mensaje_error">
-          <v-icon color="error"> mdi-alert </v-icon>
-          <span v-text="mensaje_error" class="ml-1"> </span>
-        </v-alert>
-        <v-row align="center">
-          <v-col cols="12">
-            <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
-            prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12"> 
-            <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
-            no-data-text="No hay atletas que hayan asistido a estos entrenamientos"
-            no-results-text="No hay resultados para esta búsqueda."
-            loading-text="Cargando datos..."
-            locale="es-VE"
-            fixed-header
-            :loading="tabla_cargando"
-            >
-            </v-data-table>
-            
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="12" lg="3" xl="4">
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
-            <ApexChart type="radialBar" :options="chartOptions" 
-            :series="[ratioAsistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11">
-            <ApexChart type="radialBar" :options="chartOptions2" 
-            :series="[ratioInasistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
+    <v-row v-if="entrenamientos_cargando"> 
+      <v-col class="px-6 mx-5">
+        <v-progress-linear indeterminate color="primary"> </v-progress-linear>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
-        <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
-          Generar Reporte
-        </v-btn>
-      </v-col>
+    <v-row v-else-if="!entrenamientos_cargando && !items_entrenamientos.length">
+      <v-col class="grey--text text-center pt-0"> No hay entrenamientos para esta categoria. </v-col>
     </v-row>
+    <div v-if="entrenamiento" >
+      <v-row no-gutters>
+        <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
+          <v-alert text color="error" dense v-if="mensaje_error">
+            <v-icon color="error"> mdi-alert </v-icon>
+            <span v-text="mensaje_error" class="ml-1"> </span>
+          </v-alert>
+          <v-row align="center">
+            <v-col cols="12">
+              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12"> 
+              <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
+              no-data-text="No hay atletas que hayan asistido a estos entrenamientos"
+              no-results-text="No hay resultados para esta búsqueda."
+              loading-text="Cargando datos..."
+              locale="es-VE"
+              fixed-header
+              :loading="tabla_cargando"
+              >
+              </v-data-table>
+              
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="12" lg="3" xl="4">
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+              <ApexChart type="radialBar" :options="chartOptions" 
+              :series="[ratioAsistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11">
+              <ApexChart type="radialBar" :options="chartOptions2" 
+              :series="[ratioInasistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+          <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
+            <v-icon>mdi-download</v-icon>
+            Generar Reporte
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -142,7 +144,7 @@ export default {
         },
         {
           text: 'Asistencia',
-          align: 'start',
+          align: 'center',
           sortable: true,
           filterable: true,
           value: 'asistencia',
@@ -319,7 +321,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [70, 'auto', 'auto', 'auto' ],
+              widths: [70, 120, '*', 70 ],
               body: this.datosReporte()
             },
           },
@@ -337,17 +339,17 @@ export default {
       let reporte_body = [];
       reporte_body.push([
          { text: 'Nro. Cédula', bold: true, color:'#2196F3', alignment:'right' },
-         { text: 'Nombre Completo', bold: true, color:'#2196F3' },
-         { text: 'Correo Electrónico', bold: true, color:'#2196F3' },
-         { text: 'Asistencia', bold: true, color:'#2196F3'},
+         { text: 'Nombre Completo', bold: true, color:'#2196F3', alignment: 'center' },
+         { text: 'Correo Electrónico', bold: true, color:'#2196F3', alignment: 'center' },
+         { text: 'Asistencia', bold: true, color:'#2196F3', alignment: 'center'},
       ]);
 
       //todos los atletas del reporte
       this.atletas.forEach((atleta) =>{
         reporte_body.push([
           {text: `${atleta.cedula}`, alignment:'right'},
-          {text: `${atleta.nombre_completo}`},
-          {text: `${atleta.correo}`},
+          {text: `${atleta.nombre_completo}`, alignment: 'center'},
+          {text: `${atleta.correo}`, alignment: 'center'},
           {text:`${atleta.asistencia}` , alignment: 'center'}
         ])
       });

@@ -3,8 +3,12 @@
     <v-row class="justify-center">
       <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
         <v-select v-model="periodo" label="Periodo" prepend-icon="mdi-calendar" :items="periodos"
-        clear-icon="mdi-close" name="periodo" clearable>
+        clear-icon="mdi-close" name="periodo" clearable hide-details>
         </v-select>
+      </v-col>
+    </v-row>
+    <v-row v-if="!periodo">
+      <v-col class="grey--text text-center"> Selecciona un período.
       </v-col>
     </v-row>
     <v-row class="justify-center" v-if="periodo && periodo ==='m'">
@@ -12,70 +16,75 @@
         <v-menu ref="menu" v-model="menu" :close-on-content-click="false" 
           transition="scale-transition" offset-y max-width="290px" min-width="auto">
           <template v-slot:activator="{ on, attrs }">
-            <v-text-field v-model="formato_fecha" label="Mes" prepend-icon="mdi-calendar" readonly   v-bind="attrs" v-on="on"></v-text-field>
+            <v-text-field v-model="formato_fecha" label="Mes" prepend-icon="mdi-calendar" readonly   v-bind="attrs" v-on="on" hide-details></v-text-field>
           </template>
           <v-date-picker ref="picker" color="primary" v-model="fecha" type="month" no-title scrollable @change="guardar" >
           </v-date-picker>
         </v-menu>
       </v-col>
     </v-row>
-    <v-row v-if="atletas.length || (competencias && competencias.length)" no-gutters>
-      <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
-        <v-alert text color="error" dense v-if="mensaje_error">
-          <v-icon color="error"> mdi-alert </v-icon>
-          <span v-text="mensaje_error" class="ml-1"> </span>
-        </v-alert>
-        <v-row align="center">
-          <v-col cols="12">
-            <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
-            prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12"> 
-            <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
-            no-data-text="No hay atletas que hayan asistido a este competencia."
-            no-results-text="No hay resultados para esta búsqueda."
-            loading-text="Cargando datos..."
-            locale="es-VE"
-            fixed-header
-            :loading="tabla_cargando"
-            >
-            </v-data-table>
-            
-          </v-col>
-          
-        </v-row>
+    <v-row v-if="periodo === 'm' && fecha === ''">
+      <v-col class="grey--text text-center"> Selecciona un mes.
       </v-col>
-      <v-col cols="12" lg="3" xl="4">
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
-            <ApexChart type="radialBar" :options="chartOptions" 
-            :series="[ratioAsistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-        <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="11">
-            <ApexChart type="radialBar" :options="chartOptions2" 
-            :series="[ratioInasistencias || 0]"
-            class="elevation-4 p-4 rounded-lg grey lighten-4" />
-          </v-col>
-        </v-row>
-      </v-col>
-      
     </v-row>
+    <div class="mt-4" v-if="atletas.length || (competencias && competencias.length)">
+      <v-row no-gutters>
+        <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
+          <v-alert text color="error" dense v-if="mensaje_error">
+            <v-icon color="error"> mdi-alert </v-icon>
+            <span v-text="mensaje_error" class="ml-1"> </span>
+          </v-alert>
+          <v-row align="center">
+            <v-col cols="12">
+              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12"> 
+              <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
+              no-data-text="No hay atletas que hayan asistido a este competencia."
+              no-results-text="No hay resultados para esta búsqueda."
+              loading-text="Cargando datos..."
+              locale="es-VE"
+              fixed-header
+              :loading="tabla_cargando"
+              >
+              </v-data-table>
+              
+            </v-col>
+            
+          </v-row>
+        </v-col>
+        <v-col cols="12" lg="3" xl="4">
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11" class="mt-6 mt-lg-0">
+              <ApexChart type="radialBar" :options="chartOptions" 
+              :series="[ratioAsistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+          <v-row class="justify-center" v-if="show">
+            <v-col lg="11" sm="6" cols="11">
+              <ApexChart type="radialBar" :options="chartOptions2" 
+              :series="[ratioInasistencias || 0]"
+              class="elevation-4 p-4 rounded-lg grey lighten-4" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+          <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
+            <v-icon>mdi-download</v-icon>
+            Generar Reporte
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && competencias===false &&!tabla_cargando">
       <v-col v-if="periodo==='t'" class="grey--text text-center"> Aún no hay competencias para esa categoría. </v-col>
       <v-col v-else class="grey--text text-center"> No hay competencias para esta categoría en la fecha especificada. </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
-        <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
-          Generar Reporte
-        </v-btn>
-      </v-col>
     </v-row>
   </div>
 </template>
@@ -367,7 +376,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [ 70, 'auto', 80, 'auto', 70 ],
+              widths: [ 70, '*', 80, '*', 70 ],
               body: this.datosReporte()
             },
           },
