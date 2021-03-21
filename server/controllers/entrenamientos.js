@@ -54,7 +54,6 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
       }
     }
 
-    console.log(entrenamientos);
     // Si todo sale bien
     return { codigo: 200, entrenamientos: entrenamientos }
   }
