@@ -34,20 +34,12 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
       [id_deporte, id_categoria]
     );
     entrenamientos = entrenamientos.rows;
-
+    await setTimeout(() => {null}, 20000);
     entrenamientos = await Promise.all(entrenamientos.map(async function (item) {
-      let asistencias = await bd.query(
-        `SELECT COUNT(*) FROM participaciones p WHERE p.id_entrenamiento = $1 
-         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = TRUE`,
-        [item.id, id_deporte, id_categoria]
-      );
-      asistencias = parseInt(asistencias.rows[0].count);
-      let faltas = await bd.query(
-        `SELECT COUNT(*) FROM participaciones p WHERE p.id_entrenamiento = $1 
-         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = FALSE`,
-        [item.id, id_deporte, id_categoria]
-      );
-      faltas = parseInt(faltas.rows[0].count);
+      let participaciones = await (await obtenerParticipaciones(id_deporte, id_categoria, item.id)).participaciones.map(p => p.asistencia);
+      let asistencias = participaciones.filter(p => p === true).length;
+      let faltas = participaciones.filter(p => p === false).length;
+      console.log(asistencias, faltas);
       return {
         id: item.id,
         fecha: item.fecha,
@@ -348,7 +340,7 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
     );
     if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este entrenamiento no existe.' }
     // Si el entrenamiento existe y la data es valida
-    await data.forEach(async item => {
+    data.forEach(async item => {
       // Si la asistencia no esta determinada, se borra si exite el registro
       if (item.asistencia === null) 
         await bd.query(

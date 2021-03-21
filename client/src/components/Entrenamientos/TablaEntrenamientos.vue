@@ -107,7 +107,7 @@ export default {
     ApexChart
   },
 
-  props: ['entrenamientos', 'id_deporte', 'id_categoria'],
+  props: ['id_deporte', 'id_categoria'],
 
   data() {
     return {
@@ -368,8 +368,8 @@ export default {
     }
   },
 
-  mounted() {
-    this.getEntrenamientos();
+  async mounted() {
+    await this.getEntrenamientos();
   }
 
 }

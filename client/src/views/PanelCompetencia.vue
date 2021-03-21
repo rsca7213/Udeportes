@@ -365,8 +365,8 @@ export default {
   methods: {
     // Settea los datos de las graficas de asistencia
     datosAsistencia (data) {
-      this.ratioAsistencias = data.asistencias;
-      this.ratioInasistencias = data.inasistencias;
+      this.ratioAsistencias = data.asistencias.toFixed(2);
+      this.ratioInasistencias = data.inasistencias.toFixed(2);
     },
 
     // Settea los datos y labels de la grafica radar a partir del input del select box
@@ -411,6 +411,7 @@ export default {
         });
 
         data = data.map(valor => valor / ctd_atletas || 0);
+        data = data.map(valor => valor.toFixed(2));
         
         this.dataRadar = data;
         this.radarCategories = nombres;

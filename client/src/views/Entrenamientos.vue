@@ -90,6 +90,7 @@ export default {
     async getEntrenamientos() {
       // Si se selecciona una categoria
       if (this.categoria) {
+        this.entrenamientos = [];
         // Colocamos el loader
         this.categoriaCargando = true;
         // Request GET
