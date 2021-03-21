@@ -28,6 +28,7 @@ export default {
         'Deportes', 
         'Posiciones', 
         'Categorias', 
+        'Inscripciones', 
         'DetallesAtleta', 
         'Perfil', 
         'Entrenamientos', 

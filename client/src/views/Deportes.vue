@@ -76,7 +76,7 @@
                         </div>
                     </v-card>
                     <br>
-                    <v-card elevation="2" shaped class="primary">
+                    <v-card elevation="2" shaped class="primary" @click="$router.push(`/deporte/${deporte.id}/inscripciones`);">
                         <div class="d-flex flex-no-wrap justify-space-between">
                             <v-card-title class="align-center white--text text-button">Inscripciones</v-card-title>
                             <v-avatar class="ma-3" size="60">

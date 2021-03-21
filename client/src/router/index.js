@@ -50,6 +50,11 @@ const routes = [
     component: () => import('../views/Categorias.vue')
   },
   {
+    path: '/deporte/:id_deporte/inscripciones',
+    name: 'Inscripciones',
+    component: () => import('../views/Inscripciones.vue')
+  },
+  {
     path: '/perfil',
     name: 'Perfil',
     component: () => import('../views/Perfil.vue')

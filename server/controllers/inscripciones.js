@@ -12,6 +12,15 @@ async function crearInscripcion (datos) {
     if(checkInscripcion.length){
         return { codigo: 400, texto:'El atleta ya se encuentra inscrito en esta categoria.'}
     }
+    let checkAtleta = await bd.query(
+        `SELECT * FROM atletas 
+        WHERE cedula=$1`,
+        [datos.cedula]
+    ); 
+    checkAtleta = checkAtleta.rows;
+    if(checkAtleta.length == 0){
+        return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
+    }
 
     var hoy = new Date();
     var dd = hoy.getDate(); 
@@ -56,7 +65,7 @@ async function verInscripciones (id_deporte) {
             `SELECT TO_CHAR(i.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, i.cedula_atleta AS cedula, (a.primer_nombre || ' ' || a.primer_apellido) AS nombre, 
             CASE WHEN a.genero = 'm' THEN 'Masculino' WHEN a.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, 
             CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS categoria, 
-            p.nombre AS poscion, i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
+            p.nombre AS posicion, i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
             FROM inscripciones i 
             JOIN atletas a ON a.cedula=i.cedula_atleta
             JOIN categorias c ON i.id_categoria=c.id
@@ -73,7 +82,48 @@ async function verInscripciones (id_deporte) {
     }
 }
 
+async function verInscripcion (datos) {
+    try {
+        let atleta = await bd.query(
+            `SELECT (primer_nombre || ' ' || primer_apellido) AS nombre
+            FROM atletas
+            WHERE cedula=$1`,
+            [datos.cedula]
+        );
+        let categoria = await bd.query(
+            `SELECT nombre AS nombre
+            FROM categorias
+            WHERE id=$1`,
+            [datos.categoria]
+        );
+        let posicion = await bd.query(
+            `SELECT nombre AS nombre
+            FROM posiciones
+            WHERE id=$1`,
+            [datos.posicion]
+        );
+
+        atleta = atleta.rows;
+        categoria = categoria.rows;
+        posicion = posicion.rows;
+
+        return { codigo: 200, atleta, categoria, posicion}
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') console.error(error);
+        return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    }
+}
+
 async function editarInscripcion (datos) {
+    let checkAtleta = await bd.query(
+        `SELECT * FROM atletas 
+        WHERE cedula=$1`,
+        [datos.cedula]
+    ); 
+    checkAtleta = checkAtleta.rows;
+    if(checkAtleta.length == 0){
+        return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
+    }
     try {
         await bd.query(
             `UPDATE inscripciones SET id_posicion=$1 
@@ -96,12 +146,20 @@ async function editarInscripcion (datos) {
 }
 
 async function eliminarInscripcion (datos) {
+    let checkAtleta = await bd.query(
+        `SELECT * FROM atletas 
+        WHERE cedula=$1`,
+        [datos.cedula]
+    ); 
+    checkAtleta = checkAtleta.rows;
+    if(checkAtleta.length == 0){
+        return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
+    }
     try {
         await bd.query(
             `DELETE FROM inscripciones 
-            WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_deporte=$3 
-                AND id_posicion=TO_DATE($4,'DD/MM/YYYY') AND id_deporte_pos=$5`,
-        [datos.cedula, datos.categoria, datos.deporte, datos.posicion, datos.deporte]);
+            WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_posicion=$3`,
+        [datos.cedula, datos.categoria, datos.posicion]);
     
         return { codigo: 200, texto: 'El atleta se ha removido de la plantilla correctamente', datos}
     } catch (error) {
@@ -111,6 +169,15 @@ async function eliminarInscripcion (datos) {
 }
 
 async function verCategoriasAtleta (datos) {
+    let check = await bd.query(
+        `SELECT * FROM atletas 
+        WHERE cedula=$1`,
+        [datos.cedula]
+    ); 
+    check = check.rows;
+    if(check.length == 0){
+        return { codigo: 400}
+    }
     try {
         let categoriasDisponibles = await bd.query(
             `SELECT c.id AS id, c.id_deporte AS id_deporte,
@@ -162,14 +229,28 @@ async function verPosicionesCategoria (datos) {
             [datos.categoria, datos.cedula]
         );
 
+        let posicionesDisponibles = await bd.query(
+            `SELECT p.id AS id, p.id_deporte AS id_deporte, p.nombre AS nombre 
+            FROM posiciones p
+            WHERE p.id NOT IN (
+                SELECT p.id AS id 
+                FROM posiciones p
+                JOIN inscripciones i ON i.id_posicion=p.id
+                WHERE i.id_categoria=$1 AND i.cedula_atleta=$2
+                ORDER BY p.id
+            ) AND p.id_deporte=$3`,
+            [datos.categoria, datos.cedula, datos.deporte]
+        );
+
         posiciones = posiciones.rows;
         posicionesInscrito = posicionesInscrito.rows;
+        posicionesDisponibles = posicionesDisponibles.rows;
 
-        return { codigo: 200, posiciones, posicionesInscrito}
+        return { codigo: 200, posiciones, posicionesInscrito, posicionesDisponibles}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
     }
 }
 
-module.exports = { crearInscripcion, verInscripciones, eliminarInscripcion, editarInscripcion, verCategoriasAtleta, verPosicionesCategoria }
+module.exports = { crearInscripcion, verInscripciones, verInscripcion, eliminarInscripcion, editarInscripcion, verCategoriasAtleta, verPosicionesCategoria }

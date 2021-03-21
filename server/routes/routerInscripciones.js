@@ -5,27 +5,14 @@ const inscripciones = require('../controllers/inscripciones');
 // const mw_rol = require('../middleware/rol');
 
 router.route('/:id_deporte')
-    //ruta encargada de obtener todas las inscripciones de un deporte
-    .get(async(req, res) => {
-        try{
-            let result = await inscripciones.verInscripciones(req.params.id_deporte);
-            res.send(result);
-        }
-        catch(error){
-            if (process.env.NODE_ENV === 'development') console.error(error);
-            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
-        } 
-    });
-
-router.route('/:id_deporte/:id_categoria/:id_posicion/:cedula')
-    //ruta encargada de inscribir a un atleta en una categoria
-    .get(async(req, res) => {
+    //ruta encargada de registrar las inscripciones de un deporte
+    .post(async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
-                categoria: req.params.id_categoria,
-                posicion: req.params.id_posicion,
-                cedula: req.params.cedula
+                categoria: req.body.categoria,
+                posicion: req.body.posicion,
+                cedula: req.body.cedula
             };
             let result = await inscripciones.crearInscripcion(datos);
             res.send(result);
@@ -40,11 +27,40 @@ router.route('/:id_deporte/:id_categoria/:id_posicion/:cedula')
         try{
             let datos = {
                 deporte: req.params.id_deporte,
-                categoria: req.params.id_categoria,
-                posicion: req.params.id_posicion,
-                cedula: req.params.cedula
+                categoria: req.body.categoria,
+                posicion: req.body.posicion,
+                cedula: req.body.cedula
             };
             let result = await inscripciones.editarInscripcion(datos);
+            res.send(result);
+        }
+        catch(error){
+            if (process.env.NODE_ENV === 'development') console.error(error);
+            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+        } 
+    })
+    //ruta encargada de obtener todas las inscripciones de un deporte
+    .get(async(req, res) => {
+        try{
+            let result = await inscripciones.verInscripciones(req.params.id_deporte);
+            res.send(result);
+        }
+        catch(error){
+            if (process.env.NODE_ENV === 'development') console.error(error);
+            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+        } 
+    });
+
+router.route('/:id_categoria/:id_posicion/:cedula')
+    //ruta encargada de obtener los datos de una inscripción
+    .get(async(req, res) => {
+        try{
+            let datos = {
+                posicion: req.params.id_posicion,
+                categoria: req.params.id_categoria,
+                cedula: req.params.cedula
+            };
+            let result = await inscripciones.verInscripcion(datos);
             res.send(result);
         }
         catch(error){
@@ -56,9 +72,8 @@ router.route('/:id_deporte/:id_categoria/:id_posicion/:cedula')
     .delete(async(req, res) => {
         try{
             let datos = {
-                deporte: req.params.id_deporte,
-                categoria: req.params.id_categoria,
                 posicion: req.params.id_posicion,
+                categoria: req.params.id_categoria,
                 cedula: req.params.cedula
             };
             let result = await inscripciones.eliminarInscripcion(datos);
@@ -71,7 +86,7 @@ router.route('/:id_deporte/:id_categoria/:id_posicion/:cedula')
     });
 
 router.route('/:id_deporte/:cedula')
-    //ruta encargada obtener las categorias y posiciones de un atleta
+    //ruta encargada obtener las categorias de un atleta
     .get(async(req, res) => {
         try{
             let datos = {
@@ -87,11 +102,12 @@ router.route('/:id_deporte/:cedula')
         } 
     })
 
-router.route('/categoria/:id_categoria/:cedula')
-    //ruta encargada obtener las categorias y posiciones de un atleta
+router.route('/:id_deporte/categoria/:id_categoria/:cedula')
+    //ruta encargada obtener las posiciones de un atleta
     .get(async(req, res) => {
         try{
             let datos = {
+                deporte: req.params.id_deporte,
                 categoria: req.params.id_categoria,
                 cedula: req.params.cedula
             };
