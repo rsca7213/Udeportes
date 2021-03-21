@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if ="atletas.length">
     <v-row no-gutters>
       <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
         <v-alert text color="error" dense v-if="mensaje_error">
@@ -25,7 +25,6 @@
             </v-data-table>
             
           </v-col>
-          
         </v-row>
       </v-col>
       <v-col cols="12" lg="3" xl="4">
@@ -35,7 +34,6 @@
           </v-col>
         </v-row>
       </v-col>
-      
     </v-row>
     <v-row>
       <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
@@ -46,6 +44,9 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-row v-else-if="!atletas.length && !tabla_cargando">
+    <v-col class="grey--text text-center"> No hay atletas inscritos en la categoría especificada. </v-col>
+  </v-row>
 </template>
 
 <script>

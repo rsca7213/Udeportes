@@ -27,7 +27,7 @@
       <v-col class="grey--text text-center"> Selecciona un mes.
       </v-col>
     </v-row>
-    <div class="mt-4" v-if="atletas.length || (entrenamientos && entrenamientos.length)">
+    <div class="mt-4" v-if="atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-alert text color="error" dense v-if="mensaje_error">
@@ -72,7 +72,6 @@
             </v-col>
           </v-row>
         </v-col>
-        
       </v-row>
       <v-row>
         <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
@@ -86,6 +85,9 @@
     <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && entrenamientos===false &&!tabla_cargando">
       <v-col v-if="periodo==='t'" class="grey--text text-center"> Aún no hay entrenamientos para esa categoría. </v-col>
       <v-col v-else class="grey--text text-center"> No hay entrenamientos para esta categoría en la fecha especificada. </v-col>
+    </v-row>
+    <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && !atletas.length  &&!tabla_cargando">
+      <v-col class="grey--text text-center"> No hay atletas que hayan asistido a los entrenamientos en el período especificado. </v-col>
     </v-row>
   </div>
 </template>
@@ -388,7 +390,7 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte de Asistencia General a Entrenamientos, Equipo: ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte de Asistencia General a Entrenamientos ${this.equipo}`);
     },
     //datos que contendrá el reporte
     datosReporte(){

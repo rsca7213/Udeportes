@@ -152,8 +152,11 @@ async function editarUsuario(datos_usuario, perfil=null){
     if (!check.estado) return { codigo: 422, texto: check.texto }
     check = validador.validarFecha(datos_usuario.fecha_nacimiento);
     if (!check.estado) return { codigo: 422, texto: check.texto }
-    check = validador.validarRol(datos_usuario.rol);
-    if (!check.estado) return { codigo: 422, texto: check.texto }
+    //si el usuario no esta editando su perfil sino que está siendo editado por un administrador
+    if(!perfil){
+      check = validador.validarRol(datos_usuario.rol);
+      if (!check.estado) return { codigo: 422, texto: check.texto }
+    }
     check = validador.validarTelefono(datos_usuario.telefono);
     if (!check.estado) return { codigo: 422, texto: check.texto }
 
@@ -173,7 +176,7 @@ async function editarUsuario(datos_usuario, perfil=null){
     if(perfil){
       await bd.query(
         `UPDATE usuarios SET primer_nombre = $1, primer_apellido = $2, segundo_apellido = $3,
-          fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'),segundo_nombre = $5, correo = $6,
+          fecha_nacimiento = TO_DATE($4, 'dd/mm/yyyy'), segundo_nombre = $5, correo = $6,
           telefono = $7 WHERE cedula = $8`, 
         [
           datos_usuario.primer_nombre,

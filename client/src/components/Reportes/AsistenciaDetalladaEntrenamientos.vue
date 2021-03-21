@@ -24,7 +24,7 @@
     <v-row v-else-if="!entrenamientos_cargando && !items_entrenamientos.length">
       <v-col class="grey--text text-center pt-0"> No hay entrenamientos para esta categoria. </v-col>
     </v-row>
-    <div v-if="entrenamiento" >
+    <div v-if="entrenamiento && atletas.length" >
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-alert text color="error" dense v-if="mensaje_error">
@@ -78,6 +78,9 @@
         </v-col>
       </v-row>
     </div>
+    <v-row v-else-if="!atletas.length && entrenamiento  &&!tabla_cargando">
+      <v-col class="grey--text text-center"> No hay atletas que hayan asistido al entrenamiento especificado. </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -332,7 +335,7 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte asistencia ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Entrenamiento Detallado, ${this.entrenamiento.info_entrenamiento} ${this.equipo}`);
     },
     //datos que contendrá el reporte
     datosReporte(){

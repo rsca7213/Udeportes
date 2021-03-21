@@ -25,9 +25,12 @@
                 <v-container class="px-md-4">
                   <v-row class="px-0">
                     <v-col cols=12 :sm="(item.nombre === 'Correo')? 12:6" v-for="item in datos_usuario" :key="item.cedula">
-                      <v-text-field v-if="item.nombre != 'Rol' && item.nombre != 'Fecha de Nacimiento'" :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.requerido? item.nombre+' *':item.nombre" :disabled="(item.variable_asociada==='cedula')? true:false"
+                      <v-text-field v-if="item.nombre && item.nombre != 'Fecha de Nacimiento'"
+                      :name="item.variable_asociada" v-model.trim="inputs[item.variable_asociada]" class="px-4"
+                      clear-icon="mdi-close" clearable :counter="item.longitud" 
+                      :label="item.requerido? item.nombre+' *':item.nombre" :disabled="(item.variable_asociada==='cedula' || item.variable_asociada==='rol')? true:false"
                       :prepend-icon="item.icono" type="text" validate-on-blur :rules="reglas[item.validacion]" :placeholder="item.placeholder"> </v-text-field>     
-                      <v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]" :disabled="true"></v-select>
+                      <!--<v-select v-else-if="item.nombre === 'Rol'" :name="item.variable_asociada" v-model="inputs.rol" class="px-4 mt-4" prepend-icon="mdi-account-tie" :items="roles" item-text="nombre" item-value="valor" :label="item.requerido? item.nombre+' *':item.nombre" dense validate-on-blur :rules="reglas[item.validacion]" :disabled="true"></v-select>-->
                       <v-menu v-else-if="item.nombre === 'Fecha de Nacimiento'" ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field :name="item.variable_asociada" v-model="inputs.fecha_nacimiento" class="px-4" clear-icon="mdi-close" clearable :counter="item.longitud" :label="item.nombre" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" validate-on-blur :rules="reglas[item.validacion]" @click:clear="fecha=''"></v-text-field>
@@ -152,9 +155,6 @@ export default {
         reglasFecha: [
           v => !v || (v.length <= 10) || 'La fecha debe contener como máximo 10 caracteres.'
         ],
-        reglasRol: [
-          v => ['a', 'e'].includes(v) || 'El rol es obligatorio',
-        ],
       },
     }
   },
@@ -229,14 +229,6 @@ export default {
         }      
       });
 
-      //se revisa si se cumplen las reglas del rol
-      this.reglas.reglasRol.forEach(rolValidator => {
-        if(rolValidator(this.inputs.rol) !== true){
-          this.credenciales_validas = false;
-          revisar = true;
-        }
-      });
-
       //si se cumplen todas las reglas entonces se permite agregar el usuario
       if(revisar === false){
         this.credenciales_validas = true;
@@ -264,8 +256,8 @@ export default {
   computed: {
     //método que retorna los datos que serán observados por el watcher(datos)
     datos() {
-      return `${this.inputs.cedula}|${this.inputs.primer_nombre}|${this.inputs.segundo_nombre}|
-      ${this.inputs.primer_apellido}|${this.inputs.segundo_apellido}|${this.inputs.rol}|
+      return `${this.inputs.primer_nombre}|${this.inputs.segundo_nombre}|
+      ${this.inputs.primer_apellido}|${this.inputs.segundo_apellido}|
       ${this.inputs.telefono}|${this.fecha}|${this.inputs.correo}`;
     },
     //metodo que retorna la clave que será observada por el watcher(datos_clave)
@@ -334,6 +326,7 @@ export default {
     .then((res) => {
       if (res.status === 200) 
         this.inputs = res.data.usuario;
+        this.inputs.rol = (this.inputs.rol === 'a')? 'Administrador' : 'Entrenador';
     })
     .catch(() => { });
   }

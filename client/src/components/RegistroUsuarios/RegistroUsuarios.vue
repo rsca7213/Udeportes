@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <v-dialog v-model="dialog_registro" max-width="800px" @click:outside="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
+    <v-dialog v-model="dialog_registro" max-width="950px" @click:outside="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
       <template v-slot:activator="{ on, attrs }">
         <div class="d-flex justify-end">
           <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">

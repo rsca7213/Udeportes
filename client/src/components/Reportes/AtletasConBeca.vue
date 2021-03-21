@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="atletas.length">
     <v-row no-gutters>
       <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
         <v-alert text color="error" dense v-if="mensaje_error">
@@ -32,8 +32,7 @@
             <ApexChart height="270" type="donut" :options="chartOptions" :series="chartData" class="elevation-4  rounded-lg grey lighten-4" />
           </v-col>
         </v-row>
-      </v-col>
-      
+      </v-col>     
     </v-row>
     <v-row>
       <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
@@ -44,6 +43,9 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-row v-else-if="!atletas.length && !tabla_cargando">
+    <v-col class="grey--text text-center"> No hay atletas con beca registrados en el sistema. </v-col>
+  </v-row>
 </template>
 
 <script>

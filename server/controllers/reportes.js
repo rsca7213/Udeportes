@@ -250,17 +250,20 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
       competencias = await bd.query(
         `SELECT c.id, c.nombre
          FROM competencias c 
-         WHERE c.id_deporte = $1 AND c.id_categoria = $2 AND 
-         ((SUBSTR(TO_CHAR(c.fecha_inicio, 'YYYY/DD/MM'),1,4) = $3 AND 
-         SUBSTR(TO_CHAR(c.fecha_inicio, 'MM/DD/YYYY'),1,2) >= $4) OR 
-         (SUBSTR(TO_CHAR(c.fecha_fin, 'YYYY/DD/MM'),1,4) = $3 AND 
-         SUBSTR(TO_CHAR(c.fecha_fin, 'MM/DD/YYYY'),1,2) <= $4))
+         WHERE c.id_deporte = $1 AND c.id_categoria = $2 AND
+         (
+          (SUBSTR(TO_CHAR(c.fecha_inicio, 'YYYY/DD/MM'),1,4)::INTEGER = $3 AND 
+          SUBSTR(TO_CHAR(c.fecha_inicio, 'MM/DD/YYYY'),1,2)::INTEGER >= $4) AND 
+          (SUBSTR(TO_CHAR(c.fecha_fin, 'YYYY/DD/MM'),1,4)::INTEGER = $3 AND 
+          SUBSTR(TO_CHAR(c.fecha_fin, 'MM/DD/YYYY'),1,2)::INTEGER <= $4)
+         )
          ORDER BY c.nombre`,
-        [id_deporte, id_categoria, fecha[0], fecha[1]]
+        [id_deporte, id_categoria, parseInt(fecha[0]), parseInt(fecha[1])]
       );
     }
     
     competencias = competencias.rows
+    console.log(competencias);
 
     if(!competencias.length) return { codigo: 200, competencias: competencias }
 

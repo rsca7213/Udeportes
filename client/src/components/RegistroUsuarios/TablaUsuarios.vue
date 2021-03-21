@@ -34,6 +34,9 @@
           </v-icon>
           <EliminarUsuario :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @eliminarUsuario="eliminarUsuario"/>
         </div>
+        <div v-else>
+          <span class="grey--text"> N/A </span>
+        </div>
       </template>
       </v-data-table>
       <ExitoDialog v-if="exito_dialog" :props_exito_dialog="props_exito_dialog"/>

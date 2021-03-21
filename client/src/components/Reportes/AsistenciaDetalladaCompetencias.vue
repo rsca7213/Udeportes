@@ -24,7 +24,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <div  v-if="competencia">
+    <div  v-if="competencia && atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-alert text color="error" dense v-if="mensaje_error">
@@ -78,6 +78,9 @@
         </v-col>
       </v-row>
     </div>
+    <v-row v-else-if="!atletas.length && competencia  && !tabla_cargando">
+      <v-col class="grey--text text-center"> No hay atletas que hayan asistido a la competencia especificada. </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -332,7 +335,7 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Competencia ${this.competencia}, Equipo ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Competencia: ${this.competencia.info_competencia}, Equipo ${this.equipo}`);
     },
     //datos que contendrá el reporte
     datosReporte(){
