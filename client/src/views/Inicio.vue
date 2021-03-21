@@ -13,7 +13,8 @@
             </v-card-subtitle>
             <v-card-text>
               <v-row>
-                <v-col cols="12" xl="4" md="6" v-for="(item, index) in items" :key="index" class="px-1 px-sm-3">
+                <v-col cols="12" xl="4" md="6" v-for="(item, index) in 
+                admin ? items : items.filter(i => !i.admin)" :key="index" class="px-1 px-sm-3">
                   <v-card elevation="2" shaped class="primary py-2" @click="$router.push(item.ruta)">
                     <div class="d-flex flex-no-wrap justify-space-between">
                       <v-card-title class="align-center white--text text-button">

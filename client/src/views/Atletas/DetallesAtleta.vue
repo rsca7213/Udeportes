@@ -139,14 +139,14 @@
                     <v-row>
                       <v-col class="d-flex justify-center">
                         <ApexChart type="radialBar" :options="chartOptions" 
-                        :series="[atleta.participaciones.entrenamientos.ratio]" 
+                        :series="[atleta.participaciones.entrenamientos.ratio.toFixed(2)]" 
                         class="elevation-4 p-4 rounded-lg grey lighten-4" />
                       </v-col>
                     </v-row>
                     <v-row>
                       <v-col class="d-flex justify-center">
                         <ApexChart type="radialBar" :options="chartOptions2" 
-                        :series="[atleta.participaciones.competencias.ratio]" 
+                        :series="[atleta.participaciones.competencias.ratio.toFixed(2)]" 
                         class="elevation-4 p-4 rounded-lg grey lighten-4" />
                       </v-col>
                     </v-row>

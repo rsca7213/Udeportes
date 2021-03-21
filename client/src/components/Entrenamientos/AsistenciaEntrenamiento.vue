@@ -71,6 +71,9 @@
             </div>
           </v-list-item>
         </v-list>
+        <div class="text-center grey--text" v-if="!items.length">
+          No hay atletas.
+        </div>
       </v-card-text>
       <v-card-actions> 
         <v-spacer></v-spacer>
