@@ -56,7 +56,6 @@ router.route('/:id_categoria/:id_posicion/:cedula')
     .get(async(req, res) => {
         try{
             let datos = {
-                posicion: req.params.id_posicion,
                 categoria: req.params.id_categoria,
                 cedula: req.params.cedula
             };
@@ -72,7 +71,6 @@ router.route('/:id_categoria/:id_posicion/:cedula')
     .delete(async(req, res) => {
         try{
             let datos = {
-                posicion: req.params.id_posicion,
                 categoria: req.params.id_categoria,
                 cedula: req.params.cedula
             };

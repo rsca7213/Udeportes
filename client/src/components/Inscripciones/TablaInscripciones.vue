@@ -92,15 +92,15 @@
                         no-data-text="No hay categorias disponibles" @change="obtenerPosicionesCategoria()" v-else>
                         </v-select>
 
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
+                        <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoria"
                         no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
                         </v-select>
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
+                        <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoria"
                         no-data-text="No hay posiciones disponibles" v-else>
                         </v-select>
-                        <v-btn color="secondary" block type="submit" v-if="this.posicion.id != null && this.categoria.id != null">
+                        <v-btn color="secondary" block type="submit" v-if="this.categoria.id != null">
                             <v-icon left> mdi-check-circle </v-icon>
                             Inscribir
                         </v-btn>
@@ -189,16 +189,7 @@
                         clear-icon="mdi-close" name="categoria" :items="categoriasIns" 
                         no-data-text="No hay categorias disponibles" @change="obtenerPosicionesCategoria()" v-else>
                         </v-select>
-
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaIns"
-                        no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
-                        </v-select>
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaIns"
-                        no-data-text="No hay posiciones disponibles" v-else>
-                        </v-select>
-                        <v-btn dark color="red" block type="submit" v-if="this.posicion.id != null && this.categoria.id != null">
+                        <v-btn dark color="red" block type="submit" v-if="this.categoria.id != null">
                             <v-icon left> mdi-delete </v-icon>
                             confirmar
                         </v-btn>
@@ -230,8 +221,6 @@
                     <b> Nombre del deporte: </b> {{deporte.nombre}}
                     <br>
                     <b> Nombre de la categoría: </b> {{confirmacion.categoria}}
-                    <br>
-                    <b> Nombre de la posición: </b> {{confirmacion.posicion}}
                 </v-card-text>
                 <v-card-actions> 
                     <v-spacer></v-spacer>
@@ -457,12 +446,17 @@ export default {
         this.posicionesCategoriaIns = [];
         this.posicionesCategoriaDis=  [];
         this.$refs.form.reset();
+        this.validar = null;
         this.registrarInscripcion = false;
     },
     async registrar_Inscripcion () {
         this.inscripcionRegistrar.cedula = this.atleta.cedula;
         this.inscripcionRegistrar.categoria = this.categoria.id.id_categoria;
-        this.inscripcionRegistrar.posicion = this.posicion.id.id_posicion;
+        if (this.posicion.id == null) {
+            this.inscripcionRegistrar.posicion = null;
+        } else {
+            this.inscripcionRegistrar.posicion = this.posicion.id.id_posicion;
+        }
         try {
             if (this.$refs.form.validate()) {
                 await axios
@@ -504,6 +498,7 @@ export default {
         this.posicionesCategoriaIns = [];
         this.posicionesCategoriaDis=  [];
         this.$refs.form.reset();
+        this.validar = null;
         this.editarInscripcion = false;
     },
     async editar_Inscripcion () {
@@ -551,12 +546,12 @@ export default {
         this.posicionesCategoriaIns = [];
         this.posicionesCategoriaDis=  [];
         this.$refs.form.reset();
+        this.validar = null;
         this.eliminarInscripcion = false;
     },
     async confimar_Eliminar() {
         this.inscripcion.cedula = this.atleta.cedula;
         this.inscripcion.categoria = this.categoria.id.id_categoria;
-        this.inscripcion.posicion = this.posicion.id.id_posicion;
         try {
             if (this.$refs.form.validate()) {
                 await axios
@@ -565,7 +560,6 @@ export default {
                     if (res.data.codigo === 200) {
                         this.confirmacion.atleta = res.data.atleta[0].nombre;
                         this.confirmacion.categoria = res.data.categoria[0].nombre;
-                        this.confirmacion.posicion = res.data.posicion[0].nombre;
                     }
                     this.confirmar = true;
                 })

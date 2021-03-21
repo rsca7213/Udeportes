@@ -65,11 +65,12 @@ async function verInscripciones (id_deporte) {
             `SELECT TO_CHAR(i.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, i.cedula_atleta AS cedula, (a.primer_nombre || ' ' || a.primer_apellido) AS nombre, 
             CASE WHEN a.genero = 'm' THEN 'Masculino' WHEN a.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, 
             CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS categoria, 
-            p.nombre AS posicion, i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
+            CASE WHEN i.id_posicion IS NULL THEN 'Sin Asignar' ELSE p.nombre END AS posicion, 
+            i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
             FROM inscripciones i 
             JOIN atletas a ON a.cedula=i.cedula_atleta
             JOIN categorias c ON i.id_categoria=c.id
-            JOIN posiciones p ON i.id_posicion=p.id
+            FULL JOIN posiciones p ON i.id_posicion=p.id
             WHERE i.id_deporte=$1 
             ORDER BY i.id_categoria`,
             [id_deporte]
@@ -96,18 +97,11 @@ async function verInscripcion (datos) {
             WHERE id=$1`,
             [datos.categoria]
         );
-        let posicion = await bd.query(
-            `SELECT nombre AS nombre
-            FROM posiciones
-            WHERE id=$1`,
-            [datos.posicion]
-        );
 
         atleta = atleta.rows;
         categoria = categoria.rows;
-        posicion = posicion.rows;
 
-        return { codigo: 200, atleta, categoria, posicion}
+        return { codigo: 200, atleta, categoria}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -156,10 +150,16 @@ async function eliminarInscripcion (datos) {
         return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
     }
     try {
+        //Tabla Inscripciones
         await bd.query(
             `DELETE FROM inscripciones 
-            WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_posicion=$3`,
-        [datos.cedula, datos.categoria, datos.posicion]);
+            WHERE cedula_atleta=$1 AND id_categoria=$2`,
+        [datos.cedula, datos.categoria]);
+        //Tabla Participaciones
+        await bd.query(
+            `DELETE FROM participaciones 
+            WHERE cedula_atleta=$1 AND id_categoria=$2`,
+        [datos.cedula, datos.categoria]);
     
         return { codigo: 200, texto: 'El atleta se ha removido de la plantilla correctamente', datos}
     } catch (error) {
@@ -185,6 +185,7 @@ async function verCategoriasAtleta (datos) {
             FROM categorias c
             FULL JOIN inscripciones i ON i.id_categoria=c.id
             WHERE c.id_deporte=$1 AND (i.cedula_atleta<>$2 OR i.cedula_atleta IS NULL)
+            GROUP BY c.id, c.id_deporte, c.genero
             ORDER BY c.id`,
             [datos.deporte, datos.cedula]
         );
