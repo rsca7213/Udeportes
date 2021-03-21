@@ -148,11 +148,15 @@
                         </v-select>
                       </v-col>
                     </v-row>
-                    <div v-if="inputs.select && inputs.select.tipo">
+                    <div v-if="inputs.select && inputs.select.tipo && dataRadar.length">
                       <ApexChart type="radar" :options="{ xaxis: { categories: radarCategories } , 
                       plotOptions: { radar: { polygons: { fill: { colors: ['#EAEAEA', '#FDFDFD'] } } }}}" 
                       :series="[ { name: 'Rendimiento', data: dataRadar } ]"
                       class="elevation-4 p-4 rounded-lg" />
+                    </div>
+                    <div v-else-if="inputs.select && inputs.select.tipo && !dataRadar.length"
+                    class="text-center grey--text text--darken-1">
+                      No hay estadisticas que mostrar.
                     </div>
                     <div v-else class="text-center grey--text text--darken-1">
                       Selecciona una opción.

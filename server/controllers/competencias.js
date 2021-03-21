@@ -291,7 +291,7 @@ async function obtenerParticipaciones (id_deporte, id_categoria, id) {
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
       (SELECT p.asistencia FROM participaciones p WHERE p.cedula_atleta = a.cedula
       AND p.id_competencia = $1 AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 ) AS asistencia
-      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta`,
+      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2`,
       [id, id_deporte, id_categoria]
     );
 

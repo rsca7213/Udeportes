@@ -34,16 +34,17 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
       [id_deporte, id_categoria]
     );
     entrenamientos = entrenamientos.rows;
-    await setTimeout(() => {null}, 20000);
-    entrenamientos = await Promise.all(entrenamientos.map(async function (item) {
-      let participaciones = await (await obtenerParticipaciones(id_deporte, id_categoria, item.id)).participaciones.map(p => p.asistencia);
+
+    // Para cada entrenamiento buscamos su cantidad de asistencias, faltas y porcentaje
+    for (let i = 0; i < entrenamientos.length; i++) {
+      let participaciones = await (await obtenerParticipaciones(id_deporte, id_categoria, entrenamientos[i].id)).participaciones;
+      participaciones = participaciones.map(p => p.asistencia);
       let asistencias = participaciones.filter(p => p === true).length;
       let faltas = participaciones.filter(p => p === false).length;
-      console.log(asistencias, faltas);
-      return {
-        id: item.id,
-        fecha: item.fecha,
-        nombre: item.nombre || 'Sin nombre',
+      entrenamientos[i] = {
+        id: entrenamientos[i].id,
+        fecha: entrenamientos[i].fecha,
+        nombre: entrenamientos[i].nombre || 'Sin nombre',
         asistencias: `${asistencias} ${asistencias === 1 ? 'Atleta' : 'Atletas'}`,
         faltas: `${faltas} ${faltas === 1 ? 'Atleta' : 'Atletas'}`,
         porcentaje: 
@@ -51,7 +52,9 @@ async function obtenerEntrenamientos (id_deporte, id_categoria) {
             (asistencias / (asistencias + faltas)) * 100 || 0
           ).toFixed(2) + " %"
       }
-    }));
+    }
+
+    console.log(entrenamientos);
     // Si todo sale bien
     return { codigo: 200, entrenamientos: entrenamientos }
   }
@@ -275,7 +278,7 @@ async function obtenerParticipaciones (id_deporte, id_categoria, id) {
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
       (SELECT p.asistencia FROM participaciones p WHERE p.cedula_atleta = a.cedula
       AND p.id_entrenamiento = $1 AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 ) AS asistencia
-      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta`,
+      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2`,
       [id, id_deporte, id_categoria]
     );
 
