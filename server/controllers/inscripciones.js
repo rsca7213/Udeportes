@@ -150,14 +150,14 @@ async function eliminarInscripcion (datos) {
         return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
     }
     try {
-        //Tabla Inscripciones
-        await bd.query(
-            `DELETE FROM inscripciones 
-            WHERE cedula_atleta=$1 AND id_categoria=$2`,
-        [datos.cedula, datos.categoria]);
         //Tabla Participaciones
         await bd.query(
             `DELETE FROM participaciones 
+            WHERE cedula_atleta=$1 AND id_categoria=$2`,
+        [datos.cedula, datos.categoria]);
+        //Tabla Inscripciones
+        await bd.query(
+            `DELETE FROM inscripciones 
             WHERE cedula_atleta=$1 AND id_categoria=$2`,
         [datos.cedula, datos.categoria]);
     
