@@ -256,9 +256,9 @@
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="verEntrenadores = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
-                <v-row justify="center" class="ma-3" v-if="entrenadoresAsignados.length > 0">
+                <v-row justify="center" class="mx-1" v-if="entrenadoresAsignados.length > 0">
                     <v-col>
-                        <v-list outlined>
+                        <v-list>
                             <template v-for="(entrenador, index) in entrenadoresAsignados">
                                 <v-list-item :key="entrenador.value.cedula">
                                     <v-list-item-icon class="d-none d-sm-flex">

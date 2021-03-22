@@ -14,6 +14,11 @@ router.route('/:id_deporte')
                 posicion: req.body.posicion,
                 cedula: req.body.cedula
             };
+            if (datos.posicion == null) {
+                datos.deporte_pos = null;
+            } else {
+                datos.deporte_pos = req.params.id_deporte;
+            }
             let result = await inscripciones.crearInscripcion(datos);
             res.send(result);
         }
@@ -31,6 +36,11 @@ router.route('/:id_deporte')
                 posicion: req.body.posicion,
                 cedula: req.body.cedula
             };
+            if (datos.posicion == null) {
+                datos.deporte_pos = null;
+            } else {
+                datos.deporte_pos = req.params.id_deporte;
+            }
             let result = await inscripciones.editarInscripcion(datos);
             res.send(result);
         }

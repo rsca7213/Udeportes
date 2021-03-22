@@ -40,7 +40,7 @@ async function crearInscripcion (datos) {
         await bd.query(
             `INSERT INTO inscripciones (cedula_atleta, id_categoria, id_deporte, fecha_registro, id_posicion, id_deporte_pos) VALUES
             ($1,$2,$3,TO_DATE($4,'DD/MM/YYYY'),$5,$6)`,
-            [datos.cedula, datos.categoria, datos.deporte, datos.registro, datos.posicion, datos.deporte]
+            [datos.cedula, datos.categoria, datos.deporte, datos.registro, datos.posicion, datos.deporte_pos]
         );
 
         let inscripcion = await bd.query(
@@ -48,7 +48,7 @@ async function crearInscripcion (datos) {
             FROM inscripciones 
             WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_deporte=$3 AND 
                 fecha_registro=TO_DATE($4,'DD/MM/YYYY') AND id_posicion=$5 AND id_deporte_pos=$6`,
-            [datos.cedula, datos.categoria, datos.deporte, datos.registro, datos.posicion, datos.deporte]
+            [datos.cedula, datos.categoria, datos.deporte, datos.registro, datos.posicion, datos.deporte_pos]
         ); 
 
         inscripcion = inscripcion.rows;
@@ -76,6 +76,11 @@ async function verInscripciones (id_deporte) {
             [id_deporte]
         );
 
+        let atletas = await bd.query(
+            `SELECT (cedula || ' - ' || primer_nombre || ' ' || primer_apellido) AS nombre
+            FROM atletas`
+        );
+
         let deporte = await bd.query(
             `SELECT id AS id, nombre AS nombre
             FROM deportes
@@ -84,9 +89,10 @@ async function verInscripciones (id_deporte) {
         );
 
         inscripciones = inscripciones.rows;
+        atletas = atletas.rows;
         deporte = deporte.rows;
 
-        return { codigo: 200, inscripciones, deporte}
+        return { codigo: 200, inscripciones, atletas, deporte}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -130,7 +136,7 @@ async function editarInscripcion (datos) {
     }
     try {
         await bd.query(
-            `UPDATE inscripciones SET id_posicion=$1 
+            `UPDATE inscripciones SET id_posicion=$1, id_deporte_pos=$4
             WHERE cedula_atleta=$2 AND id_categoria=$3 AND id_deporte=$4`,
             [datos.posicion, datos.cedula, datos.categoria, datos.deporte]
         ); 

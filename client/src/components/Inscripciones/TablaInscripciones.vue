@@ -79,9 +79,12 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="registrar_Inscripcion()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
+                        <!-- <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
-                        validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
+                        validate-on-blur v-model="atleta.contenido" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field> -->
+
+                        <v-combobox prepend-icon="mdi-card-account-details" v-model="atleta.contenido" 
+                        label="Atleta * (Debe incluir el Nro. de Cédula)" :items="atletas" @change="obtenerCategoriasAtleta()"></v-combobox>
 
                         <v-select v-model="categoria.id" label="Categoría *" prepend-icon="mdi-clipboard-text"
                         clear-icon="mdi-close" name="categoria" :items="categoriasDis" 
@@ -128,9 +131,12 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="editar_Inscripcion()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
+                        <!-- <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
-                        validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
+                        validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field> -->
+
+                        <v-combobox prepend-icon="mdi-card-account-details" v-model="atleta.contenido"
+                        label="Atleta * (Debe incluir el Nro. de Cédula)" :items="atletas" @change="obtenerCategoriasAtleta()"></v-combobox>
 
                         <v-select v-model="categoria.id" label="Categoría *" prepend-icon="mdi-clipboard-text"
                         clear-icon="mdi-close" name="categoria" :items="categoriasIns" 
@@ -177,9 +183,12 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="confimar_Eliminar()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
+                        <!-- <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
-                        validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
+                        validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field> -->
+
+                        <v-combobox prepend-icon="mdi-card-account-details" v-model="atleta.contenido"
+                        label="Atleta * (Debe incluir el Nro. de Cédula)" :items="atletas" @change="obtenerCategoriasAtleta()"></v-combobox>
 
                         <v-select v-model="categoria.id" label="Categoría *" prepend-icon="mdi-clipboard-text"
                         clear-icon="mdi-close" name="categoria" :items="categoriasIns" 
@@ -320,6 +329,8 @@ export default {
             },
         ],
         inscripciones: [],
+        atletas: [],
+        cedula: [],
         categoriasDis: [],
         categoriasIns: [],
         posicionesCategoria: [],
@@ -346,6 +357,9 @@ export default {
             .then((res) => {
                 if (res.data.codigo === 200) {
                     this.inscripciones = res.data.inscripciones;
+                    res.data.atletas.forEach(atleta => {
+                        this.atletas.push(atleta.nombre);
+                    });
                     this.deporte = res.data.deporte[0];
                 }
             })
@@ -365,10 +379,14 @@ export default {
         this.tablaCargando = false;
     },
     async obtenerCategoriasAtleta () {
+        if (this.atleta.contenido != null)  {
+            this.cedula = this.atleta.contenido.split(" ");
+        }
+        this.cedula = this.cedula[0];
         try {
             if (this.$refs.form.validate()) {
                 await axios
-                .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/${this.atleta.cedula}`, { withCredentials: true })
+                .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/${this.cedula}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200) {
                         this.categoriasDis = [];
@@ -404,7 +422,7 @@ export default {
     async obtenerPosicionesCategoria() {
         try {
             await axios
-            .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/categoria/${this.categoria.id.id_categoria}/${this.atleta.cedula}`, { withCredentials: true })
+            .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/categoria/${this.categoria.id.id_categoria}/${this.cedula}`, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200) {
                     this.posicionesCategoria = [];
@@ -451,7 +469,7 @@ export default {
         this.registrarInscripcion = false;
     },
     async registrar_Inscripcion () {
-        this.inscripcionRegistrar.cedula = this.atleta.cedula;
+        this.inscripcionRegistrar.cedula = this.cedula;
         this.inscripcionRegistrar.categoria = this.categoria.id.id_categoria;
         if (this.posicion.id == null) {
             this.inscripcionRegistrar.posicion = null;
@@ -503,7 +521,7 @@ export default {
         this.editarInscripcion = false;
     },
     async editar_Inscripcion () {
-        this.inscripcion.cedula = this.atleta.cedula;
+        this.inscripcion.cedula = this.cedula;
         this.inscripcion.categoria = this.categoria.id.id_categoria;
         this.inscripcion.posicion = this.posicion.id.id_posicion;
         try {
@@ -551,7 +569,7 @@ export default {
         this.eliminarInscripcion = false;
     },
     async confimar_Eliminar() {
-        this.inscripcion.cedula = this.atleta.cedula;
+        this.inscripcion.cedula = this.cedula;
         this.inscripcion.categoria = this.categoria.id.id_categoria;
         try {
             if (this.$refs.form.validate()) {
