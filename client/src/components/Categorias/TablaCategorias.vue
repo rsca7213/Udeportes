@@ -190,9 +190,14 @@
                             clear-icon="mdi-close" name="categoria" :items="categoriasAsignar" @change="obtenerEntrenadores()"
                             no-data-text="No hay categorias disponibles">
                             </v-select>
+
                             <v-select v-model="entrenador" label="Entrenadores" prepend-icon="mdi-whistle"
                             clear-icon="mdi-close" name="entrenadores" :items="entrenadoresDis"
-                            no-data-text="No existen entrenadores en el sistema">
+                            no-data-text="No existen entrenadores en el sistema" disabled v-if="categoria.id_categoria == null">
+                            </v-select>
+                            <v-select v-model="entrenador" label="Entrenadores" prepend-icon="mdi-whistle"
+                            clear-icon="mdi-close" name="entrenadores" :items="entrenadoresDis"
+                            no-data-text="No existen entrenadores en el sistema" v-else>
                             </v-select>
                         </v-col>
                         <br>
@@ -392,6 +397,15 @@ export default {
                         }
                     });
                 });
+                this.entrenadoresSelect = [];
+                res.data.entrenadores.forEach(entrenador => {
+                    this.entrenadoresSelect.push({
+                        text: entrenador.nombre,
+                        value: {
+                            cedula: entrenador.cedula
+                        }
+                    });
+                });
             }
             this.categorias.forEach(categoria => {
                 if (categoria.entrenador == null) {
@@ -416,15 +430,6 @@ export default {
         .get(`${server_url}/categorias/categoria/${this.categoria.id_categoria}/entrenadores`, { withCredentials: true })
         .then((res) => {
             if (res.data.codigo === 200) {
-                this.entrenadoresSelect = [];
-                res.data.entrenadores.forEach(entrenador => {
-                    this.entrenadoresSelect.push({
-                        text: entrenador.nombre,
-                        value: {
-                            cedula: entrenador.cedula
-                        }
-                    });
-                });
                 this.entrenadoresDis = [];
                 res.data.entrenadoresDis.forEach(entrenador => {
                     this.entrenadoresDis.push({
@@ -668,6 +673,7 @@ export default {
   async mounted(){
     //se obtienen todas las categorias del deporte
     this.obtenerCategorias();
+    // this.obtenerEntrenadores();
     //se obtienen los datos del deporte
     await axios
     .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })

@@ -4,6 +4,19 @@ const inscripciones = require('../controllers/inscripciones');
 const mw_token = require('../middleware/token');
 // const mw_rol = require('../middleware/rol');
 
+router.route('/')
+    //ruta encargada de obtener todas las inscripciones de un deporte
+    .post(mw_token, async(req, res) => {
+        try{
+            let result = await inscripciones.verInscripciones(req.body);
+            res.send(result);
+        }
+        catch(error){
+            if (process.env.NODE_ENV === 'development') console.error(error);
+            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
+        } 
+    });
+
 router.route('/:id_deporte')
     //ruta encargada de registrar las inscripciones de un deporte
     .post(mw_token, async(req, res) => {
@@ -49,17 +62,6 @@ router.route('/:id_deporte')
             res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
         } 
     })
-    //ruta encargada de obtener todas las inscripciones de un deporte
-    .get(mw_token, async(req, res) => {
-        try{
-            let result = await inscripciones.verInscripciones(req.params.id_deporte);
-            res.send(result);
-        }
-        catch(error){
-            if (process.env.NODE_ENV === 'development') console.error(error);
-            res.status(500).send('Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.');
-        } 
-    });
 
 router.route('/:id_categoria/:id_posicion/:cedula')
     //ruta encargada de obtener los datos de una inscripción
@@ -95,11 +97,12 @@ router.route('/:id_categoria/:id_posicion/:cedula')
 
 router.route('/:id_deporte/:cedula')
     //ruta encargada obtener las categorias de un atleta
-    .get(mw_token, async(req, res) => {
+    .post(mw_token, async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
-                cedula: req.params.cedula
+                cedula: req.params.cedula,
+                usuario: req.body
             };
             let result = await inscripciones.verCategoriasAtleta(datos);
             res.send(result);

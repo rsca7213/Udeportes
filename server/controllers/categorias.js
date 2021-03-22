@@ -61,9 +61,17 @@ async function verCategorias (id_deporte) {
             ORDER BY c.id`,
             [id_deporte]
         );
+        entrenadores = await bd.query(
+            `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+            FROM usuarios u 
+            WHERE u.rol='e'`,
+        );
+
         categoriasAsignar = categoriasAsignar.rows
         categorias = categorias.rows;
-        return { codigo: 200, categorias, categoriasAsignar}
+        entrenadores = entrenadores.rows;
+
+        return { codigo: 200, categorias, categoriasAsignar, entrenadores}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -149,12 +157,6 @@ async function verEntrenadores (id_categoria) {
         let entrenadoresDis = [];
         check = check.rows;
 
-        entrenadores = await bd.query(
-            `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
-            FROM usuarios u 
-            WHERE u.rol='e'`,
-        );
-
         if (check.length == 0) {
             entrenadoresDis = await bd.query(
                 `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
@@ -180,11 +182,10 @@ async function verEntrenadores (id_categoria) {
             [id_categoria]
         );
         
-        entrenadores = entrenadores.rows;
         entrenadoresDis = entrenadoresDis.rows;
         entrenadoresAsignados = entrenadoresAsignados.rows;
         
-        return { codigo: 200, entrenadores, entrenadoresDis, entrenadoresAsignados}
+        return { codigo: 200, entrenadoresDis, entrenadoresAsignados}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};

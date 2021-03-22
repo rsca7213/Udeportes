@@ -59,22 +59,41 @@ async function crearInscripcion (datos) {
     }
 }
 
-async function verInscripciones (id_deporte) {
+async function verInscripciones (datos) {
     try {
-        let inscripciones = await bd.query(
-            `SELECT TO_CHAR(i.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, i.cedula_atleta AS cedula, (a.primer_nombre || ' ' || a.primer_apellido) AS nombre, 
-            CASE WHEN a.genero = 'm' THEN 'Masculino' WHEN a.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, 
-            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS categoria, 
-            CASE WHEN i.id_posicion IS NULL THEN 'Sin Asignar' ELSE p.nombre END AS posicion, 
-            i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
-            FROM inscripciones i 
-            JOIN atletas a ON a.cedula=i.cedula_atleta
-            JOIN categorias c ON i.id_categoria=c.id
-            FULL JOIN posiciones p ON i.id_posicion=p.id
-            WHERE i.id_deporte=$1 
-            ORDER BY i.id_categoria`,
-            [id_deporte]
-        );
+        let inscripciones = [];
+        if (datos.admin) {
+            inscripciones = await bd.query(
+                `SELECT TO_CHAR(i.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, i.cedula_atleta AS cedula, (a.primer_nombre || ' ' || a.primer_apellido) AS nombre, 
+                CASE WHEN a.genero = 'm' THEN 'Masculino' WHEN a.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, 
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS categoria, 
+                CASE WHEN i.id_posicion IS NULL THEN 'Sin Asignar' ELSE p.nombre END AS posicion, 
+                i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
+                FROM inscripciones i 
+                JOIN atletas a ON a.cedula=i.cedula_atleta
+                JOIN categorias c ON i.id_categoria=c.id
+                FULL JOIN posiciones p ON i.id_posicion=p.id
+                WHERE i.id_deporte=$1 
+                ORDER BY i.id_categoria`,
+                [datos.deporte]
+            );
+        } else {
+            inscripciones = await bd.query(
+                `SELECT TO_CHAR(i.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, i.cedula_atleta AS cedula, (a.primer_nombre || ' ' || a.primer_apellido) AS nombre, 
+                CASE WHEN a.genero = 'm' THEN 'Masculino' WHEN a.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, 
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS categoria, 
+                CASE WHEN i.id_posicion IS NULL THEN 'Sin Asignar' ELSE p.nombre END AS posicion, 
+                i.id_deporte AS id_deporte, i.id_categoria AS id_categoria, i.id_posicion AS id_posicion
+                FROM inscripciones i 
+                JOIN atletas a ON a.cedula=i.cedula_atleta
+                JOIN categorias c ON i.id_categoria=c.id
+                FULL JOIN posiciones p ON i.id_posicion=p.id
+                JOIN asignaciones ag ON i.id_categoria=ag.id_categoria
+                WHERE i.id_deporte=$1 AND ag.cedula_usuario=$2
+                ORDER BY i.id_categoria`,
+                [datos.deporte, datos.cedula_auth]
+            );
+        }
 
         let atletas = await bd.query(
             `SELECT (cedula || ' - ' || primer_nombre || ' ' || primer_apellido) AS nombre
@@ -85,7 +104,7 @@ async function verInscripciones (id_deporte) {
             `SELECT id AS id, nombre AS nombre
             FROM deportes
             WHERE id=$1`,
-            [id_deporte]
+            [datos.deporte]
         );
 
         inscripciones = inscripciones.rows;
@@ -195,26 +214,55 @@ async function verCategoriasAtleta (datos) {
         return { codigo: 400}
     }
     try {
-        let categoriasDisponibles = await bd.query(
-            `SELECT c.id AS id, c.id_deporte AS id_deporte,
-            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
-            FROM categorias c
-            FULL JOIN inscripciones i ON i.id_categoria=c.id
-            WHERE c.id_deporte=$1 AND (i.cedula_atleta<>$2 OR i.cedula_atleta IS NULL)
-            GROUP BY c.id, c.id_deporte, c.genero
-            ORDER BY c.id`,
-            [datos.deporte, datos.cedula]
-        );
 
-        let categoriasInscrito = await bd.query(
-            `SELECT c.id AS id, c.id_deporte AS id_deporte,
-            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
-            FROM categorias c
-            FULL JOIN inscripciones i ON i.id_categoria=c.id
-            WHERE c.id_deporte=$1 AND i.cedula_atleta=$2
-            ORDER BY c.id`,
-            [datos.deporte, datos.cedula]
-        );
+        let categoriasDisponibles = [];
+        let categoriasInscrito = [];
+
+        if (datos.usuario.admin) {
+            categoriasDisponibles = await bd.query(
+                `SELECT c.id AS id, c.id_deporte AS id_deporte,
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+                FROM categorias c
+                FULL JOIN inscripciones i ON i.id_categoria=c.id
+                WHERE c.id_deporte=$1 AND (i.cedula_atleta<>$2 OR i.cedula_atleta IS NULL)
+                GROUP BY c.id, c.id_deporte, c.genero
+                ORDER BY c.id`,
+                [datos.deporte, datos.cedula]
+            );
+    
+            categoriasInscrito = await bd.query(
+                `SELECT c.id AS id, c.id_deporte AS id_deporte,
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+                FROM categorias c
+                FULL JOIN inscripciones i ON i.id_categoria=c.id
+                WHERE c.id_deporte=$1 AND i.cedula_atleta=$2
+                ORDER BY c.id`,
+                [datos.deporte, datos.cedula]
+            );
+        } else {
+            categoriasDisponibles = await bd.query(
+                `SELECT c.id AS id, c.id_deporte AS id_deporte,
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+                FROM categorias c
+                FULL JOIN inscripciones i ON i.id_categoria=c.id
+                JOIN asignaciones a ON c.id=a.id_categoria
+                WHERE c.id_deporte=$1 AND (i.cedula_atleta<>$2 OR i.cedula_atleta IS NULL) AND a.cedula_usuario=$3
+                GROUP BY c.id, c.id_deporte, c.genero
+                ORDER BY c.id`,
+                [datos.deporte, datos.cedula, datos.usuario.cedula_auth]
+            );
+    
+            categoriasInscrito = await bd.query(
+                `SELECT c.id AS id, c.id_deporte AS id_deporte,
+                CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+                FROM categorias c
+                FULL JOIN inscripciones i ON i.id_categoria=c.id
+                JOIN asignaciones a ON c.id=a.id_categoria
+                WHERE c.id_deporte=$1 AND i.cedula_atleta=$2 AND a.cedula_usuario=$3
+                ORDER BY c.id`,
+                [datos.deporte, datos.cedula, datos.usuario.cedula_auth]
+            );
+        }
 
         categoriasDisponibles = categoriasDisponibles.rows;
         categoriasInscrito = categoriasInscrito.rows;

@@ -277,6 +277,7 @@ export default {
         display: false,
         tablaCargando: true,
         search: '',
+        usuario: {},
         inscripcionRegistrar: {},
         inscripcion: {},
         columnas_tabla: [
@@ -353,7 +354,7 @@ export default {
         this.tablaCargando = true;
         try {
             await axios
-            .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}`, { withCredentials: true })
+            .post(`${server_url}/inscripciones`, this.usuario, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200) {
                     this.inscripciones = res.data.inscripciones;
@@ -386,7 +387,7 @@ export default {
         try {
             if (this.$refs.form.validate()) {
                 await axios
-                .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/${this.cedula}`, { withCredentials: true })
+                .post(`${server_url}/inscripciones/${this.$route.params.id_deporte}/${this.cedula}`, this.usuario, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200) {
                         this.categoriasDis = [];
@@ -625,8 +626,42 @@ export default {
     },
   },
   async mounted(){
-    //se obtienen todas las inscripciones del deporte
-    this.obtenerInscripciones();
+
+    if (await axios
+      .get(`${server_url}/auth/admin`, { withCredentials: true })
+      .then((res) => {
+        // si el usuario es admin y ha iniciado sesión
+        if (res.status === 200) {
+          this.usuario.admin = true;
+          return true;
+        }
+      })
+      .catch((err) => {
+        // si el usuario ha iniciado sesión pero no es admin
+        try {
+          if (err.response.status === 403)  {
+            this.usuario.admin = false;
+            return true;
+          }
+        }
+        catch { 
+          console.warn('Warning: No response status was found, is the server running? ');
+          return false; 
+        }
+      }))
+        await axios
+        .get(`${server_url}/perfil?data=cedula`, { withCredentials: true })
+        .then((res) => {
+          if (res.status === 200) 
+            this.usuario = {
+                deporte: this.$route.params.id_deporte,
+                admin: this.usuario.admin
+            };
+        })
+        .catch(() => { });
+
+        //se obtienen todas las inscripciones del deporte
+        this.obtenerInscripciones();
   }
 }
 </script>
