@@ -30,6 +30,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn dark color="indigo" class="mr-1" @click="obtener_Deportes()" v-if="!this.usuario.admin">
+                <v-icon left> mdi-clipboard-check </v-icon>
+                <span class="d-none d-sm-inline-block mr-1">Inscripciones</span>
+              </v-btn>
               <v-btn color="primary" class="mr-1" @click="$router.push('/perfil')">
                 <v-icon left> mdi-account-edit </v-icon>
                 <span class="d-none d-sm-inline-block mr-1">Editar</span> Perfil
@@ -43,6 +47,34 @@
         </v-col>
       </v-row>
     </v-container>
+
+  <!-- Dialog para acceder a las inscripciones -->
+    <v-dialog  v-model="listaDeporte" max-width="450px">
+      <v-card>
+        <v-card-title>
+          <span class="d-none d-sm-flex"> Mis Deportes </span>
+          <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Mis Deportes </b>
+          <v-spacer />
+          <v-btn icon @click="listaDeporte = false"><v-icon> mdi-close </v-icon></v-btn>
+        </v-card-title>
+        <v-card-text>
+          <v-select v-model="deporte" label="Deportes" prepend-icon="mdi-clipboard-text"
+          clear-icon="mdi-close" name="deporte" :items="deportes" 
+          no-data-text="No hay deportes disponibles">
+          </v-select>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn block color="secondary" class="mr-2" disabled v-if="this.deporte.id == null">
+            <v-icon left> mdi-login </v-icon>
+            acceder
+          </v-btn>
+          <v-btn block color="secondary" class="mr-2" @click="$router.push(`/deporte/${deporte.id}/inscripciones`)" v-else>
+            <v-icon left> mdi-login </v-icon>
+            acceder
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -71,6 +103,10 @@ export default {
     return {
       cargando: true,
       admin: false,
+      listaDeporte: false,
+      usuario: {},
+      deportes: [],
+      deporte: {},
       items: [
         {
           nombre: 'Deportes',
@@ -125,6 +161,26 @@ export default {
         }
       })
       .catch(() => {});
+    },
+    async obtener_Deportes () {
+      await axios
+      .get(`${server_url}/perfil/${this.usuario.cedula}`, {}, { withCredentials: true })
+      .then((res) => {
+        if (res.status === 200) {
+          this.deportes = [];
+          res.data.deportes.forEach(deporte => {
+            this.deportes.push({
+              text: deporte.nombre,
+              value: {
+                id: deporte.id
+              }
+            });
+          });
+        }
+      })
+      .catch(() => {});
+      this.deporte = {};
+      this.listaDeporte = true;
     }
   },
 
@@ -152,6 +208,39 @@ export default {
           console.warn('Warning: No response status was found, is the server running? ');
         }
       });
+
+    if (await axios
+      .get(`${server_url}/auth/admin`, { withCredentials: true })
+      .then((res) => {
+        // si el usuario es admin y ha iniciado sesión
+        if (res.status === 200) {
+          this.usuario.admin = true;
+          return true;
+        }
+      })
+      .catch((err) => {
+        // si el usuario ha iniciado sesión pero no es admin
+        try {
+          if (err.response.status === 403)  {
+            this.usuario.admin = false;
+            return true;
+          }
+        }
+        catch { 
+          console.warn('Warning: No response status was found, is the server running? ');
+          return false; 
+        }
+      }))
+        await axios
+        .get(`${server_url}/perfil?data=cedula`, { withCredentials: true })
+        .then((res) => {
+          if (res.status === 200) 
+            this.usuario = {
+              cedula: res.data,
+              admin: this.usuario.admin
+            };
+        })
+        .catch(() => { });
   }
 }
 </script>

@@ -37,4 +37,11 @@ router.route('/')
 
   });
 
+router.route('/:cedula')
+  .get(async (req, res) => {
+    let data = req.params.cedula;
+    let result = await perfil.verDeportes(data); 
+    res.send(result);
+  });
+
 module.exports = router;

@@ -63,7 +63,30 @@ async function datosPerfil (cedula) {
 
 }
 
+async function verDeportes (cedula) {
+
+  try {
+    let deportes = await bd.query(
+      `SELECT d.id AS id, d.nombre AS nombre
+      FROM asignaciones a
+      JOIN deportes d ON a.id_deporte=d.id
+      WHERE a.cedula_usuario=$1`,
+      [cedula]
+    )
+
+    deportes = deportes.rows;
+    return { codigo: 200, deportes}
+  }
+  /* en caso de error inesperado */
+  catch(error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+  }
+
+}
+
 module.exports = {
   nombrePerfil,
-  datosPerfil
+  datosPerfil,
+  verDeportes
 }
