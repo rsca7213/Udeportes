@@ -342,20 +342,20 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
     );
     if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este entrenamiento no existe.' }
     // Si el entrenamiento existe y la data es valida
-    data.forEach(async item => {
+    for (let i = 0; i < data.length; i++) {
       // Si la asistencia no esta determinada, se borra si exite el registro
-      if (item.asistencia === null) 
+      if (data[i].asistencia === null) 
         await bd.query(
           `DELETE FROM participaciones WHERE cedula_atleta = $1 AND id_entrenamiento = $2
            AND id_categoria_ent = $3 AND id_deporte_ent = $4`,
-           [item.cedula, id, id_categoria, id_deporte]
+           [data[i].cedula, id, id_categoria, id_deporte]
         );
       else {
         // Si la asistencia es falsa o verdadera, verificamos si existe ya un registro
         let check = await bd.query(
           `SELECT EXISTS (SELECT p.id FROM participaciones p WHERE p.cedula_atleta = $1 AND p.id_entrenamiento = $2
            AND p.id_categoria_ent = $3 AND p.id_deporte_ent = $4) AS existe`,
-          [item.cedula, id, id_categoria, id_deporte]
+          [data[i].cedula, id, id_categoria, id_deporte]
         );
         check = check.rows[0].existe;
         // Si existe el registro actualizamos
@@ -363,7 +363,7 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
           await bd.query(
             `UPDATE participaciones SET asistencia = $1 WHERE cedula_atleta = $2 AND id_entrenamiento = $3
             AND id_categoria_ent = $4 AND id_deporte_ent = $5`,
-            [item.asistencia, item.cedula, id, id_categoria, id_deporte]
+            [data[i].asistencia, data[i].cedula, id, id_categoria, id_deporte]
           );
         }
         // Si no existe insertamos
@@ -371,13 +371,13 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
           await bd.query(
             `INSERT INTO participaciones VALUES (nextval('participaciones_id_seq'), $1, $2, $3, $4, 
              NULL, NULL, NULL, $5, $6, $7)`,
-            [item.cedula, id_categoria, id_deporte, item.asistencia, id, id_categoria, id_deporte]
+            [data[i].cedula, id_categoria, id_deporte, data[i].asistencia, id, id_categoria, id_deporte]
           );
         }
 
       }  
       
-    });
+    };
     return { codigo: 200, texto: 'Registro de asistencia guardado con éxito.' }
 
   }
