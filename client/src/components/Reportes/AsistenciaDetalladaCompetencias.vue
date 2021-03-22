@@ -3,15 +3,15 @@
     <v-container>
       <v-row class="justify-center" v-if="items_competencias.length">
         <v-row class="justify-center">
-          <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
+          <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
             <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias"
-            clear-icon="mdi-close" name="periodo" clearable>
+            clear-icon="mdi-close" name="periodo" clearable hide-details>
             </v-select>
           </v-col>
         </v-row>
         <v-col cols=12 v-if="items_competencias.length">
           <v-row v-if="!competencia">
-            <v-col class="grey--text text-center"> Selecciona una competencia para generar el reporte. </v-col>
+            <v-col class="grey--text text-center mt-2"> Selecciona una competencia para generar el reporte. </v-col>
           </v-row>
           <v-row v-if="competencias_cargando"> 
             <v-col class="px-6 mx-5">
@@ -24,7 +24,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <div  v-if="competencia && atletas.length">
+    <div v-if="competencia && atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-alert text color="error" dense v-if="mensaje_error">
@@ -47,8 +47,10 @@
               fixed-header
               :loading="tabla_cargando"
               >
+                <template v-slot:item.correo="{ item }"> 
+                  <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+                </template>
               </v-data-table>
-              
             </v-col>
           </v-row>
         </v-col>
@@ -72,14 +74,14 @@
       <v-row>
         <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
           <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-            <v-icon>mdi-download</v-icon>
+            <v-icon left>mdi-download</v-icon>
             Generar Reporte
           </v-btn>
         </v-col>
       </v-row>
     </div>
     <v-row v-else-if="!atletas.length && competencia  && !tabla_cargando">
-      <v-col class="grey--text text-center"> No hay atletas que hayan asistido a la competencia especificada. </v-col>
+      <v-col class="grey--text text-center my-1"> No hay atletas que hayan asistido a la competencia especificada. </v-col>
     </v-row>
   </div>
 </template>
@@ -352,7 +354,7 @@ export default {
         reporte_body.push([
           {text: `${atleta.cedula}`, alignment:'right'},
           {text: `${atleta.nombre_completo}`},
-          {text: `${atleta.correo}`},
+          {text: `${atleta.correo}`, color: `${atleta.correo==='Sin correo'? '#9e9e9e' :''}`},
           {text:`${atleta.asistencia}` , alignment: 'center'}
         ])
       });
@@ -387,10 +389,10 @@ export default {
             res.data.forEach(competencia => {
               // Para cada competencia del equipo
               this.items_competencias.push({
-                  text: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`,
+                  text: `${competencia.nombre} (${competencia.fecha_inicio}${competencia.fecha_fin==='No especificada'? '':(' - ' + competencia.fecha_fin)})`,
                   value: {
                     id_competencia: competencia.id,
-                    info_competencia: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`
+                    info_competencia: `${competencia.nombre} (${competencia.fecha_inicio}${competencia.fecha_fin==='No especificada'? '':(' - ' + competencia.fecha_fin)})`
                   }
                 });
             });

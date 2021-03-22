@@ -22,6 +22,12 @@
             fixed-header
             :loading="tabla_cargando"
             >
+              <template v-slot:item.educacion_etapa="{ item }"> 
+                <span :class="item.educacion_etapa==='No especificada'? 'grey--text' : ''" v-text="item.educacion_etapa"> </span>
+              </template>
+              <template v-slot:item.correo="{ item }"> 
+                <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+              </template>
             </v-data-table>
             
           </v-col>
@@ -38,7 +44,7 @@
     <v-row>
       <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
         <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
+          <v-icon left>mdi-download</v-icon>
           Generar Reporte
         </v-btn>
       </v-col>
@@ -222,8 +228,8 @@ export default {
         reporte_body.push([
           { text: `${atleta.cedula}`, alignment:'right'},
           { text: `${atleta.nombre_completo}`},
-          { text: `${atleta.correo}`},
-          { text: `${atleta.educacion_etapa}`},
+          { text: `${atleta.correo}`, color: `${atleta.correo==='Sin correo'? '#9e9e9e' :''}`},
+          { text: `${atleta.educacion_etapa}`, color: `${atleta.educacion_etapa==='No especificada'? '#9e9e9e' :''}`},
         ]);
       });
       

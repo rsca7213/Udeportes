@@ -18,26 +18,26 @@
         fixed-header
         :loading="tablaCargando"
       >
-      <template v-slot:item.fecha_nacimiento="{ item }"> 
-        <span class="grey--text" v-if="!item.fecha_nacimiento"> N/A </span>
-        <span v-else v-text="item.fecha_nacimiento"> </span>
-      </template>
-      <template v-slot:item.telefono="{ item }"> 
-        <span class="grey--text" v-if="!item.telefono"> N/A </span>
-        <span v-else v-text="item.telefono"> </span>
-      </template>
-      <template v-slot:item.acciones="{ item }">
-        <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">
-          <EditarClave :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
-          <v-icon color="primary" dense @click="editItem(item)">
-            mdi-pencil
-          </v-icon>
-          <EliminarUsuario :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @eliminarUsuario="eliminarUsuario"/>
-        </div>
-        <div v-else>
-          <span class="grey--text"> N/A </span>
-        </div>
-      </template>
+        <template v-slot:item.fecha_nacimiento="{ item }"> 
+          <span class="grey--text" v-if="!item.fecha_nacimiento"> N/A </span>
+          <span v-else v-text="item.fecha_nacimiento"> </span>
+        </template>
+        <template v-slot:item.telefono="{ item }"> 
+          <span class="grey--text" v-if="!item.telefono"> N/A </span>
+          <span v-else v-text="item.telefono"> </span>
+        </template>
+        <template v-slot:item.acciones="{ item }">
+          <div v-if="item.cedula!=usuario_sesion_cedula" class="d-flex flex-row">
+            <EditarClave :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @editarClave="editarClave"/>
+            <v-icon color="primary" dense @click="editItem(item)">
+              mdi-pencil
+            </v-icon>
+            <EliminarUsuario :cedula_usuario="item.cedula" :nombre_completo_usuario="item.nombre_completo" @eliminarUsuario="eliminarUsuario"/>
+          </div>
+          <div v-else>
+            <span class="grey--text"> N/A </span>
+          </div>
+        </template>
       </v-data-table>
       <ExitoDialog v-if="exito_dialog" :props_exito_dialog="props_exito_dialog"/>
     </v-container>

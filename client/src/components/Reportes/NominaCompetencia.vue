@@ -3,7 +3,7 @@
     <v-container>
       <v-row class="justify-center" v-if="items_competencias.length">
         <v-row class="justify-center">
-          <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
+          <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
             <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias" hide-details
             clear-icon="mdi-close" name="periodo" clearable>
             </v-select>
@@ -11,7 +11,7 @@
         </v-row>
         <v-col cols=12 v-if="items_competencias.length">
           <v-row v-if="!competencia">
-            <v-col class="grey--text text-center"> Selecciona una competencia para generar el reporte. </v-col>
+            <v-col class="grey--text text-center mt-2"> Selecciona una competencia para generar el reporte. </v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -23,7 +23,7 @@
       <v-row v-else-if="!competencias_cargando && !items_competencias.length">
         <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
       </v-row>
-      <div class="mt-4" v-if="competencia">
+      <div class="mt-4" v-if="competencia && atletas.length">
         <v-row no-gutters>
           <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
             <v-alert text color="error" dense v-if="mensaje_error">
@@ -46,10 +46,14 @@
                 fixed-header
                 :loading="tabla_cargando"
                 >
-                </v-data-table>
-                
-              </v-col>
-              
+                  <template v-slot:item.educacion_etapa="{ item }"> 
+                    <span :class="item.educacion_etapa==='No especificada'? 'grey--text' : ''" v-text="item.educacion_etapa"> </span>
+                  </template>
+                  <template v-slot:item.correo="{ item }"> 
+                    <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+                  </template>
+                </v-data-table>   
+              </v-col>         
             </v-row>
           </v-col>
           <v-col cols="12" lg="3" xl="4">
@@ -63,12 +67,15 @@
         <v-row v-if="items_competencias.length">
           <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
             <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-              <v-icon>mdi-download</v-icon>
+              <v-icon left>mdi-download</v-icon>
               Generar Reporte
             </v-btn>
           </v-col>
-      </v-row>
+        </v-row>
       </div>
+      <v-row v-else-if="!atletas.length && !tabla_cargando && competencia">
+        <v-col class="grey--text text-center"> No hay atletas que hayan participado en esta competencia. </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -262,8 +269,8 @@ export default {
         reporte_body.push([
           {text: `${atleta.cedula}`, alignment: 'right'},
           {text: `${atleta.nombre_completo}`},
-          {text: `${atleta.correo}`},
-          {text: `${atleta.educacion_etapa}`}
+          {text: `${atleta.correo}`, color: `${atleta.correo==='Sin correo'? '#9e9e9e' :''}`},
+          {text: `${atleta.educacion_etapa}`, color: `${atleta.educacion_etapa==='No especificada'? '#9e9e9e' :''}`}
         ])
       });
       
@@ -324,10 +331,10 @@ export default {
             res.data.forEach(competencia => {
               // Para cada competencia del equipo
               this.items_competencias.push({
-                  text: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`,
+                  text: `${competencia.nombre} (${competencia.fecha_inicio}${competencia.fecha_fin==='No especificada'? '':(' - ' + competencia.fecha_fin)})`,
                   value: {
                     id_competencia: competencia.id,
-                    info_competencia: `${competencia.nombre} (${competencia.fecha_inicio +' - '+competencia.fecha_fin})`
+                    info_competencia: `${competencia.nombre} (${competencia.fecha_inicio}${competencia.fecha_fin==='No especificada'? '':(' - ' + competencia.fecha_fin)})`
                   }
                 });
             });

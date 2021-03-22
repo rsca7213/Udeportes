@@ -3,7 +3,7 @@
     <v-container>
       <v-row class="justify-center" v-if="items_entrenamientos.length">
         <v-row class="justify-center">
-          <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
+          <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
             <v-select v-model="entrenamiento" label="Entrenamientos" prepend-icon="mdi-clipboard-text" :items="items_entrenamientos"
             clear-icon="mdi-close" name="periodo" clearable hide-details>
             </v-select>
@@ -47,8 +47,10 @@
               fixed-header
               :loading="tabla_cargando"
               >
-              </v-data-table>
-              
+                <template v-slot:item.correo="{ item }"> 
+                  <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+                </template>
+              </v-data-table> 
             </v-col>
           </v-row>
         </v-col>
@@ -72,7 +74,7 @@
       <v-row>
         <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
           <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-            <v-icon>mdi-download</v-icon>
+            <v-icon left>mdi-download</v-icon>
             Generar Reporte
           </v-btn>
         </v-col>
@@ -342,8 +344,8 @@ export default {
       let reporte_body = [];
       reporte_body.push([
          { text: 'Nro. Cédula', bold: true, color:'#2196F3', alignment:'right' },
-         { text: 'Nombre Completo', bold: true, color:'#2196F3', alignment: 'center' },
-         { text: 'Correo Electrónico', bold: true, color:'#2196F3', alignment: 'center' },
+         { text: 'Nombre Completo', bold: true, color:'#2196F3' },
+         { text: 'Correo Electrónico', bold: true, color:'#2196F3' },
          { text: 'Asistencia', bold: true, color:'#2196F3', alignment: 'center'},
       ]);
 
@@ -351,8 +353,8 @@ export default {
       this.atletas.forEach((atleta) =>{
         reporte_body.push([
           {text: `${atleta.cedula}`, alignment:'right'},
-          {text: `${atleta.nombre_completo}`, alignment: 'center'},
-          {text: `${atleta.correo}`, alignment: 'center'},
+          {text: `${atleta.nombre_completo}`},
+          {text: `${atleta.correo}`, color: `${atleta.correo==='Sin correo'? '#9e9e9e' :''}`},
           {text:`${atleta.asistencia}` , alignment: 'center'}
         ])
       });
@@ -387,10 +389,10 @@ export default {
             res.data.forEach(entrenamiento => {
               // Para cada categoria del deporte
               this.items_entrenamientos.push({
-                  text: `${entrenamiento.fecha} ${entrenamiento.nombre}`,
+                  text: `(${entrenamiento.fecha}) ${entrenamiento.nombre}`,
                   value: {
                     id_entrenamiento: entrenamiento.id,
-                    info_entrenamiento: `${entrenamiento.fecha} ${entrenamiento.nombre}`,
+                    info_entrenamiento: `(${entrenamiento.fecha}) ${entrenamiento.nombre}`,
                   }
                 });
             });

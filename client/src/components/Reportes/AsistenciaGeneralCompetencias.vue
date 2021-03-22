@@ -27,7 +27,7 @@
       <v-col class="grey--text text-center"> Selecciona un mes.
       </v-col>
     </v-row>
-    <div class="mt-4" v-if="atletas.length">
+    <div class="mt-7" v-if="atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-alert text color="error" dense v-if="mensaje_error">
@@ -76,7 +76,7 @@
       <v-row>
         <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
           <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-            <v-icon>mdi-download</v-icon>
+            <v-icon left>mdi-download</v-icon>
             Generar Reporte
           </v-btn>
         </v-col>

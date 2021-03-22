@@ -22,6 +22,9 @@
             fixed-header
             :loading="tabla_cargando"
             >
+              <template v-slot:item.educacion_etapa="{ item }"> 
+                <span :class="item.educacion_etapa==='No especificada'? 'grey--text' : ''" v-text="item.educacion_etapa"> </span>
+              </template>
             </v-data-table>
           </v-col>   
         </v-row>
@@ -37,7 +40,7 @@
     <v-row>
       <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
         <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
-          <v-icon>mdi-download</v-icon>
+          <v-icon left>mdi-download</v-icon>
           Generar Reporte
         </v-btn>
       </v-col>
@@ -96,7 +99,7 @@ export default {
           class: 'primary--text font-weight-bold'
         },
         {
-          text: 'Educación',
+          text: 'Educación (Etapa)',
           align: 'start',
           sortable: true,
           filterable: true,
@@ -186,7 +189,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [70, '*', 100, '*' ],
+              widths: [70, '*', 110, '*' ],
               body: this.datos_reporte()
             }
           },
@@ -215,7 +218,7 @@ export default {
           { text: `${atleta.cedula}`, alignment: 'right'},
           { text: `${atleta.nombre_completo}`},
           { text: `${atleta.beca}`},
-          { text: `${atleta.educacion_etapa}`},
+          { text: `${atleta.educacion_etapa}`, color: `${atleta.educacion_etapa==='No especificada'? '#9e9e9e' :''}`},
         ]);
       });
       

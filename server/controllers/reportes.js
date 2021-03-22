@@ -40,11 +40,10 @@ async function nominaEquipo (id_categoria) {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         correo: atleta.correo || 'Sin correo',
-        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
-        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
+        educacion: atleta.educacion || 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada' 
       }
     });
-    
     // Devolvemos la data obtenida en forma Array[]
     return { codigo: 200, atletas: atletas }
   }
@@ -101,8 +100,8 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         correo: atleta.correo || 'Sin correo',
-        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
-        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
+        educacion: atleta.educacion || 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada' 
       }
     });
     
@@ -263,7 +262,6 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
     }
     
     competencias = competencias.rows
-    console.log(competencias);
 
     if(!competencias.length) return { codigo: 200, competencias: competencias }
 
@@ -375,7 +373,7 @@ async function asistenciaDetalladaEntrenamientos (id_deporte, id_categoria, id_e
       return {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
-        correo: `${atleta.correo? atleta.correo :' No especificado'}`,
+        correo: `${atleta.correo? atleta.correo :'Sin correo'}`,
         asistencia: `${atleta.asistencia === true? 'Sí':'No'}`,
       }
     }));
@@ -433,7 +431,7 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
       return {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
-        correo: `${atleta.correo? atleta.correo :' No especificado'}`,
+        correo: `${atleta.correo? atleta.correo :'Sin correo'}`,
         asistencia: `${atleta.asistencia === true? 'Sí':'No'}`,
       }
     }));
@@ -474,8 +472,8 @@ async function atletasBeca () {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
         beca: `${atleta.nombre_beca} (${atleta.porcentaje_beca} %)`,
-        educacion: atleta.educacion ? `${atleta.educacion}` : 'No especificada',
-        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : '' 
+        educacion: atleta.educacion || 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada' 
       }
     });
 
