@@ -75,8 +75,18 @@ async function verInscripciones (id_deporte) {
             ORDER BY i.id_categoria`,
             [id_deporte]
         );
+
+        let deporte = await bd.query(
+            `SELECT id AS id, nombre AS nombre
+            FROM deportes
+            WHERE id=$1`,
+            [id_deporte]
+        );
+
         inscripciones = inscripciones.rows;
-        return { codigo: 200, inscripciones}
+        deporte = deporte.rows;
+
+        return { codigo: 200, inscripciones, deporte}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};

@@ -61,8 +61,7 @@
                     :loading="tablaCargando"
                 >
                     <template v-slot:item.entrenador="{ item }"> 
-                        <span class="grey--text" v-if="item.entrenador === 'Sin asignar'"> Sin asignar </span>
-                        <span v-else v-text="item.entrenador"> </span>
+                        <v-icon dense color="primary" @click="ver_Categoria(item, 'entrenadores')"> mdi-whistle </v-icon>
                     </template>
                     <template v-slot:item.acciones="{ item }">
                         <v-icon dense color="primary" @click="ver_Categoria(item, 'editar')"> mdi-pencil </v-icon>
@@ -188,11 +187,11 @@
                     <v-container class="px-md-4">
                         <v-col>
                             <v-select v-model="categoria" label="Categoría" prepend-icon="mdi-clipboard-text"
-                            clear-icon="mdi-close" name="categoria" :items="categoriasNoAsignadas"
+                            clear-icon="mdi-close" name="categoria" :items="categoriasAsignar" @change="obtenerEntrenadores()"
                             no-data-text="No hay categorias disponibles">
                             </v-select>
                             <v-select v-model="entrenador" label="Entrenadores" prepend-icon="mdi-whistle"
-                            clear-icon="mdi-close" name="entrenadores" :items="entrenadoresSelect"
+                            clear-icon="mdi-close" name="entrenadores" :items="entrenadoresDis"
                             no-data-text="No existen entrenadores en el sistema">
                             </v-select>
                         </v-col>
@@ -247,6 +246,40 @@
                 </v-form>
             </v-card>
         </v-dialog>
+
+        <!-- Dialog para ver entrenadores -->
+        <v-dialog v-model="verEntrenadores" class="text-center" max-width="450">
+            <v-card rounded="md">
+                <v-card-title>
+                    <span class="d-none d-sm-flex"> Entrenador(es) de {{categoria.nombre}} </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Entrenador(es) de {{categoria.nombre}} </b>
+                    <v-spacer> </v-spacer>
+                    <v-btn icon @click="verEntrenadores = false"><v-icon> mdi-close </v-icon></v-btn>
+                </v-card-title>
+                <v-row justify="center" class="ma-3" v-if="entrenadoresAsignados.length > 0">
+                    <v-col>
+                        <v-list outlined>
+                            <template v-for="(entrenador, index) in entrenadoresAsignados">
+                                <v-list-item :key="entrenador.value.cedula">
+                                    <v-list-item-icon class="d-none d-sm-flex">
+                                        <v-icon color="indigo"> mdi-whistle </v-icon>
+                                    </v-list-item-icon>
+                                    <v-list-item-content>
+                                        <v-list-item-title v-text="entrenador.text"> </v-list-item-title>
+                                        <v-list-item-subtitle><b>Nro. Cédula:</b> {{entrenador.value.cedula}}</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                </v-list-item>
+                                <v-divider v-if="index < entrenadoresAsignados.length -1" :key="index + 'a'"></v-divider>
+                            </template>
+                        </v-list>
+                    </v-col>
+                </v-row>
+                <v-card-subtitle class="grey--text text--darken-2" v-else>
+                    <br>
+                    No se encontraron enrenadores en {{categoria.nombre}}.
+                </v-card-subtitle>
+            </v-card>
+        </v-dialog>
         
         <!-- Display de mensaje -->
         <v-snackbar v-model="display.show" timeout="3000" shaped top> 
@@ -277,6 +310,7 @@ export default {
         eliminarCategoria: false,
         asignacion: false,
         destitucion: false,
+        verEntrenadores: false,
         display: false,
         tablaCargando: true,
         search: '',
@@ -295,18 +329,10 @@ export default {
             },
             {
                 text: 'Nombre de Categoría',
-                align: 'start',
+                align: 'center',
                 sortable: true,
                 filterable: true,
                 value: 'nombre',
-                class: 'primary--text font-weight-bold'
-            },
-            { 
-                text: 'Entrenador',
-                align: 'start',
-                sortable: true,
-                filterable: true,
-                value: 'entrenador',
                 class: 'primary--text font-weight-bold'
             },
             { 
@@ -316,6 +342,14 @@ export default {
                 value: 'genero',
                 class: 'primary--text font-weight-bold',
                 align: 'center',
+            },
+            { 
+                text: 'Entrenador(es)',
+                align: 'center',
+                sortable: false,
+                filterable: false,
+                value: 'entrenador',
+                class: 'primary--text font-weight-bold'
             },
             {
                 text: 'Acciones',
@@ -327,10 +361,12 @@ export default {
         ],
         categorias: [],
         categoriasEntrenador: [],
-        categoriasNoAsignadas: [],
-        categoria: {id_categoria: null},
+        categoriasAsignar: [],
+        categoria: {},
         entrenadoresSelect: [],
-        entrenador: {cedula: null},
+        entrenadoresDis: [],
+        entrenadoresAsignados: [],
+        entrenador: {},
         deporte: {},
         reglasNombre: [
             v => !!v || 'Este campo es obligatorio',
@@ -347,9 +383,9 @@ export default {
         .then((res) => {
             if (res.data.codigo === 200) {
                 this.categorias = res.data.categorias;
-                this.categoriasNoAsignadas = [];
-                res.data.categoriasNoAsignadas.forEach(categoria => {
-                    this.categoriasNoAsignadas.push({
+                this.categoriasAsignar = [];
+                res.data.categoriasAsignar.forEach(categoria => {
+                    this.categoriasAsignar.push({
                         text: categoria.nombre,
                         value: {
                             id_categoria: categoria.id
@@ -377,7 +413,7 @@ export default {
     },
     async obtenerEntrenadores () {
         await axios
-        .get(`${server_url}/categorias/`, { withCredentials: true })
+        .get(`${server_url}/categorias/categoria/${this.categoria.id_categoria}/entrenadores`, { withCredentials: true })
         .then((res) => {
             if (res.data.codigo === 200) {
                 this.entrenadoresSelect = [];
@@ -389,12 +425,30 @@ export default {
                         }
                     });
                 });
+                this.entrenadoresDis = [];
+                res.data.entrenadoresDis.forEach(entrenador => {
+                    this.entrenadoresDis.push({
+                        text: entrenador.nombre,
+                        value: {
+                            cedula: entrenador.cedula
+                        }
+                    });
+                });
+                this.entrenadoresAsignados = [];
+                res.data.entrenadoresAsignados.forEach(entrenador => {
+                    this.entrenadoresAsignados.push({
+                        text: entrenador.nombre,
+                        value: {
+                            cedula: entrenador.cedula
+                        }
+                    });
+                });
             }
         })
     },
     async obtenerCategoriasEntrenador() {
         await axios
-        .get(`${server_url}/categorias/${this.$route.params.id_deporte}/entrenador/${this.entrenador.cedula}`, { withCredentials: true })
+        .get(`${server_url}/categorias/${this.$route.params.id_deporte}/entrenador/cedula/${this.entrenador.cedula}`, { withCredentials: true })
         .then((res) => {
             this.categoriasEntrenador = [];
             if (res.data.codigo === 200) {
@@ -458,9 +512,13 @@ export default {
         }
         if (evento == 'eliminar') {
             this.eliminarCategoria = true;
-        } else {
+        } else if (evento == 'editar') {
             this.editarCategoria = true;
-        } 
+        } else {
+            this.categoria.id_categoria = item.id;
+            this.obtenerEntrenadores();
+            this.verEntrenadores = true;
+        }
     },
     async editar_Categoria () {
         if(this.$refs.editForm.validate()) { 
@@ -566,6 +624,8 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.categoria = {};
+        this.entrenador = {};
     },
     async destituir () {
         try {
@@ -601,6 +661,8 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.categoria = {};
+        this.entrenador = {};
     }
   },
   async mounted(){
@@ -612,7 +674,6 @@ export default {
     .then((res) => {
         if (res.data.codigo === 200) this.deporte = res.data.deporte;
     })
-    this.obtenerEntrenadores();
   }
 }
 </script>

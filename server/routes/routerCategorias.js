@@ -67,11 +67,11 @@ router.route('/:id_deporte/:id_categoria')
         } 
     });
 
-router.route('/')
+router.route('/categoria/:id_categoria/entrenadores')
     //ruta encargada de listar a todos los entrenadores del sistema
     .get(mw_token, mw_rol, async(req, res) => {
         try{
-            let result = await categorias.verEntrenadores();
+            let result = await categorias.verEntrenadores(req.params.id_categoria);
             res.send(result);
         }
         catch(error){
@@ -80,7 +80,7 @@ router.route('/')
         } 
     });
 
-router.route('/:id_deporte/entrenador/:cedula')
+router.route('/:id_deporte/entrenador/cedula/:cedula')
     //ruta encargada de listar a todas las categorías de un entrenador
     .get(mw_token, mw_rol, async(req, res) => {
         try{

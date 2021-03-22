@@ -30,9 +30,9 @@ export default {
   },
   async mounted() {
     await axios
-    .get(`${server_url}/auth/admin`, { withCredentials: true })
+    .get(`${server_url}/auth/login`, { withCredentials: true })
     .then((res) => {
-      // si el usuario es admin y ha iniciado sesión
+      // si el usuario ha iniciado sesión
       if (res.status === 200) {
         this.cargando = false;
       }

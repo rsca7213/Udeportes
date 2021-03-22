@@ -6,7 +6,7 @@
                 <v-spacer class="d-none d-sm-flex"></v-spacer>
                 <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/deportes')">
                     <v-icon left> mdi-arrow-left </v-icon>
-                    Regresar a deportes
+                    Volver
                 </v-btn>
             </v-card-title>
             <v-container>
@@ -79,7 +79,7 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="registrar_Inscripcion()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Indetidad del Atleta *"
+                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
                         validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
 
@@ -128,7 +128,7 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="editar_Inscripcion()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Indetidad del Atleta *"
+                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
                         validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
 
@@ -177,7 +177,7 @@
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="confimar_Eliminar()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Indetidad del Atleta *"
+                        <v-text-field clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad del Atleta *"
                         prepend-icon="mdi-card-account-details" type="text" :rules="reglasCedula"
                         validate-on-blur v-model="atleta.cedula" name="cedula" @change="obtenerCategoriasAtleta()"> </v-text-field>
 
@@ -346,6 +346,7 @@ export default {
             .then((res) => {
                 if (res.data.codigo === 200) {
                     this.inscripciones = res.data.inscripciones;
+                    this.deporte = res.data.deporte[0];
                 }
             })
             .catch((error) => {
@@ -608,12 +609,6 @@ export default {
   async mounted(){
     //se obtienen todas las inscripciones del deporte
     this.obtenerInscripciones();
-    //se obtienen los datos del deporte
-    await axios
-    .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
-    .then((res) => {
-        if (res.data.codigo === 200) this.deporte = res.data.deporte;
-    })
   }
 }
 </script>

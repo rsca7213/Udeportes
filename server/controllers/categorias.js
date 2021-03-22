@@ -43,27 +43,27 @@ async function verCategorias (id_deporte) {
     try {
         let categorias = await bd.query(
             `SELECT c.id AS id, c.id_deporte AS id_deporte, c.nombre As nombre, TO_CHAR(c.fecha_registro, 'DD/MM/YYYY') AS fecha_registro, 
-            CASE WHEN c.genero = 'm' THEN 'Masculino' WHEN c.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero, a.cedula_usuario AS cedula,
-            CASE WHEN a.cedula_usuario = NULL THEN 'Sin asignar' ELSE (u.primer_nombre || ' ' || u.primer_apellido) END AS entrenador
+            CASE WHEN c.genero = 'm' THEN 'Masculino' WHEN c.genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero
             FROM asignaciones a
             FULL JOIN categorias c ON a.id_categoria=c.id
-            FULL JOIN usuarios u ON a.cedula_usuario=u.cedula
             WHERE c.id_deporte=$1 
+            GROUP BY c.id, c.id_deporte, c.nombre, c.fecha_registro, c.genero
             ORDER BY c.id`,
             [id_deporte]
         );
-        let categoriasNoAsignadas = await bd.query(
+        let categoriasAsignar = await bd.query(
             `SELECT c.id AS id, 
             CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
             FROM asignaciones a
             FULL JOIN categorias c ON a.id_categoria=c.id
-            WHERE c.id_deporte=$1 AND a.cedula_usuario IS NULL
+            WHERE c.id_deporte=$1
+            GROUP BY c.id, c.genero, c.nombre
             ORDER BY c.id`,
             [id_deporte]
         );
-        categoriasNoAsignadas = categoriasNoAsignadas.rows
+        categoriasAsignar = categoriasAsignar.rows
         categorias = categorias.rows;
-        return { codigo: 200, categorias, categoriasNoAsignadas}
+        return { codigo: 200, categorias, categoriasAsignar}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
@@ -75,7 +75,8 @@ async function verCategoria (datos) {
         let categoria = await bd.query(
           `SELECT id AS id, id_deporte AS id_deporte, nombre As nombre, TO_CHAR(fecha_registro, 'DD/MM/YYYY') AS fecha_registro,  
           CASE WHEN genero = 'm' THEN 'Masculino' WHEN genero = 'f' THEN 'Femenino' ELSE 'Unisex' END AS genero  
-          FROM categorias WHERE id=$1 AND id_deporte=$2`,
+          FROM categorias 
+          WHERE id=$1 AND id_deporte=$2`,
           [datos.categoria, datos.deporte]
         );
         categoria = categoria.rows[0];
@@ -137,15 +138,53 @@ async function eliminarCategoria (datos) {
     }
 }
 
-async function verEntrenadores () {
+async function verEntrenadores (id_categoria) {
     try {
-        let entrenadores = await bd.query(
-          `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
-          FROM usuarios u 
-          WHERE u.rol='e'`
+        let check = await bd.query(
+            `SELECT *
+            FROM asignaciones a 
+            WHERE a.id_categoria=$1`,
+            [id_categoria]
+        ); 
+        let entrenadoresDis = [];
+        check = check.rows;
+
+        entrenadores = await bd.query(
+            `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+            FROM usuarios u 
+            WHERE u.rol='e'`,
         );
+
+        if (check.length == 0) {
+            entrenadoresDis = await bd.query(
+                `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+                FROM usuarios u 
+                WHERE u.rol='e'`,
+            );
+        } else {
+            entrenadoresDis = await bd.query(
+                `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+                FROM usuarios u
+                WHERE u.rol='e' AND u.cedula NOT IN (
+                    SELECT cedula_usuario FROM asignaciones WHERE id_categoria=$1
+                )`,
+                [id_categoria]
+            );
+        }
+
+        entrenadoresAsignados = await bd.query(
+            `SELECT u.cedula AS cedula, (u.primer_nombre || ' ' || u.primer_apellido) AS nombre 
+            FROM usuarios u
+            JOIN asignaciones a ON a.cedula_usuario=u.cedula
+            WHERE u.rol='e' AND a.id_categoria=$1`,
+            [id_categoria]
+        );
+        
         entrenadores = entrenadores.rows;
-        return { codigo: 200, entrenadores}
+        entrenadoresDis = entrenadoresDis.rows;
+        entrenadoresAsignados = entrenadoresAsignados.rows;
+        
+        return { codigo: 200, entrenadores, entrenadoresDis, entrenadoresAsignados}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
         return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};

@@ -81,7 +81,7 @@ async function eliminarPosicion (datos) {
         //Tabla Estadisticas
         await bd.query(`DELETE FROM estadisticas WHERE id_posicion=$1`,[datos.posicion]);
         //Tabla Inscripciones
-        await bd.query(`DELETE FROM inscripciones WHERE id_posicion=$1`,[datos.posicion]);
+        await bd.query(`UPDATE inscripciones SET id_posicion=NULL, id_deporte_pos=NULL WHERE id_posicion=$1`,[datos.posicion]);
         //Tabla Posiciones
         await bd.query(`DELETE FROM posiciones WHERE id=$1`,[datos.posicion]);
         

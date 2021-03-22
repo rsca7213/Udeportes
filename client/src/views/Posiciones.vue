@@ -21,7 +21,6 @@
                                     <v-list-item-title v-text="posicion.nombre"> </v-list-item-title>
                                 </v-list-item-content>
                                 <div>
-                                    <v-icon color="primary"> mdi-chart-line </v-icon>
                                     <v-icon color="primary" @click="ver_Posicion(posicion.id, 'editar')"> mdi-pencil </v-icon>
                                     <v-icon color="error" @click="ver_Posicion(posicion.id, 'eliminar')"> mdi-delete </v-icon>
                                 </div>

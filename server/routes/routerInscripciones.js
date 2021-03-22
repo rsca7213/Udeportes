@@ -1,12 +1,12 @@
 /*Se importa el router de express*/
 const router = require('express').Router();
 const inscripciones = require('../controllers/inscripciones');
-// const mw_token = require('../middleware/token');
+const mw_token = require('../middleware/token');
 // const mw_rol = require('../middleware/rol');
 
 router.route('/:id_deporte')
     //ruta encargada de registrar las inscripciones de un deporte
-    .post(async(req, res) => {
+    .post(mw_token, async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
@@ -23,7 +23,7 @@ router.route('/:id_deporte')
         } 
     })
     //ruta encargada de editar la posicion de una inscripción
-    .put(async(req, res) => {
+    .put(mw_token, async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
@@ -40,7 +40,7 @@ router.route('/:id_deporte')
         } 
     })
     //ruta encargada de obtener todas las inscripciones de un deporte
-    .get(async(req, res) => {
+    .get(mw_token, async(req, res) => {
         try{
             let result = await inscripciones.verInscripciones(req.params.id_deporte);
             res.send(result);
@@ -53,7 +53,7 @@ router.route('/:id_deporte')
 
 router.route('/:id_categoria/:id_posicion/:cedula')
     //ruta encargada de obtener los datos de una inscripción
-    .get(async(req, res) => {
+    .get(mw_token, async(req, res) => {
         try{
             let datos = {
                 categoria: req.params.id_categoria,
@@ -68,7 +68,7 @@ router.route('/:id_categoria/:id_posicion/:cedula')
         } 
     })
     //ruta encargada de eliminar una inscripción
-    .delete(async(req, res) => {
+    .delete(mw_token, async(req, res) => {
         try{
             let datos = {
                 categoria: req.params.id_categoria,
@@ -85,7 +85,7 @@ router.route('/:id_categoria/:id_posicion/:cedula')
 
 router.route('/:id_deporte/:cedula')
     //ruta encargada obtener las categorias de un atleta
-    .get(async(req, res) => {
+    .get(mw_token, async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
@@ -102,7 +102,7 @@ router.route('/:id_deporte/:cedula')
 
 router.route('/:id_deporte/categoria/:id_categoria/:cedula')
     //ruta encargada obtener las posiciones de un atleta
-    .get(async(req, res) => {
+    .get(mw_token, async(req, res) => {
         try{
             let datos = {
                 deporte: req.params.id_deporte,
