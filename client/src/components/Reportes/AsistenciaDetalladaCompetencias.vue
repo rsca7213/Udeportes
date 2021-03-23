@@ -13,17 +13,17 @@
           <v-row v-if="!competencia">
             <v-col class="grey--text text-center mt-2"> Selecciona una competencia para generar el reporte. </v-col>
           </v-row>
-          <v-row v-if="competencias_cargando"> 
-            <v-col class="px-6 mx-5">
-              <v-progress-linear indeterminate color="primary"> </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row v-else-if="!competencias_cargando && !items_competencias.length">
-            <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
-          </v-row>
         </v-col>
       </v-row>
     </v-container>
+    <v-row v-if="competencias_cargando"> 
+      <v-col class="px-6 mx-5">
+        <v-progress-linear indeterminate color="primary"> </v-progress-linear>
+      </v-col>
+    </v-row>
+    <v-row v-else-if="!competencias_cargando && !items_competencias.length">
+      <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
+    </v-row>
     <div v-if="competencia && atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
