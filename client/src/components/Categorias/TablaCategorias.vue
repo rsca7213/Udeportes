@@ -426,6 +426,7 @@ export default {
         this.tablaCargando = false;
     },
     async obtenerEntrenadores () {
+        this.entrenador = {};
         await axios
         .get(`${server_url}/categorias/categoria/${this.categoria.id_categoria}/entrenadores`, { withCredentials: true })
         .then((res) => {
@@ -452,6 +453,7 @@ export default {
         })
     },
     async obtenerCategoriasEntrenador() {
+        this.categoria = {};
         await axios
         .get(`${server_url}/categorias/${this.$route.params.id_deporte}/entrenador/cedula/${this.entrenador.cedula}`, { withCredentials: true })
         .then((res) => {

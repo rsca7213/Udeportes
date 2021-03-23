@@ -380,6 +380,8 @@ export default {
         this.tablaCargando = false;
     },
     async obtenerCategoriasAtleta () {
+        this.categoria = {};
+        this.posicion = {};
         if (this.atleta.contenido != null)  {
             this.cedula = this.atleta.contenido.split(" ");
         }
@@ -421,6 +423,7 @@ export default {
         }
     },
     async obtenerPosicionesCategoria() {
+        this.posicion = {};
         try {
             await axios
             .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/categoria/${this.categoria.id.id_categoria}/${this.cedula}`, { withCredentials: true })
