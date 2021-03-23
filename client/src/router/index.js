@@ -45,6 +45,11 @@ const routes = [
     component: () => import('../views/Posiciones.vue')
   },
   {
+    path: '/deporte/:id_deporte/estadisticas',
+    name: 'Estadisticas',
+    component: () => import('../views/Estadisticas.vue')
+  },
+  {
     path: '/deporte/:id_deporte/categorias',
     name: 'Categorias',
     component: () => import('../views/Categorias.vue')

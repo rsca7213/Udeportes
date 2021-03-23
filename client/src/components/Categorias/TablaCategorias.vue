@@ -351,8 +351,8 @@ export default {
             { 
                 text: 'Entrenador(es)',
                 align: 'center',
-                sortable: false,
-                filterable: false,
+                sortable: true,
+                filterable: true,
                 value: 'entrenador',
                 class: 'primary--text font-weight-bold'
             },

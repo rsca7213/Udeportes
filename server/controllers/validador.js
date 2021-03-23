@@ -115,6 +115,11 @@ const reglasEstatusCompetencia = [
   v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Valor de estatus invalido'
 ];
 
+const reglasEstadisticas = [
+  v => v.length <= 8 || 'El valor no debe ser mayor a 8 caracteres',
+  v => (/^\d{0,9}$/.test(v)) || 'Debe ser una cifra válida',
+];
+
 
 
 let validador = {
@@ -139,7 +144,8 @@ let validador = {
   validarId: (id) => validar(reglasId, id),
   validarNombreEntrenamiento: (nombre) => validar(reglasNombreEntrenamiento, nombre),
   validarNombreCompetencia: (nombre) => validar(reglasNombreCompetencia, nombre),
-  validarEstatusCompetencia: (estatus) => validar(reglasEstatusCompetencia, estatus)
+  validarEstatusCompetencia: (estatus) => validar(reglasEstatusCompetencia, estatus),
+  validarEstadistica: (valor) => validar(reglasEstadisticas, valor),
 };
 
 module.exports = validador;

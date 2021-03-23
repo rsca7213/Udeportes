@@ -27,6 +27,7 @@ export default {
         'Atletas', 
         'Deportes', 
         'Posiciones', 
+        'Estadisticas',
         'Categorias', 
         'Inscripciones', 
         'DetallesAtleta', 

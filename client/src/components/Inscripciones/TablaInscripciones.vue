@@ -96,11 +96,11 @@
                         </v-select>
 
                         <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoria"
+                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoria" 
                         no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
                         </v-select>
                         <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoria"
+                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoria" clearable
                         no-data-text="No hay posiciones disponibles" v-else>
                         </v-select>
                         <v-btn color="secondary" block type="submit" v-if="this.categoria.id != null">
@@ -125,9 +125,7 @@
                     <v-btn icon @click="editarInscripcion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
-                    <span>Los campos que contienen un 
-                    <span class="red--text">"*"</span> 
-                    son obligatorios</span> 
+                    Selecciona al Atleta junto con una categoría para cambiar su posición 
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="editar_Inscripcion()">
                     <v-container class="px-md-4">
@@ -152,10 +150,10 @@
                         no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
                         </v-select>
                         <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaDis"
+                        clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaDis" clearable
                         no-data-text="No hay posiciones disponibles" v-else>
                         </v-select>
-                        <v-btn color="secondary" block type="submit" v-if="this.posicion.id != null && this.categoria.id != null">
+                        <v-btn color="secondary" block type="submit" v-if="this.categoria.id != null">
                             <v-icon left> mdi-check-circle </v-icon>
                             guardar
                         </v-btn>
@@ -301,14 +299,15 @@ export default {
             { 
                 text: 'Nombre Atleta',
                 align: 'center',
-                sortable: false,
+                sortable: true,
                 filterable: true,
                 value: 'nombre',
                 class: 'primary--text font-weight-bold'
             },
             { 
                 text: 'Género Atleta',
-                sortable: false,
+                sortable: true,
+                filterable: true,
                 value: 'genero',
                 class: 'primary--text font-weight-bold',
                 align: 'center',
@@ -316,14 +315,15 @@ export default {
             { 
                 text: 'Nombre Categoría',
                 align: 'center',
-                sortable: false,
+                sortable: true,
                 filterable: true,
                 value: 'categoria',
                 class: 'primary--text font-weight-bold'
             },
             { 
                 text: 'Posición',
-                sortable: false,
+                sortable: true,
+                filterable: true,
                 value: 'posicion',
                 class: 'primary--text font-weight-bold',
                 align: 'center',
@@ -521,7 +521,11 @@ export default {
     async editar_Inscripcion () {
         this.inscripcion.cedula = this.cedula;
         this.inscripcion.categoria = this.categoria.id.id_categoria;
-        this.inscripcion.posicion = this.posicion.id.id_posicion;
+        if (this.posicion.id == null) {
+            this.inscripcionRegistrar.posicion = null;
+        } else {
+            this.inscripcionRegistrar.posicion = this.posicion.id.id_posicion;
+        }
         try {
             if (this.$refs.form.validate()) {
                 await axios

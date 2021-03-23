@@ -67,9 +67,18 @@
                         </div>
                     </v-card>
                     <br>
+                    <v-card elevation="2" shaped class="primary" @click="$router.push(`/deporte/${deporte.id}/estadisticas`)">
+                        <div class="d-flex flex-no-wrap justify-space-between">
+                            <v-card-title class="align-center white--text text-button">Estadísticas</v-card-title>
+                            <v-avatar class="ma-3" size="60">
+                                <v-img src="../assets/deportes/categorias.png"></v-img>
+                            </v-avatar>
+                        </div>
+                    </v-card>
+                    <br>
                     <v-card elevation="2" shaped class="primary" @click="$router.push(`/deporte/${deporte.id}/categorias`);">
                         <div class="d-flex flex-no-wrap justify-space-between">
-                            <v-card-title class="align-center white--text text-button">Categorias</v-card-title>
+                            <v-card-title class="align-center white--text text-button">Categorías</v-card-title>
                             <v-avatar class="ma-3" size="60">
                                 <v-img src="../assets/deportes/categorias.png"></v-img>
                             </v-avatar>

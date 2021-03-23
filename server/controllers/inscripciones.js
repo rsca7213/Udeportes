@@ -127,8 +127,9 @@ async function verInscripcion (datos) {
             [datos.cedula]
         );
         let categoria = await bd.query(
-            `SELECT nombre AS nombre
-            FROM categorias
+            `SELECT 
+            CASE WHEN c.genero = 'm' THEN (c.nombre || ' (Masculino)') WHEN c.genero = 'f' THEN (c.nombre || ' (Femenino)') ELSE (c.nombre || ' (Unisex)') END AS nombre
+            FROM categorias c
             WHERE id=$1`,
             [datos.categoria]
         );
