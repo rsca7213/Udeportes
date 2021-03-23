@@ -55,8 +55,8 @@ CREATE TABLE estadisticas(
   id_posicion NUMERIC(5, 0) NOT NULL,
   id_deporte NUMERIC(4, 0) NOT NULL,
   nombre VARCHAR(50) NOT NULL,
-  minimo NUMERIC(3, 0),
-  maximo NUMERIC(3, 0),
+  minimo NUMERIC(8, 0),
+  maximo NUMERIC(8, 0),
 
   CONSTRAINT estadisticas_pk PRIMARY KEY(id, id_posicion, id_deporte)
 );
