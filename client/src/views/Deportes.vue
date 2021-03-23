@@ -71,7 +71,7 @@
                         <div class="d-flex flex-no-wrap justify-space-between">
                             <v-card-title class="align-center white--text text-button">Estadísticas</v-card-title>
                             <v-avatar class="ma-3" size="60">
-                                <v-img src="../assets/deportes/categorias.png"></v-img>
+                                <v-img src="../assets/deportes/estadisticas.png"></v-img>
                             </v-avatar>
                         </div>
                     </v-card>

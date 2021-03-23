@@ -14,7 +14,8 @@ async function obtenerEducaciones () {
     // Buscamos las educaciones en la bd
     let educaciones = await bd.query(
       `SELECT e.id, CASE WHEN e.tipo_etapa = 's' THEN 'Semestre' WHEN e.tipo_etapa = 'm' THEN 'Mes'
-       WHEN e.tipo_etapa = 't' THEN 'Trimestre' ELSE 'Año' END AS etapa, e.nombre FROM educaciones e`
+       WHEN e.tipo_etapa = 't' THEN 'Trimestre' ELSE 'Año' END AS etapa, e.nombre FROM educaciones e
+       ORDER BY e.nombre`
     );
     educaciones = educaciones.rows;
 

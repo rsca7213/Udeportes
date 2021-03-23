@@ -98,7 +98,7 @@
           <v-row>
             <v-col class="px-3" cols="12" sm="6">
               <v-select v-model="inputs.id_educacion" label="Educación" prepend-icon="mdi-school"
-              clear-icon="mdi-close" name="educacion" clearable
+              clear-icon="mdi-close" name="educacion" clearable @click:clear="inputs.numero_etapa = null"
               :loading="educacionCargando" :items="itemsEducacion" :disabled="educacionCargando">
               </v-select>
             </v-col>
@@ -114,7 +114,7 @@
           <v-row>
             <v-col class="px-3" cols="12" sm="6">
               <v-text-field clear-icon="mdi-close" clearable label="Nombre de Beca"
-              prepend-icon="mdi-sale" type="text" :rules="reglas.nombre_beca"
+              prepend-icon="mdi-sale" type="text" :rules="reglas.nombre_beca" @click:clear="inputs.porcentaje_beca = null"
               validate-on-blur v-model.trim="inputs.nombre_beca" name="nombre_beca"> </v-text-field>
             </v-col>
             <v-col class="px-3" cols="12" sm="6">

@@ -79,13 +79,15 @@ async function obtenerCategorias (cedula, rol = 'e') {
         `SELECT d.nombre AS deporte, d.id AS id_deporte, c.nombre || CASE WHEN c.genero ='m' THEN ' (Masculino)' 
          WHEN c.genero = 'f' THEN ' (Femenino)' ELSE ' (Unisex)' END AS categoria, c.id AS id_categoria
          FROM asignaciones a INNER JOIN categorias c ON a.id_categoria = c.id INNER JOIN deportes d
-         ON a.id_deporte = d.id WHERE a.cedula_usuario = $1`,
+         ON a.id_deporte = d.id WHERE a.cedula_usuario = $1
+         ORDER BY d.nombre, categoria`,
         [cedula]
       )
       : await bd.query(
         `SELECT d.nombre AS deporte, d.id AS id_deporte, c.nombre || CASE WHEN c.genero ='m' THEN ' (Masculino)' 
          WHEN c.genero = 'f' THEN ' (Femenino)' ELSE ' (Unisex)' END AS categoria, c.id AS id_categoria
-         FROM categorias c INNER JOIN deportes d ON d.id = c.id_deporte`
+         FROM categorias c INNER JOIN deportes d ON d.id = c.id_deporte
+         ORDER BY d.nombre, categoria`
       );
     data = data.rows;
     // obtenemos los deportes de los datos
@@ -277,7 +279,8 @@ async function obtenerParticipaciones (id_deporte, id_categoria, id) {
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
       (SELECT p.asistencia FROM participaciones p WHERE p.cedula_atleta = a.cedula
       AND p.id_entrenamiento = $1 AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 ) AS asistencia
-      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2`,
+      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2
+      ORDER BY a.primer_nombre, a.primer_apellido, a.segundo_apellido, a.segundo_nombre, a.cedula`,
       [id, id_deporte, id_categoria]
     );
 

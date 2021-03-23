@@ -72,13 +72,15 @@ async function obtenerCategorias (cedula, rol = 'e') {
         `SELECT d.nombre AS deporte, d.id AS id_deporte, c.nombre || CASE WHEN c.genero ='m' THEN ' (Masculino)' 
          WHEN c.genero = 'f' THEN ' (Femenino)' ELSE ' (Unisex)' END AS categoria, c.id AS id_categoria
          FROM asignaciones a INNER JOIN categorias c ON a.id_categoria = c.id INNER JOIN deportes d
-         ON a.id_deporte = d.id WHERE a.cedula_usuario = $1`,
+         ON a.id_deporte = d.id WHERE a.cedula_usuario = $1
+         ORDER BY d.nombre, categoria`,
         [cedula]
       )
       : await bd.query(
         `SELECT d.nombre AS deporte, d.id AS id_deporte, c.nombre || CASE WHEN c.genero ='m' THEN ' (Masculino)' 
          WHEN c.genero = 'f' THEN ' (Femenino)' ELSE ' (Unisex)' END AS categoria, c.id AS id_categoria
-         FROM categorias c INNER JOIN deportes d ON d.id = c.id_deporte`
+         FROM categorias c INNER JOIN deportes d ON d.id = c.id_deporte
+         ORDER BY d.nombre, categoria`
       );
     data = data.rows;
     // obtenemos los deportes de los datos
@@ -291,7 +293,8 @@ async function obtenerParticipaciones (id_deporte, id_categoria, id) {
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
       (SELECT p.asistencia FROM participaciones p WHERE p.cedula_atleta = a.cedula
       AND p.id_competencia = $1 AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 ) AS asistencia
-      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2`,
+      FROM atletas a INNER JOIN inscripciones i on a.cedula = i.cedula_atleta WHERE i.id_categoria = $3 AND i.id_deporte = $2
+      ORDER BY a.primer_nombre, a.primer_apellido, a.segundo_apellido, a.segundo_nombre, a.cedula`,
       [id, id_deporte, id_categoria]
     );
 
@@ -356,20 +359,20 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
     );
     if (!verify.rows[0].existe) return { codigo: 400, texto: 'Esta competencia no existe.' }
     // Si la competencia existe y la data es valida
-    await data.forEach(async item => {
+    for (let i = 0; i < data.length; i++) {
       // Si la asistencia no esta determinada, se borra si exite el registro
-      if (item.asistencia === null) 
+      if (data[i].asistencia === null) 
         await bd.query(
           `DELETE FROM participaciones WHERE cedula_atleta = $1 AND id_competencia = $2
            AND id_categoria_comp = $3 AND id_deporte_comp = $4`,
-           [item.cedula, id, id_categoria, id_deporte]
+           [data[i].cedula, id, id_categoria, id_deporte]
         );
       else {
         // Si la asistencia es falsa o verdadera, verificamos si existe ya un registro
         let check = await bd.query(
           `SELECT EXISTS (SELECT p.id FROM participaciones p WHERE p.cedula_atleta = $1 AND p.id_competencia = $2
            AND p.id_categoria_comp = $3 AND p.id_deporte_comp = $4) AS existe`,
-          [item.cedula, id, id_categoria, id_deporte]
+          [data[i].cedula, id, id_categoria, id_deporte]
         );
         check = check.rows[0].existe;
         // Si existe el registro actualizamos
@@ -377,7 +380,7 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
           await bd.query(
             `UPDATE participaciones SET asistencia = $1 WHERE cedula_atleta = $2 AND id_competencia = $3
             AND id_categoria_comp = $4 AND id_deporte_comp = $5`,
-            [item.asistencia, item.cedula, id, id_categoria, id_deporte]
+            [data[i].asistencia, data[i].cedula, id, id_categoria, id_deporte]
           );
         }
         // Si no existe insertamos
@@ -385,13 +388,13 @@ async function guardarParticipaciones (id_deporte, id_categoria, id, data) {
           await bd.query(
             `INSERT INTO participaciones VALUES (nextval('participaciones_id_seq'), $1, $2, $3, $4, 
              $5, $6, $7, NULL, NULL, NULL )`,
-            [item.cedula, id_categoria, id_deporte, item.asistencia, id, id_categoria, id_deporte]
+            [data[i].cedula, id_categoria, id_deporte, data[i].asistencia, id, id_categoria, id_deporte]
           );
         }
 
       }  
       
-    });
+    };
     return { codigo: 200, texto: 'Registro de asistencia guardado con éxito.' }
 
   }
@@ -466,10 +469,11 @@ async function obtenerRendimientos (id_deporte, id_categoria, id) {
       atletas_libres: await bd.query(
         `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido FROM atletas a
         INNER JOIN inscripciones i ON i.cedula_atleta = a.cedula WHERE i.id_categoria = $1 AND i.id_deporte = $2
-        AND i.id_posicion IS NULL AND i.id_deporte_pos IS NULL ORDER BY a.cedula`,
+        AND i.id_posicion IS NULL AND i.id_deporte_pos IS NULL ORDER BY a.primer_nombre, a.segundo_nombre, a.primer_apellido, 
+        a.segundo_apellido, a.cedula`,
         [id_categoria, id_deporte]
       ),
-      posiciones: await bd.query(`SELECT p.id, p.nombre FROM posiciones p WHERE p.id_deporte = $1`, [id_deporte])
+      posiciones: await bd.query(`SELECT p.id, p.nombre FROM posiciones p WHERE p.id_deporte = $1 ORDER BY p.nombre`, [id_deporte])
     };
     competencia.posiciones = competencia.posiciones.rows;
     
@@ -478,7 +482,8 @@ async function obtenerRendimientos (id_deporte, id_categoria, id) {
       let atletas = await bd.query(
         `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido FROM atletas a
          INNER JOIN inscripciones i ON i.cedula_atleta = a.cedula WHERE i.id_categoria = $1 AND i.id_deporte = $2
-         AND i.id_posicion = $3 AND i.id_deporte_pos = $4 ORDER BY a.cedula`,
+         AND i.id_posicion = $3 AND i.id_deporte_pos = $4 ORDER BY a.primer_nombre, a.segundo_nombre,
+         a.primer_apellido, a.segundo_apellido, a.cedula`,
          [id_categoria, id_deporte, posicion.id, id_deporte]
       );
       // Para cada atleta buscaremos las estadisticas que tiene su posicion, en caso de que tenga

@@ -18,7 +18,8 @@ async function obtenerAtletas () {
        TO_CHAR(a.fecha_nacimiento, 'dd/mm/yyyy') AS fecha_nacimiento, a.correo,
        e.nombre AS educacion, CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
        THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa,
-       a.numero_etapa FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id;` 
+       a.numero_etapa FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
+       ORDER BY a.cedula` 
     );
 
     atletas = atletas.rows;
