@@ -30,6 +30,10 @@
     <div class="mt-7" v-if="atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
+          <v-row>
+            <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
+            </v-col>     
+          </v-row>
           <v-alert text color="error" dense v-if="mensaje_error">
             <v-icon color="error"> mdi-alert </v-icon>
             <span v-text="mensaje_error" class="ml-1"> </span>
