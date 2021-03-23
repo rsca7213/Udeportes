@@ -152,7 +152,7 @@
             </template>
         </v-snackbar>
 
-        <v-btn color="primary" @click="crearDeporte = true" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn color="primary" @click="abrir_crear()" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
     </v-container>
     <Cargador v-else/>
 </template>
@@ -191,6 +191,10 @@ export default {
         }
     },
     methods: {
+        abrir_crear () {
+            this.deporteCrear = {};
+            this.crearDeporte = true;
+        },
         async crear_Deporte () {
             if(this.$refs.crearForm.validate()) { 
                 try {

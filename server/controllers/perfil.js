@@ -70,7 +70,9 @@ async function verDeportes (cedula) {
       `SELECT d.id AS id, d.nombre AS nombre
       FROM asignaciones a
       JOIN deportes d ON a.id_deporte=d.id
-      WHERE a.cedula_usuario=$1`,
+      WHERE a.cedula_usuario=$1
+      GROUP BY d.id, d.nombre
+      ORDER BY d.id`,
       [cedula]
     )
 

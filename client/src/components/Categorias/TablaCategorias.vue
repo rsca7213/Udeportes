@@ -18,15 +18,15 @@
                 </v-row>
                 <v-row class="d-none d-md-flex">
                     <v-col cols="12" class="text-right">
-                        <v-btn color="primary" dark @click="crearCategoria = true"> 
+                        <v-btn color="primary" dark @click="abrir('crear')"> 
                             <v-icon left> mdi-plus-circle </v-icon>
                             Crear Categoría
                         </v-btn>
-                        <v-btn class="ml-3" color="indigo" dark @click="asignacion = true"> 
+                        <v-btn class="ml-3" color="indigo" dark @click="abrir('asignar')"> 
                             <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
-                        <v-btn class="mx-3" color="red" dark @click="destitucion = true"> 
+                        <v-btn class="mx-3" color="red" dark @click="abrir('destituir')"> 
                             <v-icon left> mdi-delete </v-icon>
                             Destituir Entrenador
                         </v-btn>
@@ -34,19 +34,19 @@
                 </v-row>
                 <v-row class="d-flex d-md-none">
                     <v-col class="text-center px-1" cols="12">
-                        <v-btn color="primary" dark @click="crearCategoria = true"> 
+                        <v-btn color="primary" dark @click="abrir('crear')"> 
                             <v-icon left> mdi-plus-circle </v-icon>
                             Crear Categoría
                         </v-btn>
                     </v-col>
                     <v-col class="text-center px-1" cols="12">
-                        <v-btn color="indigo" dark @click="asignacion = true"> 
+                        <v-btn color="indigo" dark @click="abrir('asignar')"> 
                             <v-icon left> mdi-whistle </v-icon>
                             Asignar Entrenador
                         </v-btn>
                     </v-col>
                     <v-col class="text-center px-1" cols="12">
-                        <v-btn color="red" dark @click="destitucion = true"> 
+                        <v-btn color="red" dark @click="abrir('destituir')"> 
                             <v-icon left> mdi-delete </v-icon>
                             Destituir Entrenador
                         </v-btn>
@@ -178,7 +178,7 @@
                     <span class="d-none d-sm-flex"> Asignar Entrenador </span>
                     <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Asignar Entrenador </b>
                     <v-spacer> </v-spacer>
-                    <v-btn icon @click="cerrar('asignar')"><v-icon> mdi-close </v-icon></v-btn>
+                    <v-btn icon @click="asignacion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-text  class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start">
                     Escoge una categoría y el entrenador que desea asignar.
@@ -221,7 +221,7 @@
                     <span class="d-none d-sm-flex"> Destituir Entrenador </span>
                     <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Destituir Entrenador </b>
                     <v-spacer> </v-spacer>
-                    <v-btn icon @click="cerrar('destituir')"><v-icon> mdi-close </v-icon></v-btn>
+                    <v-btn icon @click="destitucion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-text  class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start">
                     Escoge el entrenador junto con la categoría de la cual lo va a destituir de su cargo.
@@ -261,24 +261,24 @@
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="verEntrenadores = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
-                <v-row justify="center" class="mx-1" v-if="entrenadoresAsignados.length > 0">
-                    <v-col>
-                        <v-list>
-                            <template v-for="(entrenador, index) in entrenadoresAsignados">
-                                <v-list-item :key="entrenador.value.cedula">
-                                    <v-list-item-icon class="d-none d-sm-flex">
-                                        <v-icon color="indigo"> mdi-whistle </v-icon>
-                                    </v-list-item-icon>
-                                    <v-list-item-content>
-                                        <v-list-item-title v-text="entrenador.text"> </v-list-item-title>
-                                        <v-list-item-subtitle><b>Nro. Cédula:</b> {{entrenador.value.cedula}}</v-list-item-subtitle>
-                                    </v-list-item-content>
-                                </v-list-item>
-                                <v-divider v-if="index < entrenadoresAsignados.length -1" :key="index + 'a'"></v-divider>
-                            </template>
-                        </v-list>
-                    </v-col>
-                </v-row>
+                    <div v-if="entrenadoresAsignados.length > 0">
+                        <v-col>
+                            <v-list>
+                                <template v-for="(entrenador, index) in entrenadoresAsignados">
+                                    <v-list-item :key="entrenador.value.cedula">
+                                        <v-list-item-icon class="d-none d-sm-flex">
+                                            <v-icon color="indigo"> mdi-whistle </v-icon>
+                                        </v-list-item-icon>
+                                        <v-list-item-content>
+                                            <v-list-item-title v-text="entrenador.text"> </v-list-item-title>
+                                            <v-list-item-subtitle><b>Nro. Cédula:</b> {{entrenador.value.cedula}}</v-list-item-subtitle>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                    <v-divider v-if="index < entrenadoresAsignados.length -1" :key="index + 'a'"></v-divider>
+                                </template>
+                            </v-list>
+                        </v-col>
+                    </div>
                 <v-card-subtitle class="grey--text text--darken-2" v-else>
                     <br>
                     No se encontraron enrenadores en {{categoria.nombre}}.
@@ -586,14 +586,17 @@ export default {
             console.log(error);
         }
     },
-    cerrar (caso) {
-        if (caso === 'asignar') {
-            this.asignacion = false;
-        } else {
-            this.destitucion = false;
-        }
+    abrir (evento) {
         this.categoria = {};
         this.entrenador = {};
+        if (evento == 'crear') {
+            this.categoriaCrear = {};
+            this.crearCategoria = true;
+        } else if (evento == 'asignar') {
+            this.asignacion = true;
+        } else {
+            this.destitucion = true;
+        }
     },
     async asignar () {
         try {
@@ -613,15 +616,9 @@ export default {
                         type: 'error',
                     }
                 }
-                this.obtenerCategorias();
-                this.obtenerEntrenadores();
-                this.categoria = {};
-                this.entrenador = {};
                 this.asignacion = false;
             })
             .catch((error) => {
-                this.categoria = {};
-                this.entrenador = {};
                 this.mensajeError = error.response.status === 400
                 ? 'Ha ocurrido un error a la hora de crear la categoria'
                 : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
@@ -629,6 +626,8 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.obtenerCategorias();
+        this.obtenerEntrenadores();
         this.categoria = {};
         this.entrenador = {};
     },
@@ -650,15 +649,9 @@ export default {
                         type: 'error',
                     }
                 }
-                this.obtenerCategorias();
-                this.obtenerEntrenadores();
-                this.categoria = {};
-                this.entrenador = {};
                 this.destitucion = false;
             })
             .catch((error) => {
-                this.categoria = {};
-                this.entrenador = {};
                 this.mensajeError = error.response.status === 400
                 ? 'Ha ocurrido un error a la hora de crear la categoria'
                 : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
@@ -666,6 +659,8 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.obtenerCategorias();
+        this.obtenerEntrenadores();
         this.categoria = {};
         this.entrenador = {};
     }

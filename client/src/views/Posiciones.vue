@@ -122,7 +122,7 @@
                 </template>
             </v-snackbar>
 
-            <v-btn color="primary" @click="crearPosicion = true" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
+            <v-btn color="primary" @click="abrir_crear()" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
         </v-card>  
     </v-container>
     <Cargador v-else/>
@@ -162,6 +162,10 @@ export default {
         }
     },
     methods: {
+        abrir_crear () {
+            this.posicionCrear = {};
+            this.crearPosicion = true;
+        },
         async crear_Posicion () {
             if(this.$refs.crearForm.validate()) { 
                 try {

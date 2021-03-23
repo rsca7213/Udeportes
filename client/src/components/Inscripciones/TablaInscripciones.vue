@@ -18,15 +18,15 @@
                 </v-row>
                 <v-row class="d-none d-md-flex">
                     <v-col cols="12" class="text-right">
-                        <v-btn color="primary" dark @click="registrarInscripcion = true"> 
+                        <v-btn color="primary" dark @click="abrir('registrar')"> 
                             <v-icon left> mdi-clipboard-check </v-icon>
                             Inscribir Atleta
                         </v-btn>
-                        <v-btn class="ml-3" color="indigo" dark @click="editarInscripcion = true"> 
+                        <v-btn class="ml-3" color="indigo" dark @click="abrir('editar')"> 
                             <v-icon left> mdi-clipboard-flow </v-icon>
                             Editar Inscripción
                         </v-btn>
-                        <v-btn class="ml-3" color="red" dark @click="eliminarInscripcion = true"> 
+                        <v-btn class="ml-3" color="red" dark @click="abrir('eliminar')"> 
                             <v-icon left> mdi-clipboard-alert </v-icon>
                             Eliminar Inscripción
                         </v-btn>
@@ -34,19 +34,19 @@
                 </v-row>
                 <v-row class="d-flex d-md-none">
                     <v-col class="text-center" cols="12">
-                        <v-btn color="primary" dark @click="registrarInscripcion = true"> 
+                        <v-btn color="primary" dark @click="abrir('registrar')"> 
                             <v-icon left> mdi-clipboard-check </v-icon>
                             Inscribir Atleta
                         </v-btn>
                     </v-col>
                     <v-col class="text-center" cols="12">
-                        <v-btn class="ml-3" color="indigo" dark @click="editarInscripcion = true"> 
+                        <v-btn class="ml-3" color="indigo" dark @click="abrir('editar')"> 
                             <v-icon left> mdi-clipboard-flow </v-icon>
                             Editar Inscripción
                         </v-btn>
                     </v-col>
                     <v-col class="text-center" cols="12">
-                        <v-btn class="ml-3" color="red" dark @click="eliminarInscripcion = true"> 
+                        <v-btn class="ml-3" color="red" dark @click="abrir('eliminar')"> 
                             <v-icon left> mdi-clipboard-alert </v-icon>
                             Eliminar Inscripción
                         </v-btn>
@@ -70,7 +70,7 @@
                 <v-card-title>
                     Registrar Inscripción
                     <v-spacer> </v-spacer>
-                    <v-btn icon @click="cerrar_Registrar()"><v-icon> mdi-close </v-icon></v-btn>
+                    <v-btn icon @click="registrarInscripcion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
                     <span>Los campos que contienen un 
@@ -122,7 +122,7 @@
                 <v-card-title>
                     Editar Inscripción
                     <v-spacer> </v-spacer>
-                    <v-btn icon @click="cerrar_Editar()"><v-icon> mdi-close </v-icon></v-btn>
+                    <v-btn icon @click="editarInscripcion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
                     <span>Los campos que contienen un 
@@ -174,7 +174,7 @@
                 <v-card-title>
                     Eliminar Inscripción
                     <v-spacer> </v-spacer>
-                    <v-btn icon @click="cerrar_Eliminar()"><v-icon> mdi-close </v-icon></v-btn>
+                    <v-btn icon @click="eliminarInscripcion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
                     <span>Los campos que contienen un 
@@ -307,7 +307,7 @@ export default {
                 class: 'primary--text font-weight-bold'
             },
             { 
-                text: 'Género',
+                text: 'Género Atleta',
                 sortable: false,
                 value: 'genero',
                 class: 'primary--text font-weight-bold',
@@ -459,15 +459,18 @@ export default {
             console.log(error);
         }
     },
-    cerrar_Registrar () {
-        this.categoriasDis = [];
-        this.categoriasIns = [];
-        this.posicionesCategoria = [];
-        this.posicionesCategoriaIns = [];
-        this.posicionesCategoriaDis=  [];
-        this.$refs.form.reset();
+    abrir (evento) {
+        this.atleta = {};
+        this.categoria = {};
+        this.posicion = {};
         this.validar = null;
-        this.registrarInscripcion = false;
+        if (evento == 'registrar') {
+            this.registrarInscripcion = true;
+        } else if (evento == 'editar') {
+            this.editarInscripcion = true;
+        } else {
+            this.eliminarInscripcion = true;
+        }
     },
     async registrar_Inscripcion () {
         this.inscripcionRegistrar.cedula = this.cedula;
@@ -495,11 +498,9 @@ export default {
                             type: 'error',
                         }
                     }
-                    this.$refs.form.reset();
                     this.registrarInscripcion = false;
                 })
                 .catch((error) => {
-                    this.$refs.form.reset();
                     this.mensajeError = error.response.status === 400
                     ? 'Ha ocurrido un error a la hora de crear la categoria'
                     : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
@@ -508,18 +509,11 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.atleta = {};
+        this.categoria = {};
+        this.posicion = {};
         this.validar = null;
         this.obtenerInscripciones();
-    },
-    cerrar_Editar () {
-        this.categoriasDis = [];
-        this.categoriasIns = [];
-        this.posicionesCategoria = [];
-        this.posicionesCategoriaIns = [];
-        this.posicionesCategoriaDis=  [];
-        this.$refs.form.reset();
-        this.validar = null;
-        this.editarInscripcion = false;
     },
     async editar_Inscripcion () {
         this.inscripcion.cedula = this.cedula;
@@ -543,11 +537,9 @@ export default {
                             type: 'error',
                         }
                     }
-                    this.$refs.form.reset();
                     this.editarInscripcion = false;
                 })
                 .catch((error) => {
-                    this.$refs.form.reset();
                     this.mensajeError = error.response.status === 400
                     ? 'Ha ocurrido un error a la hora de crear la categoria'
                     : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
@@ -556,18 +548,11 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.atleta = {};
+        this.categoria = {};
+        this.posicion = {};
         this.validar = null;
         this.obtenerInscripciones();
-    },
-    cerrar_Eliminar () {
-        this.categoriasDis = [];
-        this.categoriasIns = [];
-        this.posicionesCategoria = [];
-        this.posicionesCategoriaIns = [];
-        this.posicionesCategoriaDis=  [];
-        this.$refs.form.reset();
-        this.validar = null;
-        this.eliminarInscripcion = false;
     },
     async confimar_Eliminar() {
         this.inscripcion.cedula = this.cedula;
@@ -607,12 +592,10 @@ export default {
                             type: 'error',
                         }
                     }
-                    this.$refs.form.reset();
                     this.confirmar = false;
                     this.eliminarInscripcion = false;
                 })
                 .catch((error) => {
-                    this.$refs.form.reset();
                     this.mensajeError = error.response.status === 400
                     ? 'Ha ocurrido un error a la hora de crear la categoria'
                     : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
@@ -621,6 +604,9 @@ export default {
         } catch (error) {
             console.log(error);
         }
+        this.atleta = {};
+        this.categoria = {};
+        this.posicion = {};
         this.validar = null;
         this.obtenerInscripciones();
     },
