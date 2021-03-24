@@ -1,6 +1,7 @@
 /* Importar jwt e instanciar la conexion a la bd */
 const jwt = require('jsonwebtoken');
 const bd = require('../conexion');
+const auth = require('../controllers/auth');
 
 /* Verifica el token del usuario */
 async function verifyToken (req, res, next) {
@@ -23,6 +24,18 @@ async function verifyToken (req, res, next) {
     if (check.length === 0) { 
       res.clearCookie('JWT');
       return res.status(401).send('user-no-encontrado');
+    }
+    /* si el usuario posee un token valido, pero este esta a punto de expirar, creamos uno nuevo */
+    // Verifica el tiempo restante en horas, si es menor o igual a 1 hora
+    if ((user.exp - (Date.now() / 1000)) / 3600 <= 1) {
+      // Creamos un nuevo token y refrescamos la cookie con 12 h extra con el nuevo token
+      new_token = auth.crearToken(user.cedula);
+      res.cookie('JWT', new_token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 12 * 3600000),
+        sameSite: true,
+        path: '/'
+      });
     }
     /* Si todo esta bien, llamamos a next() */
     next();
