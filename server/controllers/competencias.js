@@ -604,7 +604,6 @@ async function actualizarRendimiento (id_deporte, id_categoria, id, cedula, id_p
 
     // Realizamos la actualizacion de la tabla rendimientos con los datos
     estadisticas.forEach(async e => {
-      console.log(e);
       // Si el valor es nulo, significa que se deberia borrar el registro de la base de datos
       if (e.valor === null) {
         await bd.query(
