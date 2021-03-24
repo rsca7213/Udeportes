@@ -522,9 +522,9 @@ export default {
         this.inscripcion.cedula = this.cedula;
         this.inscripcion.categoria = this.categoria.id.id_categoria;
         if (this.posicion.id == null) {
-            this.inscripcionRegistrar.posicion = null;
+            this.inscripcion.posicion = null;
         } else {
-            this.inscripcionRegistrar.posicion = this.posicion.id.id_posicion;
+            this.inscripcion.posicion = this.posicion.id.id_posicion;
         }
         try {
             if (this.$refs.form.validate()) {

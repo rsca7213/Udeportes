@@ -13,7 +13,7 @@ async function crearEstadisticas (datos) {
         check = validador.validarEstadistica(datos.body.maximo);
         if (!check.estado) return { codigo: 422, texto: check.texto }
     }
-    if (datos.body.minimo > datos.body.maximo) {
+    if (datos.body.minimo > datos.body.maximo && datos.body.maximo != null) {
         return { codigo: 422, texto: 'El valor mínimo debe ser menor que el valor máximo' }
     }
     try {
@@ -102,7 +102,7 @@ async function editarEstadistica (datos) {
         check = validador.validarEstadistica(datos.body.maximo);
         if (!check.estado) return { codigo: 422, texto: check.texto }
     }
-    if (datos.body.minimo > datos.body.maximo) {
+    if (datos.body.minimo > datos.body.maximo && datos.body.maximo != null) {
         return { codigo: 422, texto: 'El valor mínimo debe ser menor que el valor máximo' }
     }
     try {

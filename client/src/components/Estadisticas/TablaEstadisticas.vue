@@ -69,14 +69,14 @@
                         validate-on-blur v-model="estadisticaCrear.nombre" name="nombre"> </v-text-field>
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Mínimo"
                         prepend-icon="mdi-arrow-down" type="text" @change="check_minimo()"
-                        validate-on-blur v-model="estadisticaCrear.minimo" name="minimo"> </v-text-field>
+                        validate-on-blur v-model.number="estadisticaCrear.minimo" name="minimo"> </v-text-field>
 
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Máximo"
                         prepend-icon="mdi-arrow-up" type="text" disabled v-if="estadisticaCrear.minimo == null"
-                        validate-on-blur v-model="estadisticaCrear.maximo" name="maximo"> </v-text-field>
+                        validate-on-blur v-model.number="estadisticaCrear.maximo" name="maximo"> </v-text-field>
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Máximo"
                         prepend-icon="mdi-arrow-up" type="text" v-else
-                        validate-on-blur v-model="estadisticaCrear.maximo" name="maximo"> </v-text-field>
+                        validate-on-blur v-model.number="estadisticaCrear.maximo" name="maximo"> </v-text-field>
                         
                         <v-select v-model="estadisticaCrear.id_posicion" label="Posición *" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posiciones"
@@ -117,14 +117,14 @@
 
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Mínimo"
                         prepend-icon="mdi-arrow-down" type="text" @change="check_minimo()"
-                        validate-on-blur v-model="estadistica.minimo" name="minimo"> </v-text-field>
+                        validate-on-blur v-model.number="estadistica.minimo" name="minimo"> </v-text-field>
 
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Máximo"
                         prepend-icon="mdi-arrow-up" type="text" disabled v-if="estadistica.minimo == null"
-                        validate-on-blur v-model="estadistica.maximo" name="maximo"> </v-text-field>
+                        validate-on-blur v-model.number="estadistica.maximo" name="maximo"> </v-text-field>
                         <v-text-field clear-icon="mdi-close" clearable counter="8" label="Valor Máximo"
                         prepend-icon="mdi-arrow-up" type="text" v-else
-                        validate-on-blur v-model="estadistica.maximo" name="maximo"> </v-text-field>
+                        validate-on-blur v-model.number="estadistica.maximo" name="maximo"> </v-text-field>
                         
                         <v-select v-model="estadistica.id_posicion" :label="estadistica.posicion" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posiciones"
