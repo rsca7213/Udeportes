@@ -200,6 +200,14 @@ export default {
         }
     },
     methods: {
+        async obtenerDeportes () {
+            axios.get(`${server_url}/deportes/`, { withCredentials: true })
+            .then((res) => {
+                if (res.data.codigo === 200){
+                    this.deportes = res.data.deportes;
+                }
+            })
+        },
         abrir_crear () {
             this.deporteCrear = {};
             this.crearDeporte = true;
@@ -211,7 +219,6 @@ export default {
                     .post(`${server_url}/deportes`, this.deporteCrear, { withCredentials: true })
                     .then((res) => {
                         if (res.data.codigo === 200) {
-                            this.deportes.push(res.data.deporte);
                             this.display = {
                                 show: true, 
                                 mensaje: res.data.texto,
@@ -237,6 +244,7 @@ export default {
                     console.log(error);
                 }
             }
+            this.obtenerDeportes();
         },
         async ver_Deporte (id, evento) {
             try {
@@ -266,8 +274,6 @@ export default {
                     .put(`${server_url}/deportes/${this.deporte.id}`, this.deporte, { withCredentials: true })
                     .then((res) => {
                         if (res.data.codigo === 200) {
-                            const index = this.deportes.findIndex(d => d.id == this.deporte.id);
-                            this.deportes[index] = res.data.deporte;
                             this.display = {
                                 show: true, 
                                 mensaje: res.data.texto,
@@ -293,6 +299,7 @@ export default {
                     console.log(error);
                 }
             }
+            this.obtenerDeportes();
         },
         async eliminar_Deporte () {
             try {
@@ -318,6 +325,7 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+            this.obtenerDeportes();
         },
         deportes_Vacios () {
             if (this.deportes.length == 0) {
@@ -334,12 +342,7 @@ export default {
         .then((res) => {
             if (res.status === 200) {
                 //en caso de que se pasen todas las validaciones se llaman a todos los deportes del sistema
-                axios.get(`${server_url}/deportes/`, { withCredentials: true })
-                .then((res) => {
-                    if (res.data.codigo === 200){
-                        this.deportes = res.data.deportes;
-                    }
-                })
+                this.obtenerDeportes();
                 this.cargando = false;
             }
         })

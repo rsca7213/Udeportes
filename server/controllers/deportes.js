@@ -27,7 +27,7 @@ async function crearDeporte (datos) {
 async function verDeportes () {
     try {
         let deportes = await bd.query(
-          `SELECT d.id, d.nombre FROM deportes d ORDER BY d.id`
+          `SELECT d.id, d.nombre FROM deportes d ORDER BY d.nombre`
         );
         deportes = deportes.rows;
     

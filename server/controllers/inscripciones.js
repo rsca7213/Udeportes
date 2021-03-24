@@ -155,12 +155,23 @@ async function editarInscripcion (datos) {
         return { codigo: 400, texto:'El atleta no se encuentra registrado en el sistema.'}
     }
     try {
+        let inscripcion = await bd.query(
+            `SELECT cedula_atleta, id_categoria, id_deporte, TO_CHAR(fecha_registro, 'DD/MM/YYYY'), id_posicion, id_deporte_pos 
+            FROM inscripciones 
+            WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_deporte=$3`,
+            [datos.cedula, datos.categoria, datos.deporte]
+        ); 
+        inscripcion = inscripcion.rows[0];
+        await bd.query(
+            `DELETE FROM rendimientos WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_posicion=$3`,
+            [datos.cedula, datos.categoria, inscripcion.id_posicion]
+        );
         await bd.query(
             `UPDATE inscripciones SET id_posicion=$1, id_deporte_pos=$4
             WHERE cedula_atleta=$2 AND id_categoria=$3 AND id_deporte=$4`,
             [datos.posicion, datos.cedula, datos.categoria, datos.deporte]
         ); 
-        let inscripcion = await bd.query(
+        inscripcion = await bd.query(
             `SELECT cedula_atleta, id_categoria, id_deporte, TO_CHAR(fecha_registro, 'DD/MM/YYYY'), id_posicion, id_deporte_pos 
             FROM inscripciones 
             WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_deporte=$3`,
