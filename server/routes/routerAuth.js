@@ -32,7 +32,7 @@ router.route('/login')
       let token = auth.crearToken(check.cedula);
       res.cookie('JWT', token, {
         httpOnly: true,
-        expires: 0,
+        expires: new Date(Date.now() + 12 * 3600000),
         sameSite: true,
         path: '/'
       });

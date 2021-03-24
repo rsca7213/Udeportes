@@ -51,7 +51,7 @@ function crearToken (cedula) {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: '24h'
+      expiresIn: '12h'
     }
   );
   return token;
