@@ -48,7 +48,7 @@
                     <v-list-item-subtitle> 
                       <b> Edad: </b>
                       <span v-text="atleta.edad"> </span>
-                      <b> | Genero: </b>
+                      <b> | Género: </b>
                       <span v-text="atleta.genero"> </span>
                     </v-list-item-subtitle>
                   </v-list-item-content>

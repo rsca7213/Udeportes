@@ -98,7 +98,7 @@ export default {
       // headers de la tabla
       atributosTabla: [
         {
-          text: 'Nro. Cedula',
+          text: 'Nro. Cédula',
           align: 'start',
           sortable: true,
           filterable: true,
@@ -114,7 +114,7 @@ export default {
           class: 'primary--text font-weight-bold'
         },
         {
-          text: 'Genero',
+          text: 'Género',
           align: 'start',
           sortable: true,
           filterable: true,

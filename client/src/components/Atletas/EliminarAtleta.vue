@@ -20,7 +20,7 @@
         <br>
         <span class="error--text"> Al eliminar al atleta se eliminaran todos sus datos del sistema. </span>
         <br>
-        <b> Nro. Cedula: </b> <span v-text="cedula"> </span>
+        <b> Nro. Cédula: </b> <span v-text="cedula"> </span>
         <br>
         <b> Nombre Completo: </b> <span v-text="nombre_completo"> </span>
       </v-card-text>

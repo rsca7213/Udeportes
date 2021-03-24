@@ -54,7 +54,7 @@
               <v-list-item-title v-text="item.nombre_completo" class="d-none d-sm-inline"> </v-list-item-title>
               <v-list-item-title v-text="item.nombre_completo" class="text-body-2 d-inline d-sm-none"> </v-list-item-title>
               <v-list-item-subtitle> 
-                <b class="mr-1 hide-xxs"> Nro. Cedula: </b>
+                <b class="mr-1 hide-xxs"> Nro. Cédula: </b>
                 <span v-text="item.cedula"> </span>
               </v-list-item-subtitle>
             </v-list-item-content>

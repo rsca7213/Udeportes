@@ -149,10 +149,27 @@
                       </v-col>
                     </v-row>
                     <div v-if="inputs.select && inputs.select.tipo && dataRadar.length">
-                      <ApexChart type="radar" :options="{ xaxis: { categories: radarCategories } , 
-                      plotOptions: { radar: { polygons: { fill: { colors: ['#EAEAEA', '#FDFDFD'] } } }}}" 
+                      <ApexChart type="bar" :height="dataRadar.length * 50"
+                      :options="{ 
+                        xaxis: { 
+                          categories: radarCategories,
+                          labels: {
+                            formatter: valor => {
+                              if (typeof(valor) != typeof(1) || valor <= 1e-50) return 0;
+                              return valor % 1 > 0 ? valor.toFixed(1) : valor;
+                            }
+                          }
+                        }, 
+                        plotOptions: {
+                          bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            barHeight: '70%'
+                          }
+                        }
+                      }" 
                       :series="[ { name: 'Rendimiento', data: dataRadar } ]"
-                      class="elevation-4 p-4 rounded-lg" />
+                      class="elevation-4 pa-1 pa-sm-4 rounded-lg" />
                     </div>
                     <div v-else-if="inputs.select && inputs.select.tipo && !dataRadar.length"
                     class="text-center grey--text text--darken-1">
@@ -484,5 +501,13 @@ export default {
 </script>
 
 <style>
+  .apexcharts-menu-icon {
+    display: none;
+  }
 
+  @media only screen and (max-width: 340px) {
+    tspan {
+      font-size: 10px;
+    }
+  }
 </style>

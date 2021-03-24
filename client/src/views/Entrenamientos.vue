@@ -16,7 +16,7 @@
               <v-row class="pt-0">
                 <v-col class="pt-0" cols="12" md="6" lg="4" xl="3">
                   <v-select v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
-                  clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
+                  clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect" :messages="deporteActual"
                   no-data-text="No tiene categorias asignadas" @change="getEntrenamientos()">
                   </v-select>
                 </v-col>
@@ -66,6 +66,8 @@ export default {
       entrenamientos: [],
       // Items en el select box (Categorias)
       itemsSelect: [],
+      // Deportes { id, nombre } para mostrarlo al seleccionar una categoria
+      deportes: [],
       // V-model del select box
       categoria: {
         id_categoria: 0,
@@ -116,6 +118,13 @@ export default {
         // Quitamos el loader
         this.categoriaCargando = false;
       }
+    }
+  },
+
+  // Determina el nombre del deporte actual de la categoria seleccionada
+  computed: {
+    deporteActual() {
+      return this.deportes.find(item => item.id  === this.categoria.id_deporte)?.nombre;
     }
   },
 
@@ -177,6 +186,13 @@ export default {
                   id_deporte: asignacion.id_deporte
                 }
               });
+
+              // Agregamos el deporte al arreglo de deportes siempre y cuando no exista ya en dicho arreglo
+              if (!this.deportes.map(i => i.id).includes(asignacion.id_deporte))
+                this.deportes.push({
+                  id: asignacion.id_deporte,
+                  nombre: asignacion.deporte
+                });
             });
           });
           // Mostramos el componente al tener listo el select box

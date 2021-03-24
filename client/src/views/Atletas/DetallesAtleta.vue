@@ -55,7 +55,7 @@
                       <v-col class="align-center">
                         <v-icon class="mr-1" color="indigo" :class="atleta.cedula ? '' : 'text--lighten-2'"> mdi-card-account-details </v-icon>
                         <span class="font-weight-medium indigo--text" 
-                        :class="atleta.cedula ? '' : 'text--lighten-2'"> Nro. Cedula: </span>
+                        :class="atleta.cedula ? '' : 'text--lighten-2'"> Nro. Cédula: </span>
                         <span v-text="atleta.cedula || 'No disponible'" class="ml-1"
                         :class="atleta.cedula ? '' : 'grey--text'"> </span>
                       </v-col>
@@ -75,7 +75,7 @@
                       <v-col class="align-center"> 
                         <v-icon class="mr-1" color="indigo" :class="atleta.telefono ? '' : 'text--lighten-2'"> mdi-cellphone </v-icon>
                         <span class="font-weight-medium indigo--text" 
-                        :class="atleta.telefono ? '' : 'text--lighten-2'"> Telefono: </span>
+                        :class="atleta.telefono ? '' : 'text--lighten-2'"> Teléfono: </span>
                         <span v-text="atleta.telefono || 'No disponible'" class="ml-1"
                         :class="atleta.telefono ? '' : 'grey--text'"> </span>
                       </v-col>
@@ -84,7 +84,7 @@
                       <v-col class="align-center"> 
                         <v-icon class="mr-1" color="indigo" :class="atleta.genero ? '' : 'text--lighten-2'"> mdi-human-male-female </v-icon>
                         <span class="font-weight-medium indigo--text" 
-                        :class="atleta.genero ? '' : 'text--lighten-2'"> Genero: </span>
+                        :class="atleta.genero ? '' : 'text--lighten-2'"> Género: </span>
                         <span v-text="atleta.genero || 'No disponible'" class="ml-1"
                         :class="atleta.genero ? '' : 'grey--text'"> </span>
                       </v-col>
