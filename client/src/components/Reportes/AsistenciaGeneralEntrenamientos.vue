@@ -157,7 +157,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'asistencias',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort : (a, b) =>{
+            a = parseInt(a.split(' ')[0]);
+            b = parseInt(b.split(' ')[0]);
+            return a > b ? 1 : -1;
+          },
         },
         {
           text: 'Inasistencias',
@@ -165,7 +170,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'faltas',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort : (a, b) =>{
+            a = parseInt(a.split(' ')[0]);
+            b = parseFloat(b.split(' ')[0]);
+            return a > b ? 1 : -1;
+          },
         },
         {
           text: '% Asistencias',
@@ -173,7 +183,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'porcentaje',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort : (a, b) =>{
+            a = parseFloat(a.replace(' %', ''));
+            b = parseFloat(b.replace(' %', ''));
+            return a > b ? 1 : -1;
+          },
         },
       ],
 

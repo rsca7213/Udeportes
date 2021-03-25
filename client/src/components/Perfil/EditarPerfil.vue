@@ -297,12 +297,14 @@ export default {
           .then((res) => {
             if (res.data.codigo === 200) {
               this.form_cargando = false;
-              this.mensaje_exito = '¡Información editada exitosamente!';
-              //para mostrar el dialog indicando el éxtio de la operación
-              let datos_exito_dialog = {estatus_operacion : true, mensaje_operacion : this.mensaje_exito};
-              this.props_exito_dialog = datos_exito_dialog;
               
-              this.exito_dialog = true;     
+              /*
+                Se agrega la key edit al sesión storage para mostrar el snackbar de éxito luego de 
+                editar la información del usuario y recargar la página
+              */
+              sessionStorage.edit = true;
+              this.$router.go();
+              
             }
             else{
               this.form_cargando = false;
@@ -329,6 +331,19 @@ export default {
         this.inputs.rol = (this.inputs.rol === 'a')? 'Administrador' : 'Entrenador';
     })
     .catch(() => { });
+
+    /*
+      Para actualizar el nombre del usuario en el navbar se utiliza sessionStorage
+      y en caso de que la key edit sea igual a true entonces se muestra el snackbar de
+      éxito y por último se remueve la key del sessionStorage
+    */ 
+    if (sessionStorage.edit){
+      this.mensaje_exito = '¡Información editada exitosamente!';
+      let datos_exito_dialog = {estatus_operacion : true, mensaje_operacion : this.mensaje_exito};
+      this.props_exito_dialog = datos_exito_dialog;
+      this.exito_dialog = true;
+      sessionStorage.removeItem('edit');
+    }
   }
 }
 </script>
