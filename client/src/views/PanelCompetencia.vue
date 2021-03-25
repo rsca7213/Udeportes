@@ -90,7 +90,7 @@
                                     <span v-text="estadistica.nombre" class="ml-1 indigo--text"> </span>
                                   </v-row>
                                   <v-row> 
-                                    <span v-text="estadistica.valor || 'N/A'" class="ml-6"> </span>
+                                    <span v-text="estadistica.valor === null ? 'N/A' : estadistica.valor" class="ml-6"> </span>
                                   </v-row>
                                 </v-col>
                                 <v-col cols="!2" v-if="!atleta.estadisticas.length" class="px-1"> 

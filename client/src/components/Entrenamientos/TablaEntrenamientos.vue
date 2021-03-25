@@ -147,7 +147,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'asistencias',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort: (a, b) => {
+            a = parseInt(a.replace(' Atleta', '').replace(' Atletas', ''));
+            b = parseInt(b.replace(' Atleta', '').replace(' Atletas', ''));
+            return a > b ? 1 : -1;
+          }
         },
         {
           text: 'Inasistencias',
@@ -155,7 +160,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'faltas',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort: (a, b) => {
+            a = parseInt(a.replace(' Atleta', '').replace(' Atletas', ''));
+            b = parseInt(b.replace(' Atleta', '').replace(' Atletas', ''));
+            return a > b ? 1 : -1;
+          }
         },
         {
           text: '% Asistencia',
@@ -163,7 +173,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'porcentaje',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort: (a,b) => {
+            a = parseFloat(a.replace(' %', ''));
+            b = parseFloat(b.replace(' %', ''));
+            return a > b ? 1 : -1;
+          }
         },
         {
           text: 'Acciones',

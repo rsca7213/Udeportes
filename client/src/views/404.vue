@@ -37,7 +37,7 @@
 
 <script>
 export default {
-
+  name: 'Error404'
 }
 </script>
 

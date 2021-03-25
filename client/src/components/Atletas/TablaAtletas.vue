@@ -127,7 +127,12 @@ export default {
           sortable: true,
           filterable: true,
           value: 'edad',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sort: (a, b) => {
+            a = parseInt(a.replace(' Año', '').replace(' Años', ''));
+            b = parseInt(b.replace(' Año', '').replace(' Años', ''));
+            return a > b ? 1 : -1;
+          }
         },
         {
           text: 'Correo Electrónico',

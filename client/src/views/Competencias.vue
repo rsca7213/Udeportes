@@ -15,8 +15,9 @@
             <v-container class="pt-0">
               <v-row class="pt-0">
                 <v-col class="pt-0" cols="12" md="6" lg="4" xl="3">
-                  <v-select v-model="categoria" label="Categoría" prepend-icon="mdi-clipboard-text"
-                  clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect" :messages="deporteActual"
+                  <v-select v-model="categoria" :label="`Categoría ${deporteActual ? '(' + deporteActual + ')' : ''}`" 
+                  prepend-icon="mdi-clipboard-text" 
+                  clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
                   no-data-text="No tiene categorias asignadas" @change="getCompetencias()">
                   </v-select>
                 </v-col>
@@ -211,7 +212,7 @@ export default {
   // Determina el nombre del deporte actual de la categoria seleccionada
   computed: {
     deporteActual() {
-      return this.deportes.find(item => item.id  === this.categoria.id_deporte)?.nombre;
+      return this.deportes.find(item => item.id  === this.categoria?.id_deporte)?.nombre;
     }
   },
 
