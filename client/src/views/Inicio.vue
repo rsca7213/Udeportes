@@ -26,11 +26,18 @@
                     </div>
                   </v-card>
                 </v-col>
+                <v-col cols="12" class="d-flex d-sm-none">
+                  <v-spacer></v-spacer>
+                  <v-btn dark color="indigo" @click="obtener_Deportes()" v-if="!this.usuario.admin">
+                    <v-icon left> mdi-clipboard-check </v-icon>
+                    <span class="mr-1">Inscripciones</span>
+                  </v-btn>
+                </v-col>
               </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn dark color="indigo" class="mr-1" @click="obtener_Deportes()" v-if="!this.usuario.admin">
+              <v-btn dark color="indigo" class="mr-1 d-none d-sm-block" @click="obtener_Deportes()" v-if="!this.usuario.admin">
                 <v-icon left> mdi-clipboard-check </v-icon>
                 <span class="d-none d-sm-inline-block mr-1">Inscripciones</span>
               </v-btn>
