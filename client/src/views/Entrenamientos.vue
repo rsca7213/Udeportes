@@ -7,22 +7,22 @@
           <v-card class="px-2 py-4" color="#F5F5F5" elevation="4" shaped>
             <v-card-title> Entrenamientos </v-card-title>
             <v-card-subtitle v-if="!categoria || !categoria.id_categoria"> 
-              Para comenzar a gestionar los entrenamientos, por favor selecciona una categoria. 
+              Para comenzar a gestionar los entrenamientos, por favor selecciona una categoría. 
             </v-card-subtitle>
             <v-card-subtitle> 
-              Puedes cambiar la categoria en cualquier momento.
+              Puedes cambiar la categoría en cualquier momento.
             </v-card-subtitle>
             <v-container class="pt-0">
               <v-row class="pt-0">
                 <v-col class="pt-0" cols="12" md="6" lg="4" xl="3">
-                  <v-select v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
+                  <v-select v-model="categoria" label="Categoría" prepend-icon="mdi-clipboard-text"
                   clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect" :messages="deporteActual"
                   no-data-text="No tiene categorias asignadas" @change="getEntrenamientos()">
                   </v-select>
                 </v-col>
               </v-row>
               <v-row v-if="!categoria || !categoria.id_categoria">
-                <v-col class="grey--text text-center"> Selecciona una categoria para gestionar sus entrenamientos. </v-col>
+                <v-col class="grey--text text-center"> Selecciona una categoría para gestionar sus entrenamientos. </v-col>
               </v-row>
               <v-row v-else-if="categoriaCargando"> 
                 <v-col class="px-6 mx-5">

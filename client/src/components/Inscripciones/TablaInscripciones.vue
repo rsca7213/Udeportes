@@ -125,6 +125,7 @@
                     <v-btn icon @click="editarInscripcion = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
                 <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
+                    <br>
                     Selecciona al Atleta junto con una categoría para cambiar su posición 
                 </v-card-subtitle>
                 <v-form ref="form" @submit.prevent="editar_Inscripcion()">

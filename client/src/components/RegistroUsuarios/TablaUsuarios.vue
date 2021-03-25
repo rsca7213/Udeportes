@@ -94,7 +94,7 @@ export default {
           filterable: true,
           class: 'primary--text font-weight-bold'},
         { 
-          text: 'Correo', 
+          text: 'Correo Electrónico', 
           value: 'correo',
           align: 'left',
           sortable: true,
