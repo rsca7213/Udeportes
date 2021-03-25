@@ -18,7 +18,7 @@
                 </v-row>
                 <v-row class="d-none d-md-flex">
                     <v-col cols="12" class="text-right">
-                        <v-btn color="primary" dark @click="abrir()"> 
+                        <v-btn color="primary" class="mr-2" dark @click="abrir()"> 
                             <v-icon left> mdi-plus-circle </v-icon>
                             Crear Estadística
                         </v-btn>
@@ -26,7 +26,7 @@
                 </v-row>
                 <v-row class="d-flex d-md-none">
                     <v-col class="text-center px-1" cols="12">
-                        <v-btn color="primary" dark @click="abrir()"> 
+                        <v-btn color="primary" class="mr-2" dark @click="abrir()"> 
                             <v-icon left> mdi-plus-circle </v-icon>
                             Crear Estadística
                         </v-btn>
