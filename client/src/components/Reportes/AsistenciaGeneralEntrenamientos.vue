@@ -456,7 +456,7 @@ export default {
               this.entrenamientos = res.data.entrenamientos;
               this.calcularRatios();
             }
-            else if(!res.data.atletas){
+            else if(res.data.entrenamientos.length){
               this.entrenamientos = res.data.entrenamientos;
             }
             else{

@@ -458,7 +458,7 @@ export default {
               this.competencias = res.data.competencias;
               this.calcularRatios();
             }
-            else if(!res.data.atletas){
+            else if(res.data.competencias.length){
               this.competencias = res.data.competencias;
             }
             else{
