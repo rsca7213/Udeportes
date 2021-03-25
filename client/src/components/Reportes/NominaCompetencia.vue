@@ -108,17 +108,15 @@ export default {
       busqueda_atleta: '',
       atletas: [],
       mensaje_error: '',
+      //competencias que se mostrar en el select según la categoría elegida
       items_competencias: [],
       competencias_cargando: false,
+      //competencia elegida para mostrar los atletas que asistieron a esa competencia
       competencia: false,
-      equipo_reporte: {
-        nombre_equipo: '',
-        nombre_categoria: ''
-      },
       // headers de la tabla
       atributos_tabla: [
         {
-          text: 'Nro. Cedula',
+          text: 'Nro. Cédula',
           align: 'start',
           sortable: true,
           filterable: true,
@@ -236,7 +234,7 @@ export default {
             ],
             
           },
-          {text: [{text:'Nómina de Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.info_competencia}`}], fontSize: 14, margin: [ 0, 10, 0, 0 ]},
+          {text: [{text:'Nómina de Competencia ', bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 0 ]},
           {text: [{text:'Equipo: ', bold:true, color: '#2196F3'},{text:`${this.equipo}`}], fontSize: 14, margin: [ 0, 10, 0, 0 ]},
           {text: [{text:'Competencia: ', bold:true, color: '#2196F3'},{text:`${this.competencia.info_competencia}`}], fontSize: 14, margin: [ 0, 5, 0, 20 ]},
   

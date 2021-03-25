@@ -113,6 +113,7 @@ export default {
       busqueda_atleta: '',
       competencias_cargando: false,
       competencia: false,
+      //competencias del select
       items_competencias: [],
       // Ratios de ambos charts
       ratioAsistencias: 0,
@@ -121,10 +122,6 @@ export default {
       //variable que se encarga de mostrar el menu de la fecha
       atletas: [],
       mensaje_error: '',
-      equipo_reporte: {
-        nombre_equipo: '',
-        nombre_categoria: ''
-      },
       // headers de la tabla
       atributos_tabla: [
         {

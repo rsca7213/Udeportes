@@ -160,12 +160,14 @@ export default {
       card_title: 'Reportes',
       menu_reportes: 'menu',
       categoria_cargando: true,
+      //categoria que se le pasa a los componentes para las búsquedas que sean necesarias
       categoria: {
         id_categoria: 0,
         id_deporte: 0
       },
       //rol de usuario para mostrar solo las opciones de reportes respectivas
       rol_usuario: '',
+      //nombre del equipo para mostrarlo en el reporte respectivo
       equipo: '',
       // Data para el select de deportes, rellenado en mounted()
       items_deportes: [],
@@ -196,7 +198,7 @@ export default {
         },
         {
           nombre: 'Nómina de Competencia',
-          descripcion: 'Consulta todos los atletas de una competencia',
+          descripcion: 'Consulta todos los atletas que asistieron a una competencia',
         },
       ],
       //Información de reportes de atletas
@@ -224,6 +226,7 @@ export default {
       let nombre_deporte='';
       let nombre_categoria= '';
   
+      //se obtiene el nombre y categoría del equipo a partir de la opción seleccionada en el select
       if(this.categoria!==null){
         for(let item of this.items_deportes){
           if(item.header){
@@ -249,7 +252,7 @@ export default {
   },
   async mounted() {
     this.categoria_cargando = true;
-    // Solicitud GET
+    // se obtiene el rol del usuario para mostrar los reportes que pueda generar
     await axios
       .get(`${server_url}/perfil?data=completa`, { withCredentials: true })
       .then((res) => {
@@ -258,6 +261,8 @@ export default {
           
       })
       .catch(() => { });
+
+    //se obtienen todos las categorias a mostrar en el select de categorias
     await axios.get(`${server_url}/entrenamientos/categorias`, { withCredentials: true })
       .then((res) => {
         // En caso de exito

@@ -18,6 +18,7 @@
 export default {
   name: 'ExitoDialog',
   props: {
+    //mensaje a mostrar y estatus de la operación
     props_exito_dialog: {},
   },
   data() {
@@ -26,6 +27,7 @@ export default {
     }
   },
   watch: {
+    //cuando algún componente cambia pros_exito_dialog se mostrara el dialog
     "props_exito_dialog" : function () {
       this.display = true;
     }

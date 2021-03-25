@@ -135,10 +135,6 @@ export default {
         {text: 'Total', value: 't'},
       ],
       mensaje_error: '',
-      equipo_reporte: {
-        nombre_equipo: '',
-        nombre_categoria: ''
-      },
       // headers de la tabla
       atributos_tabla: [
         {
@@ -455,13 +451,14 @@ export default {
           if (res.status === 200) {
             this.tabla_cargando=false;
             
+            //si hay atletas que hayan asistido al entrenamiento se calculan los datos a mostrar en las
+            //gráficas
             if(res.data.atletas){
               this.atletas = res.data.atletas;
               this.competencias = res.data.competencias;
-              this.competencias = [];
               this.calcularRatios();
             }
-            else if(res.data.competencias.length){
+            else if(!res.data.atletas){
               this.competencias = res.data.competencias;
             }
             else{

@@ -75,7 +75,7 @@ export default {
       // headers de la tabla
       atributos_tabla: [
         {
-          text: 'Nro. Cedula',
+          text: 'Nro. Cédula',
           align: 'start',
           sortable: true,
           filterable: true,

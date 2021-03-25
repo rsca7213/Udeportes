@@ -18,7 +18,7 @@ router.route('/nomina/equipo/:categoria')
 router.route('/asistencia/entrenamientos/:deporte/:categoria')
   /*
     Ruta POST que obtiene los datos basicos de todos los atletas registrados en el sistema
-    que hayan participado en los entrenamientos del período especificado
+    con su respectiva asistencia en los entrenamientos del período especificado
     pertenecientes a la categoría solicitada y los retorna con un codigo 200 en formato
     Array[] o retorna un error con un codigo 500
   */
@@ -40,7 +40,7 @@ router.route('/asistencia/entrenamientos/:deporte/:categoria')
 router.route('/asistencia/entrenamiento/:deporte/:categoria/:entrenamiento')
   /*
     Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
-    pertenecientes a la categoría solicitada que hayan participado en el entrenamiento
+    pertenecientes a la categoría solicitada con su respectiva asistencia en el entrenamiento
     previamente especificado y los retorna con un codigo 200 en formato
     Array[] o retorna un error con un codigo 500
   */
@@ -53,7 +53,7 @@ router.route('/asistencia/entrenamiento/:deporte/:categoria/:entrenamiento')
 router.route('/nomina/competencia/:deporte/:categoria/:competencia')
 /*
   Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
-  participantes en la competencia solicitada y los retorna con un codigo 200 en formato
+  participantes que hayan asistido a la competencia solicitada y los retorna con un codigo 200 en formato
   Array[] o retorna un error con un codigo 500
 */
 .get(mw_token, async (req, res) => {
@@ -64,7 +64,7 @@ router.route('/nomina/competencia/:deporte/:categoria/:competencia')
 router.route('/asistencia/competencias/:deporte/:categoria')
   /*
     Ruta POST que obtiene los datos basicos de todos los atletas registrados en el sistema
-    pertenecientes a la categoría solicitada que hayan participado en las competencias en el
+    pertenecientes a la categoría solicitada con su respectiva asistencia en las competencias en el
     periodo especificado y los retorna con un codigo 200 en formato
     Array[] o retorna un error con un codigo 500
   */
@@ -86,7 +86,7 @@ router.route('/asistencia/competencias/:deporte/:categoria')
 router.route('/asistencia/competencia/:deporte/:categoria/:competencia')
   /*
     Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
-    pertenecientes a la categoría solicitada que hayan participado en la competencia
+    pertenecientes a la categoría solicitada con su respectiva asistencia en la competencia
     previamente especificada y los retorna con un codigo 200 en formato
     Array[] o retorna un error con un codigo 500
   */

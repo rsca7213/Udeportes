@@ -83,14 +83,10 @@ export default {
       busqueda_atleta: '',
       atletas: [],
       mensaje_error: '',
-      equipo_reporte: {
-        nombre_equipo: '',
-        nombre_categoria: ''
-      },
       // headers de la tabla
       atributos_tabla: [
         {
-          text: 'Nro. Cedula',
+          text: 'Nro. Cédula',
           align: 'start',
           sortable: true,
           filterable: true,

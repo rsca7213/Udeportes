@@ -113,6 +113,7 @@ export default {
       busqueda_atleta: '',
       entrenamientos_cargando: false,
       entrenamiento: false,
+      //entrenamientos del select
       items_entrenamientos: [],
       // Ratios de ambos charts
       ratioAsistencias: 0,
@@ -121,10 +122,6 @@ export default {
       //variable que se encarga de mostrar el menu de la fecha
       atletas: [],
       mensaje_error: '',
-      equipo_reporte: {
-        nombre_equipo: '',
-        nombre_categoria: ''
-      },
       // headers de la tabla
       atributos_tabla: [
         {
@@ -426,6 +423,7 @@ export default {
           // En caso de exito
           if (res.status === 200) {
             this.atletas = res.data;
+            //se calculan los datos a mostrar en la gráfica
             this.calcularRatios();
           }
         })

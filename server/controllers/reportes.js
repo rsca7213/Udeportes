@@ -57,7 +57,7 @@ async function nominaEquipo (id_categoria) {
 /*
   Función que obtiene todos los datos basicos de atletas registrados en el sistema
   Datos = { cedula. mombre_completo, genero, fecha_nacimiento, correo, educacion (etapa) }
-  pertenecientes a una competencia previamente especificada.
+  que asistieron a una competencia previamente especificada.
   Retornará un arreglo con los datos de los atletas registrados en el sistema y un HTTP 200
   En caso de error retornará un HTTP 500
 */
@@ -72,7 +72,7 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
     if (!validador.validarId(id_categoria).estado) return { codigo: 422, texto: validador.validarId(id_categoria).texto }
     if (!validador.validarId(id_deporte).estado) return { codigo: 422, texto: validador.validarId(id_deporte).texto }
     
-    // Buscamos los datos basicos de los atletas que hayan participado en la competencia previamente especificada
+    // Buscamos los datos basicos de los atletas que hayan asistido a la competencia previamente especificada
 
     let atletas = await bd.query(
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, 
@@ -80,7 +80,7 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
       e.nombre AS educacion, CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
       THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
       FROM inscripciones i, participaciones p, atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
-      WHERE a.cedula = i.cedula_atleta AND p.asistencia IS NOT NULL AND i.cedula_atleta = p.cedula_atleta AND
+      WHERE a.cedula = i.cedula_atleta AND p.asistencia = true AND i.cedula_atleta = p.cedula_atleta AND
       i.id_categoria = p.id_categoria AND i.id_deporte = p.id_deporte
       AND $1 = p.id_deporte_comp AND $2 = p.id_categoria_comp AND $3 = p.id_competencia;`,
        [id_deporte, id_categoria, id_competencia] 
@@ -251,13 +251,13 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
          FROM competencias c 
          WHERE c.id_deporte = $1 AND c.id_categoria = $2 AND
          (
-          (SUBSTR(TO_CHAR(c.fecha_inicio, 'YYYY/DD/MM'),1,4)::INTEGER = $3 AND 
-          SUBSTR(TO_CHAR(c.fecha_inicio, 'MM/DD/YYYY'),1,2)::INTEGER >= $4) AND 
-          (SUBSTR(TO_CHAR(c.fecha_fin, 'YYYY/DD/MM'),1,4)::INTEGER = $3 AND 
-          SUBSTR(TO_CHAR(c.fecha_fin, 'MM/DD/YYYY'),1,2)::INTEGER <= $4)
+          (SUBSTR(TO_CHAR(c.fecha_inicio, 'YYYY/DD/MM'),1,4) = $3 AND 
+          CAST(SUBSTR(TO_CHAR(c.fecha_inicio, 'MM/DD/YYYY'),1,2) AS INTEGER) <= $4) AND 
+          (c.fecha_fin IS NULL OR (SUBSTR(TO_CHAR(c.fecha_fin, 'YYYY/DD/MM'),1,4) = $3 AND 
+          CAST(SUBSTR(TO_CHAR(c.fecha_fin, 'MM/DD/YYYY'),1,2) AS INTEGER) >= $4))
          )
          ORDER BY c.nombre`,
-        [id_deporte, id_categoria, parseInt(fecha[0]), parseInt(fecha[1])]
+        [id_deporte, id_categoria, fecha[0], parseInt(fecha[1])]
       );
     }
     
@@ -332,7 +332,7 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
 /*
   Función que obtiene todos los datos basicos de atletas registrados en el sistema
   Datos = { cedula. mombre_completo, genero, fecha_nacimiento, correo, educacion (etapa) }
-  que hayan participado en en el entrenamiento que se encuentre previamente especificada.
+  que con su respectiva asistencia (asistencias o faltas) en en el entrenamiento que se encuentre previamente especificada.
   Retornará un arreglo con los datos de los atletas registrados en el sistema y un HTTP 200
   En caso de error retornará un HTTP 500
 */
@@ -390,7 +390,7 @@ async function asistenciaDetalladaEntrenamientos (id_deporte, id_categoria, id_e
 /*
   Función que obtiene todos los datos basicos de atletas registrados en el sistema
   Datos = { cedula. mombre_completo, genero, fecha_nacimiento, correo, educacion (etapa) }
-  que hayan participado en la competencia que se encuentre previamente especificada.
+  con su respectiva asistencia (asistencia o falta) en la competencia que se encuentre previamente especificada.
   Retornará un arreglo con los datos de los atletas registrados en el sistema y un HTTP 200
   En caso de error retornará un HTTP 500
 */
@@ -445,6 +445,13 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
   }
 }
 
+/*
+  Función que obtiene todos los datos basicos de atletas registrados en el sistema
+  Datos = { cedula. mombre_completo, genero, fecha_nacimiento, correo, educacion (etapa) }
+  que tengan una beca.
+  Retornará un arreglo con los datos de los atletas registrados en el sistema y un HTTP 200
+  En caso de error retornará un HTTP 500
+*/
 async function atletasBeca () {
   try {
  
