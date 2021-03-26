@@ -142,14 +142,14 @@
                   <v-container class="pt-0">
                     <v-row class="pt-0">
                       <v-col class="pt-0 px-1">
-                        <v-select v-model="inputs.cedula" label="Posición o Atleta" prepend-icon="mdi-chart-areaspline"
+                        <v-select v-model="inputs.cedula" label="Atleta" prepend-icon="mdi-chart-areaspline"
                         clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
-                        no-data-text="No hay datos" @change="datosRadar()" >
+                        no-data-text="No hay atletas con estadísticas que mostrar." @change="datosRadar()" >
                         </v-select>
                       </v-col>
                     </v-row>
                     <div v-if="inputs.cedula && radar.categorias.length">
-                      <ApexChart type="bar" :height="radar.categorias.length * 100"
+                      <ApexChart type="bar" :height="radar.categorias.length === 1 ? 150 : radar.categorias.length * 100"
                       :options="{ 
                         colors: ['#2196F3', '#8BC34A'],
                         xaxis: { 
@@ -170,7 +170,7 @@
                         }
                       }" 
                       :series="[ 
-                        { name: 'Jugador', data: radar.data_jugador },
+                        { name: 'Atleta', data: radar.data_jugador },
                         { name: 'Promedio', data: radar.data_promedio } 
                       ]"
                       class="elevation-4 pa-1 pa-sm-4 rounded-lg" />
