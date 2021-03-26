@@ -314,7 +314,7 @@ export default {
     },
     async crear_Estadistica () {
         this.estadisticaCrear.id_posicion = this.estadisticaCrear.id_posicion.id_posicion;
-        if (this.estadisticaCrear.minimo == "") {
+        if (this.estadisticaCrear.minimo == "" && this.estadisticaCrear.minimo != 0) {
             this.estadisticaCrear.minimo = null;
             this.estadisticaCrear.maximo = null;
         }
@@ -385,7 +385,7 @@ export default {
         if (this.estadistica.id_posicion.id_posicion != null) {
            this.estadistica.id_posicion = this.estadistica.id_posicion.id_posicion; 
         }    
-        if (this.estadistica.minimo == "") {
+        if (this.estadistica.minimo == "" && this.estadistica.minimo != 0) {
             this.estadistica.minimo = null;
             this.estadistica.maximo = null;
         }
