@@ -27,6 +27,12 @@
       <v-col class="grey--text text-center"> Selecciona un mes.
       </v-col>
     </v-row>
+    <v-row class="justify-center" v-if="mensaje_error">
+      <v-alert text color="error" dense>
+        <v-icon color="error"> mdi-alert </v-icon>
+        <span v-text="mensaje_error" class="ml-1"> </span>
+      </v-alert>
+    </v-row>
     <div class="mt-7" v-if="atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
@@ -34,10 +40,6 @@
             <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
             </v-col>     
           </v-row>
-          <v-alert text color="error" dense v-if="mensaje_error">
-            <v-icon color="error"> mdi-alert </v-icon>
-            <span v-text="mensaje_error" class="ml-1"> </span>
-          </v-alert>
           <v-row align="center">
             <v-col cols="12">
               <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -392,7 +394,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [ 70, '*', 80, '*', 70 ],
+              widths: [ 70, 130, 75, '*', 70 ],
               body: this.datosReporte()
             },
           },

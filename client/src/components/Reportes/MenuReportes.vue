@@ -12,7 +12,7 @@
                 <v-expansion-panels class="px-0 px-sm-8" v-if="true" accordion>
                   <v-expansion-panel :disabled="false">
                     <v-expansion-panel-header> 
-                      <span>
+                      <span class="d-flex justify-start">
                         <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
                         <span class="subtitle-1">Reportes de Asistencia a Entrenamientos y Competencias</span>
                       </span>
@@ -101,7 +101,7 @@
               <v-container class="pt-0">
                 <v-row class="pt-0 justify-center" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                   <v-col class="pt-0 pl-md-11" cols="12" sm="10" lg="6" xl="6">
-                    <v-select class="mb-4" v-model="categoria" label="Categoria" prepend-icon="mdi-clipboard-text"
+                    <v-select class="mb-4" v-model="categoria" :label="`Categoría ${deporteActual ? '(' + deporteActual + ')' : ''}`" prepend-icon="mdi-clipboard-text"
                     clear-icon="mdi-close" name="categoria" clearable :items="items_deportes"
                     no-data-text="No tiene categorias asignadas" @change="datosEquipo()" hide-details>
                     </v-select>
@@ -169,6 +169,8 @@ export default {
       rol_usuario: '',
       //nombre del equipo para mostrarlo en el reporte respectivo
       equipo: '',
+      //deportes del select
+      deportes: [],
       // Data para el select de deportes, rellenado en mounted()
       items_deportes: [],
       //Información de reportes de asistencia a entrenamientos y competencias
@@ -210,6 +212,12 @@ export default {
       ]
     }
   },
+  // Determina el nombre del deporte actual de la categoria seleccionada
+  computed: {
+    deporteActual() {
+      return this.deportes.find(item => item.id  === this.categoria?.id_deporte)?.nombre;
+    }
+  },
   methods: {
     //método encargado de cambiar la vista de los reportes
     cambiarVista(titulo){
@@ -225,27 +233,9 @@ export default {
 
       let nombre_deporte='';
       let nombre_categoria= '';
-  
-      //se obtiene el nombre y categoría del equipo a partir de la opción seleccionada en el select
-      if(this.categoria!==null){
-        for(let item of this.items_deportes){
-          if(item.header){
-            nombre_deporte = item.header;
-          }
-          else if(item.text){
-            nombre_categoria=item.text;
-            if(item.value.id_categoria===this.categoria.id_categoria){
-              break;
-            }
-          }
-        }
-      }
-      else{
-        this.categoria={
-          id_deporte: 0,
-          id_categoria: 0
-        }
-      }
+
+      nombre_deporte = this.deportes.find(item => item.id  === this.categoria?.id_deporte)?.nombre;
+      nombre_categoria = this.items_deportes.find(item => item.value?.id_categoria  === this.categoria?.id_categoria)?.text;
 
       this.equipo = `${nombre_deporte} ${nombre_categoria}`
     },
@@ -283,6 +273,13 @@ export default {
                   id_categoria: categoria.id_categoria,
                   id_deporte: asignacion.id_deporte
                 }
+              });
+
+              // Agregamos el deporte al arreglo de deportes siempre y cuando no exista ya en dicho arreglo
+              if (!this.deportes.map(i => i.id).includes(asignacion.id_deporte))
+              this.deportes.push({
+                id: asignacion.id_deporte,
+                nombre: asignacion.deporte
               });
             });
           });

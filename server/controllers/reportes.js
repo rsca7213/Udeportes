@@ -22,7 +22,8 @@ async function nominaEquipo (id_categoria) {
       e.nombre AS educacion, CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
       THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
       FROM inscripciones i, atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
-      where a.cedula = i.cedula_atleta AND i.id_categoria = $1;`,
+      where a.cedula = i.cedula_atleta AND i.id_categoria = $1
+      ORDER BY a.cedula;`,
        [id_categoria] 
     );
 
@@ -82,7 +83,8 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
       FROM inscripciones i, participaciones p, atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
       WHERE a.cedula = i.cedula_atleta AND p.asistencia = true AND i.cedula_atleta = p.cedula_atleta AND
       i.id_categoria = p.id_categoria AND i.id_deporte = p.id_deporte
-      AND $1 = p.id_deporte_comp AND $2 = p.id_categoria_comp AND $3 = p.id_competencia;`,
+      AND $1 = p.id_deporte_comp AND $2 = p.id_categoria_comp AND $3 = p.id_competencia
+      ORDER BY a.cedula;`,
        [id_deporte, id_categoria, id_competencia] 
     );
 
@@ -150,10 +152,15 @@ async function asistenciaGeneralEntrenamientos (id_deporte, id_categoria, tipo_a
         [id_deporte, id_categoria, fecha[0], fecha[1]]
       );
     }
-    
-    entrenamientos = entrenamientos.rows
+
+    entrenamientos = entrenamientos.rows;
 
     if(!entrenamientos.length) return { codigo: 200, entrenamientos: entrenamientos }
+
+    //se obtienen los ids de todos los entrenamientos en el período seleccionado
+    entrenamientos_id = entrenamientos.map(entrenamiento =>{
+      return parseInt(entrenamiento.id)
+    })
 
     /*
       Se buscan todos los atletas que estén inscritos en el equipo respectivo y que hayan
@@ -165,10 +172,8 @@ async function asistenciaGeneralEntrenamientos (id_deporte, id_categoria, tipo_a
        WHERE a.cedula = i.cedula_atleta AND $1 = i.id_deporte AND $2 = i.id_categoria AND
        i.cedula_atleta = p.cedula_atleta AND i.id_deporte = p.id_deporte AND
        i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_entrenamiento= any ($3::int[])
-       GROUP BY a.cedula;`,
-       [id_deporte, id_categoria, entrenamientos.map(entrenamiento =>{
-         return parseInt(entrenamiento.id)
-       })] 
+       GROUP BY a.cedula ORDER BY a.cedula;`,
+       [id_deporte, id_categoria, entrenamientos_id] 
     );
 
     atletas = atletas.rows;
@@ -182,21 +187,24 @@ async function asistenciaGeneralEntrenamientos (id_deporte, id_categoria, tipo_a
         atleta.segundo_apellido
       ];
 
+      //se buscan las asistencias de cada atleta para los entrenamientos del período especificado
       let asistencias = await bd.query(
         `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 
-         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = TRUE`,
-        [atleta.cedula, id_deporte, id_categoria]
+         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = TRUE
+         AND p.id_entrenamiento = any ($4::int[])`,
+        [atleta.cedula, id_deporte, id_categoria, entrenamientos_id ]
       );
       asistencias = parseInt(asistencias.rows[0].count);
 
+      //se buscan las faltas de cada atleta para los entrenamientos del período especificado
       let faltas = await bd.query(
         `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 
-         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = FALSE`,
-        [atleta.cedula, id_deporte, id_categoria]
+         AND p.id_deporte_ent = $2 AND p.id_categoria_ent = $3 AND p.asistencia = FALSE
+         AND p.id_entrenamiento = any ($4::int[])`,
+        [atleta.cedula, id_deporte, id_categoria, entrenamientos_id]
       );
       faltas = parseInt(faltas.rows[0].count);
       
-
       return {
         cedula: atleta.cedula,
         nombre_completo: nombres.join(' ').replace(/ +/g, " "),
@@ -265,6 +273,11 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
 
     if(!competencias.length) return { codigo: 200, competencias: competencias }
 
+    //se obtienen los ids de todos los entrenamientos en el período seleccionado
+    competencias_id = competencias.map(competencia =>{
+      return parseInt(competencia.id)
+    })
+
     /*
       Se buscan todos los atletas que estén inscritos en el equipo respectivo y que hayan
       faltado o participado a las competencias del equipo
@@ -275,10 +288,8 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
        WHERE a.cedula = i.cedula_atleta AND $1 = i.id_deporte AND $2 = i.id_categoria AND
        i.cedula_atleta = p.cedula_atleta AND i.id_deporte = p.id_deporte AND
        i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_competencia= any ($3::int[])
-       GROUP BY a.cedula;`,
-       [id_deporte, id_categoria, competencias.map(competencia =>{
-         return parseInt(competencia.id)
-       })] 
+       GROUP BY a.cedula ORDER BY a.cedula;`,
+       [id_deporte, id_categoria, competencias_id] 
     );
 
     atletas = atletas.rows;
@@ -292,17 +303,21 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
         atleta.segundo_apellido
       ];
 
+      //se buscan las asistencias de cada atleta para las competencias del período especificado
       let asistencias = await bd.query(
         `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 
-         AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 AND p.asistencia = TRUE`,
-        [atleta.cedula, id_deporte, id_categoria]
+         AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 AND p.asistencia = TRUE
+         AND p.id_competencia = any ($4::int[])`,
+        [atleta.cedula, id_deporte, id_categoria, competencias_id]
       );
       asistencias = parseInt(asistencias.rows[0].count);
 
+      //se buscan las faltas de cada atleta para las competencias del período especificado
       let faltas = await bd.query(
         `SELECT COUNT(*) FROM participaciones p WHERE p.cedula_atleta = $1 
-         AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 AND p.asistencia = FALSE`,
-        [atleta.cedula, id_deporte, id_categoria]
+         AND p.id_deporte_comp = $2 AND p.id_categoria_comp = $3 AND p.asistencia = FALSE
+         AND p.id_competencia = any ($4::int[])`,
+        [atleta.cedula, id_deporte, id_categoria, competencias_id]
       );
       faltas = parseInt(faltas.rows[0].count);
       
@@ -356,7 +371,8 @@ async function asistenciaDetalladaEntrenamientos (id_deporte, id_categoria, id_e
        FROM atletas a, inscripciones i, participaciones p
        WHERE a.cedula = i.cedula_atleta AND $1 = i.id_deporte AND $2 = i.id_categoria AND
        i.cedula_atleta = p.cedula_atleta AND i.id_deporte = p.id_deporte AND
-       i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_entrenamiento = $3;`,
+       i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_entrenamiento = $3
+       ORDER BY a.cedula;`,
        [id_deporte, id_categoria, id_entrenamiento] 
     );
 
@@ -414,7 +430,8 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
        FROM atletas a, inscripciones i, participaciones p
        WHERE a.cedula = i.cedula_atleta AND $1 = i.id_deporte AND $2 = i.id_categoria AND
        i.cedula_atleta = p.cedula_atleta AND i.id_deporte = p.id_deporte AND
-       i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_competencia = $3;`,
+       i.id_categoria = p.id_categoria AND p.asistencia IS NOT NULL AND p.id_competencia = $3
+       ORDER BY a.cedula;`,
        [id_deporte, id_categoria, id_competencia] 
     );
 
@@ -462,7 +479,8 @@ async function atletasBeca () {
        CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
        THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
        FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
-       WHERE nombre_beca IS NOT NULL`, 
+       WHERE nombre_beca IS NOT NULL
+       ORDER BY a.cedula`, 
     );
 
     atletas = atletas.rows;

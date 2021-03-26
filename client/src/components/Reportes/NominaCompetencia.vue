@@ -15,6 +15,12 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-row class="justify-center" v-if="mensaje_error">
+        <v-alert text color="error" dense>
+          <v-icon color="error"> mdi-alert </v-icon>
+          <span v-text="mensaje_error" class="ml-1"> </span>
+        </v-alert>
+      </v-row>
       <v-row v-if="competencias_cargando"> 
         <v-col class="px-6 mx-5">
           <v-progress-linear indeterminate color="primary"> </v-progress-linear>
@@ -30,10 +36,6 @@
               <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
               </v-col>     
             </v-row>
-            <v-alert text color="error" dense v-if="mensaje_error">
-              <v-icon color="error"> mdi-alert </v-icon>
-              <span v-text="mensaje_error" class="ml-1"> </span>
-            </v-alert>
             <v-row align="center">
               <v-col cols="12">
                 <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -243,7 +245,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [70, 120, 120, '*' ],
+              widths: [70, 130, 120, '*' ],
               body: this.datos_reporte()
             }
           },
