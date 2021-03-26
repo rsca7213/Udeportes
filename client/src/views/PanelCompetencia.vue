@@ -142,17 +142,18 @@
                   <v-container class="pt-0">
                     <v-row class="pt-0">
                       <v-col class="pt-0 px-1">
-                        <v-select v-model="inputs.select" label="Posición o Atleta" prepend-icon="mdi-chart-areaspline"
+                        <v-select v-model="inputs.cedula" label="Posición o Atleta" prepend-icon="mdi-chart-areaspline"
                         clear-icon="mdi-close" name="categoria" clearable :items="itemsSelect"
                         no-data-text="No hay datos" @change="datosRadar()" >
                         </v-select>
                       </v-col>
                     </v-row>
-                    <div v-if="inputs.select && inputs.select.tipo && dataRadar.length">
-                      <ApexChart type="bar" :height="dataRadar.length * 50"
+                    <div v-if="inputs.cedula && radar.categorias.length">
+                      <ApexChart type="bar" :height="radar.categorias.length * 100"
                       :options="{ 
+                        colors: ['#2196F3', '#8BC34A'],
                         xaxis: { 
-                          categories: radarCategories,
+                          categories: radar.categorias,
                           labels: {
                             formatter: valor => {
                               if (typeof(valor) != typeof(1) || valor <= 1e-50) return 0;
@@ -168,10 +169,13 @@
                           }
                         }
                       }" 
-                      :series="[ { name: 'Rendimiento', data: dataRadar } ]"
+                      :series="[ 
+                        { name: 'Jugador', data: radar.data_jugador },
+                        { name: 'Promedio', data: radar.data_promedio } 
+                      ]"
                       class="elevation-4 pa-1 pa-sm-4 rounded-lg" />
                     </div>
-                    <div v-else-if="inputs.select && inputs.select.tipo && !dataRadar.length"
+                    <div v-else-if="inputs.cedula && !radar.categorias.length"
                     class="text-center grey--text text--darken-1">
                       No hay estadisticas que mostrar.
                     </div>
@@ -244,17 +248,18 @@ export default {
 
       // Select box del radar
       inputs: {
-        select: {
-            tipo: '',
-            id: ''
-        }
+        cedula: ''
       },
       // Items del select box del radar
       itemsSelect: [],
-      // Data del radar
-      dataRadar: [],
-      // Labels del radar
-      radarCategories: [],
+
+      // Data para el radar
+      radar: {
+        categorias: [],
+        data_jugador: [],
+        data_promedio: [],
+        ctd_no_nulos: []
+      },
       
       // Opciones asistencias
       asistenciaOptions: {
@@ -390,53 +395,56 @@ export default {
       this.ratioInasistencias = data.inasistencias.toFixed(2);
     },
 
-    // Settea los datos y labels de la grafica radar a partir del input del select box
-    datosRadar () {
-      if (!this.inputs.select) return;
-      this.dataRadar = [];
-      this.radarCategories = [];
-      // Si la grafica es sobre el atleta sencillamente recorremos cada estadistica y vamos pusheando
-      if (this.inputs.select.tipo ===  'a') {
-        this.competencia.posiciones.map(posicion => {
-          posicion.atletas.forEach(atleta => {
-            if (atleta.cedula === this.inputs.select.id) {
-              atleta.estadisticas.forEach(estadistica => {
-                this.dataRadar.push(estadistica.valor || 0);
-                this.radarCategories.push(estadistica.nombre);
-              });
-            }
-          });
-        });
-      }
-      // Si la grafica es de una posicion, vamos sumando a los arreglos y luego calculamos el promedio
-      else if (this.inputs.select.tipo === 'p') {
-        let nombres = [];
-        let data = [];
-        let ctd_atletas = 0;
-        this.competencia.posiciones.forEach(p => {
-          if (p.id == this.inputs.select.id) {
-            ctd_atletas = p.atletas.length;
-            let estadisticas = p.atletas.map(a => a.estadisticas );
-            estadisticas[0].forEach(e => { 
-              nombres.push(e.nombre); 
-              data.push(0); 
-            });
-            estadisticas.forEach(es => {
-              let i = 0;
-              es.forEach(e => {
-                data[i] += parseInt(e.valor || 0);
-                i++;
-              });
-            });
-          }
-        });
+    /*
+      Funcion que retorna los datos y labels de la grafica radar,
+      buscando los rendimientos en las estadisticas de la posición del atleta
+      y los rendimientos promedio de las estadisticas de la posición en la competencia
+    */
+    datosRadar() {
+      // Si el input esta vacio skip
+      if (!this.inputs.cedula) return;
 
-        data = data.map(valor => valor / ctd_atletas || 0);
-        data = data.map(valor => valor.toFixed(2));
-        
-        this.dataRadar = data;
-        this.radarCategories = nombres;
-      }
+      // Seteamos los valores iniciales del radar
+      this.radar = {
+        categorias: [],
+        data_jugador: [],
+        data_promedio: [],
+        ctd_no_nulos: []
+      };
+
+      /*
+        Buscamos la posicion que nos interesa
+        posicion = {
+          id: Number (puede ser un string de num ej "1"),
+          nombre: String,
+          atletas: Array
+        }
+      */
+      let posicion = this.competencia.posiciones.filter(pos => {
+        return pos.atletas.find(atleta => atleta.cedula === this.inputs.cedula)
+      }).pop();
+
+      /*
+        Para cada atleta de la posicion, si el atleta es el buscado, agregamos sus estadisticas a
+        data_jugador y los nombres a categorias. Para cada uno de los atletas, indiferente de si es el
+        buscado o no, vamos sumando las estadisticas a data_promedio
+      */
+      posicion.atletas.forEach(atleta => {
+        atleta.estadisticas.forEach((estadistica, idx) => {
+          if (this.inputs.cedula === atleta.cedula) {
+            this.radar.categorias[idx] = estadistica.nombre;
+            this.radar.data_jugador[idx] = estadistica.valor;
+          }
+          this.radar.data_promedio[idx] = estadistica.valor + this.radar.data_promedio[idx] || estadistica.valor;
+          // Vamos contando la cantidad de atletas que tienen la estadistica no nula
+          if (estadistica.valor != null)
+            this.radar.ctd_no_nulos[idx] = this.radar.ctd_no_nulos[idx] + 1 || 1;
+        });
+      });
+
+      
+      // Calculamos el promedio para cada estadistica de la posicion
+      this.radar.data_promedio = this.radar.data_promedio.map((data, idx) => data / this.radar.ctd_no_nulos[idx] || 0);
     },
 
     /*
@@ -457,23 +465,17 @@ export default {
           this.competencia.posiciones.forEach(posicion => {
             if (posicion.atletas.length)
               this.itemsSelect.push({
-              text: posicion.nombre,
-              value: {
-                tipo: 'p',
-                id: posicion.id
-              }
+              header: posicion.nombre,
+              divider: true
             });
             posicion.atletas.forEach(atleta => {
               this.itemsSelect.push({
                 text: atleta.nombre,
-                value: {
-                  tipo: 'a',
-                  id: atleta.cedula
-                }
+                value: atleta.cedula
               });
             });
           });
-          
+          this.datosRadar();
           this.cargando = false;
         }
       })
