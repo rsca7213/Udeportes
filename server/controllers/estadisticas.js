@@ -71,14 +71,9 @@ async function verEstadistica (datos) {
         let posiciones = await bd.query(
             `SELECT * 
             FROM posiciones p
-            WHERE p.id_deporte=$1 AND p.id NOT IN (
-                SELECT p.id 
-                FROM posiciones p
-                JOIN estadisticas e ON e.id_posicion=p.id
-                WHERE e.id=$2
-            )
+            WHERE p.id_deporte=$1
             ORDER BY p.id`,
-            [datos.id_deporte, datos.id_estadistica]
+            [datos.id_deporte]
         );
 
         estadistica = estadistica.rows[0];
@@ -106,12 +101,23 @@ async function editarEstadistica (datos) {
         return { codigo: 422, texto: 'El valor mínimo debe ser menor que el valor máximo' }
     }
     try {
+        let estadistica = await bd.query(
+            `SELECT * FROM estadisticas WHERE id=$1`,
+            [datos.estadistica]
+        ); 
+        estadistica = estadistica.rows[0];
+        if (estadistica.id_posicion != datos.body.id_posicion) {
+            await bd.query(
+                `DELETE FROM rendimientos WHERE id_estadistica=$1`,
+                [estadistica.id]
+            );
+        }
         await bd.query(
             `UPDATE estadisticas SET nombre=$1, minimo=$2, maximo=$3, id_posicion=$4 WHERE id=$5`,
             [datos.body.nombre, datos.body.minimo, datos.body.maximo, datos.body.id_posicion, datos.estadistica]
         ); 
-        let estadistica = await bd.query(
-            `SELECT * FROM posiciones WHERE id=$1`,
+        estadistica = await bd.query(
+            `SELECT * FROM estadisticas WHERE id=$1`,
             [datos.estadistica]
         ); 
         estadistica = estadistica.rows[0];
