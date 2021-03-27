@@ -121,7 +121,7 @@
               <v-text-field clear-icon="mdi-close" clearable label="Porcentaje (%)" :disabled="!inputs.nombre_beca"
               prepend-icon="mdi-percent" type="text" :rules="reglas.porcentaje_beca"
               validate-on-blur v-model.number.trim="inputs.porcentaje_beca" name="porcentaje_beca"
-              :error-messages="validacion.porcentaje_beca"> </v-text-field>
+              :error-messages="validacion.porcentaje_beca" messages="Min: 0 ─ Max: 100"> </v-text-field>
             </v-col>
           </v-row>
         </v-container>

@@ -29,6 +29,11 @@
             <v-col class="px-6 py-0">
               <v-text-field clear-icon="mdi-close" clearable :label="estadistica.nombre" 
               prepend-icon="mdi-poll-box" validate-on-blur v-model.number="estadistica.valor" name="estadistica"
+              :messages="
+                `${estadistica.min ? 'Min: ' + estadistica.min : ''} 
+                 ${estadistica.min ? estadistica.max ?  '─' : '' : '' }
+                 ${estadistica.max ? 'Max: ' + estadistica.max : ''}`
+              "
               :rules="
               [
                 v => v === null || typeof(v) === typeof(1) || 'Debe ser un numero',

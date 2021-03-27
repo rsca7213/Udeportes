@@ -69,7 +69,7 @@
           </v-btn>
         </div>
         <div class="d-flex justify-center mt-2" v-if="chartData.length">
-          <ApexChart width="400" type="donut" :options="chartOptions" :series="chartData" class="elevation-4 p-4 rounded-lg grey lighten-4" />
+          <ApexChart width="550" type="donut" :options="chartOptions" :series="chartData" class="elevation-4 p-4 rounded-lg grey lighten-4" />
         </div>
         <div class="text-center" v-else>
           No hay datos.
@@ -114,17 +114,136 @@ export default {
         animations: {
           speed: 1600
         },
-        responsive: [{
-          breakpoint: 800,
-          options: {
-            chart: {
-              width: 300
-            },
-            legend: {
-              position: 'bottom'
+        responsive: [
+          {
+            breakpoint: 350,
+            options: {
+              chart: {
+                size: 100,
+                width: 200,
+                height: 800
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 375,
+            options: {
+              chart: {
+                size: 100,
+                width: 260,
+                height: 900
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 410,
+            options: {
+              chart: {
+                size: 100,
+                width: 300,
+                height: 1000
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 430,
+            options: {
+              chart: {
+                width: 350,
+                height: 1000
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 470,
+            options: {
+              chart: {
+                width: 370,
+                height: 1000
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 500,
+            options: {
+              chart: {
+                width: 400
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 550,
+            options: {
+              chart: {
+                width: 420
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 600,
+            options: {
+              chart: {
+                width: 470
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 630,
+            options: {
+              chart: {
+                width: 500
+              },
+              legend: {
+                position: 'bottom'
+              }
             }
           }
-        }]
+        ]
       },
       
     
