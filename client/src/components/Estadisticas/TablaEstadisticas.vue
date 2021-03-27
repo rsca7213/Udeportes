@@ -99,16 +99,14 @@
         <v-dialog v-model="editarEstadistica" class="text-center" max-width="450">
             <v-card rounded="md">
                 <v-card-title>
-                    <span class="d-none d-sm-flex"> Editar Categoría </span>
-                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Categoría </b>
+                    <span class="d-none d-sm-flex"> Editar Estadística </span>
+                    <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Editar Estadística </b>
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="editarEstadistica = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
-                <!-- <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
-                    <span>Los campos que contienen un 
-                    <span class="red--text">"*"</span> 
-                    son obligatorios</span> 
-                </v-card-subtitle> -->
+                <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
+                    <span>Nota: La Posición inicial es {{estadistica.posicion}}</span> 
+                </v-card-subtitle>
                 <v-form ref="editForm" @submit.prevent="editar_Estadistica()">
                     <v-container class="px-md-4">
                         <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre de la Estadística"
@@ -126,11 +124,11 @@
                         prepend-icon="mdi-arrow-up" type="text" v-else
                         validate-on-blur v-model.number="estadistica.maximo" name="maximo"> </v-text-field>
                         
-                        <v-select v-model="estadistica.id_posicion" :label="estadistica.posicion" prepend-icon="mdi-source-pull"
-                        clear-icon="mdi-close" name="posicion" :items="posiciones"
+                        <v-select v-model="posicionDef" label="Posición" prepend-icon="mdi-source-pull"
+                        clear-icon="mdi-close" name="posicion" :items="posiciones" clearable
                         no-data-text="No hay posiciones disponibles">
                         </v-select>
-                        <v-btn color="secondary" block type="submit" disabled v-if="estadistica.nombre == null || estadistica.id_posicion == null">
+                        <v-btn color="secondary" block type="submit" disabled v-if="estadistica.nombre == null || posicionDef == null">
                             <v-icon left> mdi-check-circle </v-icon>
                             guardar
                         </v-btn>
@@ -255,6 +253,7 @@ export default {
         ],
         estadisticas: [],
         posiciones: [],
+        posicionDef: {},
         estadisticaCrear: {},
         deporte: {},
         estadistica: {},
@@ -314,11 +313,14 @@ export default {
     },
     async crear_Estadistica () {
         this.estadisticaCrear.id_posicion = this.estadisticaCrear.id_posicion.id_posicion;
-        if (this.estadisticaCrear.minimo == "" && this.estadisticaCrear.minimo != 0) {
+        if (this.estadisticaCrear.minimo === 0) {
+            this.estadisticaCrear.minimo = 0;
+        }
+        if (this.estadisticaCrear.minimo === "") {
             this.estadisticaCrear.minimo = null;
             this.estadisticaCrear.maximo = null;
         }
-        if (this.estadisticaCrear.maximo == "") {
+        if (this.estadisticaCrear.maximo === "") {
             this.estadisticaCrear.maximo = null;
         }
         if(this.$refs.crearForm.validate()) { 
@@ -339,6 +341,8 @@ export default {
                             type: 'error',
                         }
                     }
+                    this.estadisticaCrear = {};
+                    this.$refs.crearForm.reset();
                     this.crearEstadistica = false;
                 })
                 .catch((error) => {
@@ -351,8 +355,6 @@ export default {
                 console.log(error);
             }
         }
-        this.estadisticaCrear = {};
-        this.$refs.crearForm.reset();
         this.obtenerEstadisticas();
     },
     async ver_Estadistica (item, evento) {
@@ -363,13 +365,21 @@ export default {
                     this.estadistica = res.data.estadistica;
                     this.posiciones = [];
                     res.data.posiciones.forEach(posicion => {
-                    this.posiciones.push({
-                        text: posicion.nombre,
-                        value: {
-                            id_posicion: posicion.id
+                        if (posicion.id == this.estadistica.id_posicion) {
+                            this.posicionDef = {
+                                text: posicion.nombre,
+                                value: {
+                                    id_posicion: posicion.id
+                                }
+                            }
                         }
+                        this.posiciones.push({
+                            text: posicion.nombre,
+                            value: {
+                                id_posicion: posicion.id
+                            }
+                        });
                     });
-                });
                 }
             })
         } catch (error) {
@@ -382,14 +392,17 @@ export default {
         }
     },
     async editar_Estadistica () {
-        if (this.estadistica.id_posicion.id_posicion != null) {
-           this.estadistica.id_posicion = this.estadistica.id_posicion.id_posicion; 
-        }    
-        if (this.estadistica.minimo == "" && this.estadistica.minimo != 0) {
+        if (this.posicionDef.id_posicion != null) {
+            this.estadistica.id_posicion = this.posicionDef.id_posicion;
+        }
+        if (this.estadistica.minimo === 0) {
+            this.estadistica.minimo = 0;
+        }  
+        if (this.estadistica.minimo === "") {
             this.estadistica.minimo = null;
             this.estadistica.maximo = null;
         }
-        if (this.estadistica.maximo == "") {
+        if (this.estadistica.maximo === "") {
             this.estadistica.maximo = null;
         }
         if(this.$refs.editForm.validate()) { 
