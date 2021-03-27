@@ -18,7 +18,7 @@
       <v-card-text class="text-subtitle-1">
         <b class="error--text"> ¿Está seguro que desea eliminar al atleta? </b>
         <br>
-        <span class="error--text"> Al eliminar al atleta se eliminaran todos sus datos del sistema. </span>
+        <span class="error--text"> Al eliminar al atleta se eliminarán todos sus datos del sistema. </span>
         <br>
         <b> Nro. Cédula: </b> <span v-text="cedula"> </span>
         <br>

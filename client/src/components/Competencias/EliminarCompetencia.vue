@@ -17,7 +17,7 @@
       <v-card-text class="text-subtitle-1">
         <b class="error--text"> ¿Está seguro que desea eliminar la competencia? </b>
         <br>
-        <span class="error--text"> Al eliminar la competencia, se eliminaran todos los registros de asistencia y estadisticas de esta. </span>
+        <span class="error--text"> Al eliminar la competencia, se eliminarán todos los registros de asistencia y estadisticas de esta. </span>
         <br>
         <b> Nombre: </b> <span v-text="competencia.nombre"> </span>
       </v-card-text>

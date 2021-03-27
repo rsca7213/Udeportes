@@ -17,7 +17,7 @@
       <v-card-text class="text-subtitle-1">
         <b class="error--text"> ¿Está seguro que desea eliminar el entrenamiento? </b>
         <br>
-        <span class="error--text"> Al eliminar el entrenamiento, se eliminaran todos los registros de asistencia de los atletas a este. </span>
+        <span class="error--text"> Al eliminar el entrenamiento, se eliminarán todos los registros de asistencia de los atletas a este. </span>
         <br>
         <b> Fecha: </b> <span v-text="entrenamiento.fecha"> </span>
         <br>
