@@ -31,7 +31,7 @@
       </v-row>
       <div class="mt-4" v-if="competencia && atletas.length">
         <v-row no-gutters>
-          <v-col cols="12" lg="12" xl="9" class="elevation-4 py-4 px-6 rounded-lg">
+          <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-6 rounded-lg">
             <v-row>
               <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
               </v-col>     
