@@ -152,7 +152,11 @@ export default {
       educacionCargando: true,
       mensajeError: '',
       mensajeSuccess: '',
-
+      datosEducacionEditar: {
+        id: '',
+        nombre: '',
+        etapa: ''
+      },
       // form inputs
       educacion: {
         id: '',
@@ -197,6 +201,10 @@ export default {
             nombre: '',
             etapa: ''
           };
+          if (this.datosEducacionEditar.id) {
+            let idx = this.items.findIndex(i => i.id == this.datosEducacionEditar.id);
+            this.items[idx] = this.datosEducacionEditar;
+          }
           this.mensajeSuccess = '';
           this.mensajeError = '';
           this.step = 'R';
@@ -212,6 +220,11 @@ export default {
           this.step = 'C';
           break;
         case 'U':
+          this.datosEducacionEditar = {
+            id: educacion.id,
+            nombre: educacion.nombre,
+            etapa: educacion.etapa
+          };
           this.educacion = educacion;
           this.step = 'U';
           this.mensajeSuccess = '';
