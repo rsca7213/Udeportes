@@ -152,21 +152,6 @@ export default {
         fill: {
           opacity: '0.85'
         },
-        
-        title: {
-          text: 'Atletas Por Educación',
-          align: 'center',
-          margin: 20,
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          style: {
-            fontSize:  '16px',
-            fontWeight:  '500',
-            fontFamily:  'Roboto',
-            color:  '#616161'
-          },
-        },
         animations: {
           speed: 1600
         },
