@@ -37,7 +37,7 @@
                   </v-expansion-panel>
                   <v-expansion-panel class="justify-start" :disabled="false">
                     <v-expansion-panel-header>
-                      <span>
+                      <span class="d-flex justify-start">
                         <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
                         <span class="subtitle-1">Nóminas de Equipos y Competencias</span>
                       </span>    
@@ -62,7 +62,7 @@
                   </v-expansion-panel>
                   <v-expansion-panel v-if="rol_usuario==='Administrador'">
                     <v-expansion-panel-header> 
-                      <span>
+                      <span class="d-flex justify-start">
                         <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
                         <span class="subtitle-1">Reportes de Atletas</span>
                       </span>

@@ -8,7 +8,7 @@
     </v-row>
     <v-container v-if="atletas.length">
       <v-row no-gutters>
-        <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
+        <v-col cols="12" lg="12" xl="9" class="elevation-4 py-4 px-6 rounded-lg">
           <v-row align="center">
             <v-col cols="12">
               <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -32,21 +32,40 @@
             </v-col>   
           </v-row>
         </v-col>
-        <v-col cols="12" lg="3" xl="4">
-          <v-row class="justify-center" v-if="chartData.length">
-            <v-col lg="11" sm="8" md="10" cols="11" class="mt-6 mt-lg-0 d-flex justify-center">
-              <ApexChart height="270" type="donut" :options="chartOptions" :series="chartData" class="elevation-4  rounded-lg grey lighten-4" />
-            </v-col>
-          </v-row>
-        </v-col>     
-      </v-row>
-      <v-row>
-        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
-          <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
+        <v-row class=" mt-3 justify-center justify-sm-end" v-if="chartData.length">
+          <v-dialog v-model="dialog" class="text-center" max-width="600">
+            <template v-slot:activator="{ on, attrs }"> 
+              <v-btn color="indigo" dark v-bind="attrs" v-on="on" class="mx-0 mr-2 mt-2 mt-sm-0"> 
+                <v-icon left> mdi-chart-arc </v-icon>
+                Atletas por Educación
+              </v-btn>        
+            </template>
+            <v-card rounded="md" style="border: 0px">
+              <v-card-title>
+                <span class="d-none d-sm-flex"> Atletas por Educación </span>
+                <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Atletas por Educación </b>
+                <v-spacer> </v-spacer>
+                <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
+              </v-card-title>
+              <v-card-text>
+                <div class="d-flex justify-center mt-2">
+                  <ApexChart width="550" type="donut" :options="chartOptions" :series="chartData" class="elevation-4 p-4 rounded-lg grey lighten-4" /> 
+                </div>
+              </v-card-text>
+              <v-card-actions> 
+                <v-spacer></v-spacer>
+                <v-btn color="grey darken-1" dark @click="dialog = false">
+                  <v-icon left> mdi-close </v-icon>
+                  Cerrar
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>               
+          <v-btn color="primary mt-2 mt-sm-0 mr-sm-3" @click="getReporte" :disabled="atletas.length? false : true">
             <v-icon left>mdi-download</v-icon>
-            Generar Reporte
+              Generar Reporte
           </v-btn>
-        </v-col>
+        </v-row>
       </v-row>
     </v-container>
     <v-row v-else-if="!atletas.length && !tabla_cargando">
@@ -75,7 +94,7 @@ export default {
       busqueda_atleta: '',
       atletas: [],
       mensaje_error: '',
-
+      dialog: false,
       // headers de la tabla
       atributos_tabla: [
         {
@@ -111,51 +130,144 @@ export default {
           class: 'primary--text font-weight-bold'
         },
       ],
-
       chartOptions: {
-        chart: {
-          type: 'donut',
-          offsetY: 0,
-          margin: 0,
-          
-        },
+        type: 'donut',
         fill: {
           opacity: '0.85'
-        },
-        
-        title: {
-          text: 'Atletas Por Educación',
-          align: 'center',
-          margin: 20,
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          style: {
-            fontSize:  '16px',
-            fontWeight:  '500',
-            fontFamily:  'Roboto',
-            color:  '#616161'
-          },
         },
         animations: {
           speed: 1600
         },
-
-        legend: {
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          position: 'bottom'
-        },
-        
-        grid: {
-          padding: {
-            top: -10
+        responsive: [
+          {
+            breakpoint: 350,
+            options: {
+              chart: {
+                size: 100,
+                width: 200,
+                height: 800
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
           },
-         
-
-        },
-
+          {
+            breakpoint: 375,
+            options: {
+              chart: {
+                size: 100,
+                width: 260,
+                height: 900
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 410,
+            options: {
+              chart: {
+                size: 100,
+                width: 300,
+                height: 1000
+              },
+              plotOptions: {
+                donut: {
+                  labels: {
+                    show: false
+                  }
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 430,
+            options: {
+              chart: {
+                width: 350,
+                height: 1000
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 470,
+            options: {
+              chart: {
+                width: 370,
+                height: 1000
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 500,
+            options: {
+              chart: {
+                width: 400
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 550,
+            options: {
+              chart: {
+                width: 420
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 600,
+            options: {
+              chart: {
+                width: 470
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          },
+          {
+            breakpoint: 630,
+            options: {
+              chart: {
+                width: 500
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        ]
       },
       chartData: [],
     }
