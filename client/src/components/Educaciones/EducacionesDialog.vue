@@ -40,8 +40,8 @@
           <span v-text="mensajeSuccess" class="ml-1"> </span>
         </v-alert>
         <div v-if="step === 'R'"> 
-          <div class="text-right mb-3" @click="cambiarVista('C')">
-            <v-btn color="primary"> 
+          <div class="text-right mb-3">
+            <v-btn color="primary" @click="cambiarVista('C')"> 
               <v-icon left> mdi-plus-circle </v-icon>
               Agregar educación
             </v-btn>

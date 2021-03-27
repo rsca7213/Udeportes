@@ -21,8 +21,8 @@
           <v-icon color="error"> mdi-alert </v-icon>
           <span v-text="mensajeError" class="ml-1"> </span>
         </v-alert>
-        <div class="text-right mb-3" @click="vista = 2">
-          <v-btn color="primary"  v-if="items.filter(item => item.atletas.length > 0).length">
+        <div class="text-right mb-3">
+          <v-btn color="primary" v-if="items.filter(item => item.atletas.length > 0).length" @click="vista = 2">
             <v-icon left> mdi-chart-arc </v-icon>
             Ver gráfica
           </v-btn>
