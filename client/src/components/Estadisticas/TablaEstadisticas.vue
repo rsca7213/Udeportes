@@ -104,8 +104,8 @@
                     <v-spacer> </v-spacer>
                     <v-btn icon @click="editarEstadistica = false"><v-icon> mdi-close </v-icon></v-btn>
                 </v-card-title>
-                <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
-                    <span>Nota: La Posición inicial es {{estadistica.posicion}}</span> 
+                <v-card-subtitle class="grey--text subtitle-1 d-flex justify-center justify-sm-start"> 
+                    <span> <b>Nota:</b> La Posición actual es {{estadistica.posicion}}</span> 
                 </v-card-subtitle>
                 <v-form ref="editForm" @submit.prevent="editar_Estadistica()">
                     <v-container class="px-md-4">

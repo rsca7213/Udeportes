@@ -124,6 +124,7 @@
 
             <v-btn color="primary" @click="abrir_crear()" large right fixed bottom fab dark><v-icon>mdi-plus</v-icon></v-btn>
         </v-card>  
+        <v-row class="d-flex d-sm-none mt-12"> </v-row>
     </v-container>
     <Cargador v-else/>
 </template>

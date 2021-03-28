@@ -2,7 +2,7 @@
   <div>
     <v-container v-if="!cargando">
       <v-row>
-        <v-col cols="12"> 
+        <v-col cols="12" class="px-0"> 
           <TablaInscripciones />
         </v-col>
       </v-row>
