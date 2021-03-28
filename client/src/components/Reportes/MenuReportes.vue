@@ -93,7 +93,7 @@
                 Puedes cambiar la categoria en cualquier momento.
               </v-card-subtitle>
               <div class="text-center">
-                <v-btn text class="blue--text text--lighten-1 mb-2" @click="cambiarVista('Reportes')">
+                <v-btn text class="blue--text text--lighten-1 mb-3" @click="cambiarVista('Reportes')">
                   <v-icon left> mdi-arrow-left </v-icon>
                   Regresar al menú
                 </v-btn>

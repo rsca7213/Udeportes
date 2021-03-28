@@ -32,13 +32,9 @@
       <div class="mt-4" v-if="competencia && atletas.length">
         <v-row no-gutters>
           <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-sm-6 px-0 rounded-lg">
-            <v-row>
-              <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
-              </v-col>     
-            </v-row>
             <v-row align="center">
               <v-col cols="12">
-                <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+                <v-text-field class="mx-2 mx-sm-0" clear-icon="mdi-close" clearable label="Buscar" 
                 prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
               </v-col>
             </v-row>
@@ -347,7 +343,7 @@ export default {
       if(this.competencia && this.competencia.id_competencia) this.getAtletas();
     },
     dialog(){
-      if(!this.dialog) this.dialog_chart=false;
+      if(!this.dialog) setTimeout(() => this.dialog_chart = false, 170);
     }
   },
 

@@ -11,7 +11,7 @@
         <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-sm-6 px-0 rounded-lg">
           <v-row align="center">
             <v-col cols="12">
-              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              <v-text-field class="mx-2 mx-sm-0" clear-icon="mdi-close" clearable label="Buscar" 
               prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
             </v-col>
           </v-row>
@@ -279,7 +279,7 @@ export default {
   },
   watch: {
     dialog(){
-      if(!this.dialog) this.dialog_chart=false;
+      if(!this.dialog) setTimeout(() => this.dialog_chart = false, 170);
     }
   },
   methods: {

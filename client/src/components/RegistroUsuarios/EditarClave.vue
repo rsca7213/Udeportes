@@ -94,7 +94,7 @@ export default {
       }
     },
     dialog_editar_clave(){
-      if(this.dialog_editar_clave) this.inputs.clave = '';
+      if(this.dialog_editar_clave) this.inputs.clave='';
     }
   },
   methods: {

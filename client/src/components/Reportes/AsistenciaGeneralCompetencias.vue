@@ -36,13 +36,9 @@
     <div class="mt-7" v-if="atletas.length">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
-          <v-row>
-            <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
-            </v-col>     
-          </v-row>
           <v-row align="center">
             <v-col cols="12">
-              <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
+              <v-text-field class="mx-2 mx-sm-0" clear-icon="mdi-close" clearable label="Buscar" 
               prepend-icon="mdi-magnify" type="text" v-model="busqueda_atleta" name="busqueda"> </v-text-field>
             </v-col>
           </v-row>
@@ -56,10 +52,8 @@
               fixed-header
               :loading="tabla_cargando"
               >
-              </v-data-table>
-              
-            </v-col>
-            
+              </v-data-table>     
+            </v-col>       
           </v-row>
         </v-col>
         <v-col cols="12" lg="3" xl="4">
@@ -80,7 +74,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" lg="9" xl="8" class="d-flex justify-end">
+        <v-col cols="12" lg="9" xl="8" class="d-flex justify-center justify-sm-end">
           <v-btn color="primary" @click="getReporte" :disabled="atletas.length? false : true">
             <v-icon left>mdi-download</v-icon>
             Generar Reporte
