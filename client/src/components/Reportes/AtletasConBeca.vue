@@ -35,7 +35,7 @@
         <v-row class=" mt-3 justify-center justify-sm-end" v-if="chartData.length">
           <v-dialog v-model="dialog" class="text-center" max-width="600">
             <template v-slot:activator="{ on, attrs }"> 
-              <v-btn color="indigo" dark v-bind="attrs" v-on="on" class="mx-0 mr-2 mt-2 mt-sm-0"> 
+              <v-btn color="indigo" dark v-bind="attrs" v-on="on" @click="mostrarGrafica" class="mx-0 mr-2 mt-2 mt-sm-0"> 
                 <v-icon left> mdi-chart-arc </v-icon>
                 Atletas por Educación
               </v-btn>        
@@ -47,7 +47,10 @@
                 <v-spacer> </v-spacer>
                 <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
               </v-card-title>
-              <v-card-text>
+              <v-card-text v-if="!dialog_chart" class="mt-2"> 
+                <v-progress-linear indeterminate color="primary"> </v-progress-linear>
+              </v-card-text>
+              <v-card-text v-else>
                 <div class="d-flex justify-center mt-2">
                   <ApexChart width="550" type="donut" :options="chartOptions" :series="chartData" class="elevation-4 p-4 rounded-lg grey lighten-4" /> 
                 </div>
@@ -82,7 +85,7 @@ import ApexChart from 'vue-apexcharts';
 import axios from 'axios';
 const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
 export default {
-  name: 'NominaEquipo',
+  name: 'AtletasConBeca',
   components: {
     ApexChart
   },
@@ -95,6 +98,8 @@ export default {
       atletas: [],
       mensaje_error: '',
       dialog: false,
+      dialog_chart: false,
+      width: 600,
       // headers de la tabla
       atributos_tabla: [
         {
@@ -273,14 +278,6 @@ export default {
     }
   },
 
-  watch: {
-    //método que se ejecuta cada vez que cambia la categoría(se selecciona otro valor en el select de equipos)
-    categoria(){
-      this.chartData=[];
-      this.getAtletas();
-    }
-  },
-
   methods: {
     //método que genera el reporte
     getReporte(){
@@ -339,6 +336,10 @@ export default {
       });
       
       return reporte_body;
+    },
+    //método encargado de permitir que se muestre la gráfica con un tamaño acorde a la resolución
+    mostrarGrafica(){
+      setTimeout(()=>{this.dialog_chart=true},200);
     },
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas() {
