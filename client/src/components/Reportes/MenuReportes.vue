@@ -90,7 +90,7 @@
             </div>
             <div v-else-if="menu_reportes !=='menu'">
               <v-card-subtitle class="py-2 pl-sm-11 pl-4" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
-                Puedes cambiar la categoria en cualquier momento.
+                Puedes cambiar la categoría en cualquier momento.
               </v-card-subtitle>
               <div class="text-center">
                 <v-btn text class="blue--text text--lighten-1 mb-3" @click="cambiarVista('Reportes')">

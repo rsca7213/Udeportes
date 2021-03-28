@@ -28,7 +28,7 @@
       </v-col>
     </v-row>
     <v-row v-else-if="!entrenamientos_cargando && !items_entrenamientos.length">
-      <v-col class="grey--text text-center pt-0"> No hay entrenamientos para esta categoria. </v-col>
+      <v-col class="grey--text text-center pt-0"> No hay entrenamientos para esta categoría. </v-col>
     </v-row>
     <div v-if="entrenamiento && atletas.length" >
       <v-row no-gutters>

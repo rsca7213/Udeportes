@@ -28,7 +28,7 @@
       </v-col>
     </v-row>
     <v-row v-else-if="!competencias_cargando && !items_competencias.length">
-      <v-col class="grey--text text-center"> No hay competencias para esta categoria. </v-col>
+      <v-col class="grey--text text-center"> No hay competencias para esta categoría. </v-col>
     </v-row>
     <div v-if="competencia && atletas.length">
       <v-row no-gutters>

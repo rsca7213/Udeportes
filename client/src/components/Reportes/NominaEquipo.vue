@@ -18,7 +18,7 @@
           <v-row>
             <v-col cols="12"> 
               <v-data-table :headers="atributos_tabla" :items="atletas" :search="busqueda_atleta" 
-              no-data-text="No hay atletas registrados para esta categoria."
+              no-data-text="No hay atletas registrados para esta categoría."
               no-results-text="No hay resultados para esta búsqueda."
               loading-text="Cargando datos..."
               locale="es-VE"
