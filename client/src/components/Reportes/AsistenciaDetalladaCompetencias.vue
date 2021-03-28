@@ -1,14 +1,14 @@
 <template>
   <div>
+    <v-row class="justify-center">
+      <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
+        <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias"
+        clear-icon="mdi-close" name="periodo" clearable hide-details>
+        </v-select>
+      </v-col>
+    </v-row>
     <v-container>
       <v-row class="justify-center" v-if="items_competencias.length">
-        <v-row class="justify-center">
-          <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
-            <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias"
-            clear-icon="mdi-close" name="periodo" clearable hide-details>
-            </v-select>
-          </v-col>
-        </v-row>
         <v-col cols=12 v-if="items_competencias.length">
           <v-row v-if="!competencia">
             <v-col class="grey--text text-center mt-2"> Selecciona una competencia para generar el reporte. </v-col>

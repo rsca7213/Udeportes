@@ -6,9 +6,9 @@
         <span v-text="mensaje_error" class="ml-1"> </span>
       </v-alert>
     </v-row>
-    <v-container v-if="atletas.length">
+    <v-container class="px-0 px-sm-6" v-if="atletas.length">
       <v-row no-gutters>
-        <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-6 rounded-lg">
+        <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-sm-6 px-0 rounded-lg">
           <v-row align="center">
             <v-col cols="12">
               <v-text-field clear-icon="mdi-close" clearable label="Buscar" 

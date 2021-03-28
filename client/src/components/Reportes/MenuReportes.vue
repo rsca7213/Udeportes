@@ -4,7 +4,7 @@
       <v-row class="" align="start">
         <v-col cols="12 "> 
           <v-card color="#F5F5F5" elevation="4" shaped>
-            <v-card-title class="pl-11 pb-0 grey--text text--darken-2">
+            <v-card-title class="pl-sm-11 pl-4 pb-0 grey--text text--darken-2">
               {{card_title}}
             </v-card-title>
             <div v-if="menu_reportes === 'menu'">
@@ -89,7 +89,7 @@
               </v-card-text>
             </div>
             <div v-else-if="menu_reportes !=='menu'">
-              <v-card-subtitle class="pl-11 py-2" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
+              <v-card-subtitle class="py-2 pl-sm-11 pl-4" v-if="!reportes_atletas.filter(reporte => reporte.nombre ===menu_reportes).length">
                 Puedes cambiar la categoria en cualquier momento.
               </v-card-subtitle>
               <div class="text-center">

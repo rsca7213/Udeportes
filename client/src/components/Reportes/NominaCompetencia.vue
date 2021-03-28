@@ -1,14 +1,14 @@
 <template>
   <div>
-    <v-container>
+    <v-row class="justify-center">
+      <v-col class="pt-0 pl-md-11 mt-1" cols="12" sm="10" lg="6" xl="6">
+        <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias" hide-details
+        clear-icon="mdi-close" name="periodo" clearable>
+        </v-select>
+      </v-col>
+    </v-row>
+    <v-container>     
       <v-row class="justify-center" v-if="items_competencias.length">
-        <v-row class="justify-center">
-          <v-col class="pt-0 pl-md-11 mt-2" cols="12" sm="10" lg="6" xl="6">
-            <v-select v-model="competencia" label="Competencias" prepend-icon="mdi-trophy" :items="items_competencias" hide-details
-            clear-icon="mdi-close" name="periodo" clearable>
-            </v-select>
-          </v-col>
-        </v-row>
         <v-col cols=12 v-if="items_competencias.length">
           <v-row v-if="!competencia">
             <v-col class="grey--text text-center mt-2"> Selecciona una competencia para generar el reporte. </v-col>
@@ -31,7 +31,7 @@
       </v-row>
       <div class="mt-4" v-if="competencia && atletas.length">
         <v-row no-gutters>
-          <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-6 rounded-lg">
+          <v-col cols="12" lg="12" xl="12" class="elevation-4 py-4 px-sm-6 px-0 rounded-lg">
             <v-row>
               <v-col cols=12 class="ml-1 pb-0"><span class="pl-1 pl-sm-0" v-text="equipo"></span>
               </v-col>     
