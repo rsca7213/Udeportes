@@ -345,6 +345,9 @@ export default {
       this.ratioAsistencias = 0;
       this.ratioInasistencias = 0;
       if(this.competencia && this.competencia.id_competencia) this.getAtletas();
+    },
+    dialog(){
+      if(!this.dialog) this.dialog_chart=false;
     }
   },
 

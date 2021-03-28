@@ -277,7 +277,11 @@ export default {
       chartData: [],
     }
   },
-
+  watch: {
+    dialog(){
+      if(!this.dialog) this.dialog_chart=false;
+    }
+  },
   methods: {
     //método que genera el reporte
     getReporte(){

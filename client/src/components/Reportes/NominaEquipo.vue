@@ -308,6 +308,9 @@ export default {
     categoria(){
       this.chartData=[];
       this.getAtletas();
+    },
+    dialog(){
+      if(!this.dialog) this.dialog_chart=false;
     }
   },
 
