@@ -93,6 +93,9 @@ export default {
         this.clave_valida = true;
       }
     },
+    dialog_editar_clave(){
+      if(this.dialog_editar_clave) this.inputs.clave = '';
+    }
   },
   methods: {
     //función que cierra el modal, vacía el campo, vacía el mensaje de error y quita las validaciones
