@@ -193,6 +193,7 @@ export default {
             display: {show: false},
             deporteCrear: {},
             deporte: {},
+            nombre: null,
             deportes: [],
             reglasNombre: [
                 v => !!v || 'Este campo es obligatorio',
@@ -253,6 +254,7 @@ export default {
                 .then((res) => {
                     if (res.data.codigo === 200){
                         this.deporte = res.data.deporte;
+                        this.nombre = this.deporte.nombre;
                     }
                 })
             } catch (error) {
@@ -269,38 +271,41 @@ export default {
             }
         },
         async editar_Deporte () {
-            if(this.$refs.editForm.validate()) { 
-                try {
-                    await axios
-                    .put(`${server_url}/deportes/${this.deporte.id}`, this.deporte, { withCredentials: true })
-                    .then((res) => {
-                        if (res.data.codigo === 200) {
-                            this.display = {
-                                show: true, 
-                                mensaje: res.data.texto,
-                                type: 'success',
+            if (this.deporte.nombre != this.nombre) {
+                if(this.$refs.editForm.validate()) { 
+                    try {
+                        await axios
+                        .put(`${server_url}/deportes/${this.deporte.id}`, this.deporte, { withCredentials: true })
+                        .then((res) => {
+                            if (res.data.codigo === 200) {
+                                this.display = {
+                                    show: true, 
+                                    mensaje: res.data.texto,
+                                    type: 'success',
+                                }
+                            } else {
+                                this.display = {
+                                    show: true, 
+                                    mensaje: res.data.texto,
+                                    type: 'error',
+                                }
                             }
-                        } else {
-                            this.display = {
-                                show: true, 
-                                mensaje: res.data.texto,
-                                type: 'error',
-                            }
-                        }
-                        this.$refs.editForm.reset();
-                        this.editarDeporte = false;
-                    })
-                    .catch((error) => {
-                        this.$refs.editForm.reset();
-                        this.mensajeError = error.response.status === 400
-                        ? 'Ha ocurrido un error a la hora de editar el deporte'
-                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                    });
-                } catch (error) {
-                    console.log(error);
+                            this.$refs.editForm.reset();
+                            this.editarDeporte = false;
+                        })
+                        .catch((error) => {
+                            this.$refs.editForm.reset();
+                            this.mensajeError = error.response.status === 400
+                            ? 'Ha ocurrido un error a la hora de editar el deporte'
+                            : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
+                this.obtenerDeportes();
             }
-            this.obtenerDeportes();
+            this.editarDeporte = false;
         },
         async eliminar_Deporte () {
             try {

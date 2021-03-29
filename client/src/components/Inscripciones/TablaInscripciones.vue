@@ -60,6 +60,10 @@
                     fixed-header
                     :loading="tablaCargando"
                 >
+                    <template v-slot:item.posicion="{ item }"> 
+                        <span class="grey--text" v-if="item.posicion === 'Sin Asignar'"> Sin Asignar  </span>
+                        <span v-else v-text="item.posicion"></span>
+                    </template>
                 </v-data-table>
             </v-container>
         </v-card>

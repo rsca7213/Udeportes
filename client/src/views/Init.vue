@@ -9,6 +9,11 @@
                         <v-img src="../assets/logo-text.png" contain max-width="240" class="mb-3"> </v-img>
                         <v-card class="px-2 py-4 login-card" color="#F5F5F5" elevation="4" shaped>
                             <v-card-title class="grey--text text--darken-2"> Datos del Administrador </v-card-title>
+                            <v-card-subtitle class="grey--text text--darken-2 subtitle-1 d-flex justify-center justify-sm-start"> 
+                                <span>Los campos que contienen un 
+                                <span class="red--text">"*"</span> 
+                                son obligatorios</span> 
+                            </v-card-subtitle>
                             <v-form ref="form" @submit.prevent="submit()" class="px-4">
                                 <v-text-field name="cedula" clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
                                 type="text" :rules="reglasCedula" validate-on-blur v-model="inputs.cedula" prepend-icon="mdi-card-account-details"> </v-text-field>
@@ -28,11 +33,7 @@
                                 validate-on-blur v-model="inputs.clave"> </v-text-field>
                                 <v-card-actions class="mt-4">
                                     <v-container>
-                                        <v-row no-gutters>
-                                            <v-col cols="12" sm="5">
-                                                <v-card-text class="red--text pt-2 d-none d-sm-block">Requerido(*)</v-card-text>
-                                                <v-card-text class="red--text pt-2 text-right d-block d-sm-none">Requerido(*)</v-card-text>
-                                            </v-col>    
+                                        <v-row no-gutters justify="center"> 
                                             <v-col cols="12" sm="7" class="text-right">
                                                 <v-btn color="primary" class="mx-1" :loading="formCargando" type="submit"> 
                                                     <v-icon left> mdi-login </v-icon>

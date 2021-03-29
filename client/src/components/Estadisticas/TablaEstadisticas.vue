@@ -40,6 +40,14 @@
                     fixed-header
                     :loading="tablaCargando"
                 >
+                    <template v-slot:item.minimo="{ item }"> 
+                        <span class="grey--text" v-if="item.minimo === 'Sin Definir'"> Sin Definir  </span>
+                        <span v-else v-text="item.minimo"></span>
+                    </template>
+                    <template v-slot:item.maximo="{ item }"> 
+                        <span class="grey--text" v-if="item.maximo === 'Sin Definir'"> Sin Definir  </span>
+                        <span v-else v-text="item.maximo"></span>
+                    </template>
                     <template v-slot:item.acciones="{ item }">
                         <v-icon dense color="primary" @click="ver_Estadistica(item, 'editar')"> mdi-pencil </v-icon>
                         <v-icon dense color="red" @click="ver_Estadistica(item, 'eliminar')"> mdi-delete </v-icon>
@@ -441,6 +449,8 @@ export default {
             axios.delete(`${server_url}/estadisticas/${this.$route.params.id_deporte}/estadistica/${this.estadistica.id}`, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200){
+                    const index = this.estadisticas.findIndex(e => e.id == this.estadistica.id);
+                    this.estadisticas.splice(index, 1);
                     this.display = {
                         show: true, 
                         mensaje: res.data.texto,
