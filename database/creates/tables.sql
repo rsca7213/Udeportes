@@ -92,7 +92,7 @@ CREATE TABLE rendimientos(
   id_competencia NUMERIC(5, 0) NOT NULL,
   id_categoria NUMERIC(5, 0) NOT NULL,
   id_deporte_comp NUMERIC(4, 0) NOT NULL,
-  valor NUMERIC(4,0),
+  valor NUMERIC(8,0),
 
   CONSTRAINT rendimientos_pk PRIMARY KEY(
   cedula_atleta,

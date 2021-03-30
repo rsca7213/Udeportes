@@ -16,7 +16,7 @@ function  validar(reglas, valor) {
 /***** Reglas de validación ******/
 
 const reglasCedula = [
-  v => !!v || 'La cedula de identidad es obligatoria',
+  v => !!v || 'La cédula de identidad es obligatoria',
   v => v && v.length <= 8 || 'La cédula de identidad no debe ser mayor a 8 caracteres',
   v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cédula válida',
 ];
@@ -31,7 +31,7 @@ const reglasSegundoNombre = [
 ];
 
 const reglasCorreo = [
-  v => v && v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres.',
+  v => v && v.length >= 8 || 'El correo electrónico debe contener como mínimo 8 caracteres.',
   v => v && v.length <= 256 || 'El correo electrónico debe contener como máximo 256 caracteres.',
   v => v && (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v)) || 'Debe ser un correo electrónico valido.'
 ];
@@ -47,13 +47,13 @@ const reglasTelefono = [
 ];
 
 const reglasFecha = [
-  v => (!v||(v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/)).test(v)) || 'Debe ser una fecha valida dd/mm/yyyy',
+  v => (!v||(v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/)).test(v)) || 'Debe ser una fecha válida dd/mm/yyyy',
   v => !v || v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
 ];
 
 const reglasFechaObligatoria = [
   v => !!v || 'La fecha es obligatoria.',
-  v => v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/).test(v) || 'Debe ser una fecha valida dd/mm/yyyy',
+  v => v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/).test(v) || 'Debe ser una fecha válida dd/mm/yyyy',
   v => v && v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
 ]
 
@@ -62,20 +62,20 @@ const reglasRol = [
 ];
 
 const reglasGenero = [
-  v => v && ['m', 'f'].includes(v) || 'El genero es obligatorio'
+  v => v && ['m', 'f'].includes(v) || 'El género es obligatorio'
 ];
 
 const reglasEducacionAtleta = [
   // El valor "v"  tiene la siguiente forma: v = { id: Number, etapa: Number }
-  v => !v.id || v.id === '0' || typeof(parseInt(v.id)) === typeof(1) || 'La educación no es valida',
-  v => !v.id || v.id === '0' || v.id > 0  || 'La educación no es valida',
+  v => !v.id || v.id === '0' || typeof(parseInt(v.id)) === typeof(1) || 'La educación no es válida',
+  v => !v.id || v.id === '0' || v.id > 0  || 'La educación no es válida',
   v => !v.id || v.id === '0' || typeof(v.etapa) === 'number' || 'La etapa debe ser un número',
   v => !v.id || v.id === '0' || v.etapa > 0 || 'La etapa debe ser mayor o igual a 1',
   v => !v.id || v.id === '0' || v.etapa < 100 || 'La etapa debe ser menor o igual a 99'
 ];
 
 const reglasCorreoOpcional = [
-  v => !v || v.length >= 8 || 'El correo electrónico debe contener como minimo 8 caracteres.',
+  v => !v || v.length >= 8 || 'El correo electrónico debe contener como mínimo 8 caracteres.',
   v => !v || v.length <= 256 || 'El correo electrónico debe contener como máximo 256 caracteres.',
   v => !v || (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v)) || 'Debe ser un correo electrónico valido.'
 ];
@@ -94,11 +94,11 @@ const reglasNombreEducacion = [
 ];
 
 const reglasEtapaEducacion = [
-  v => v && ['m', 't', 's', 'a'].includes(v) || 'El tipo de etapa o periodo es obligatorio'
+  v => v && ['m', 't', 's', 'a'].includes(v) || 'El tipo de etapa o período es obligatorio'
 ];
 
 const reglasId = [
-  v => v && typeof(v) === typeof(1) || 'La id no es un numero'
+  v => v && typeof(v) === typeof(1) || 'La id no es un número'
 ];
 
 const reglasNombreEntrenamiento = [
@@ -112,7 +112,7 @@ const reglasNombreCompetencia = [
 
 const reglasEstatusCompetencia = [
   v => !!v || 'El estatus es obligatorio',
-  v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Valor de estatus invalido'
+  v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Valor de estatus inválido'
 ];
 
 const reglasEstadisticas = [
