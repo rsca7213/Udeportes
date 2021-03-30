@@ -61,7 +61,7 @@
                     <v-col class="pt-1 pt-sm-2">
                       <AsistenciaCompetencia :id_deporte="$route.params.id_deporte" 
                       :id_categoria="$route.params.id_categoria" :id="$route.params.id"
-                      @updateAsistencias="datosAsistencia" />
+                      @updateAsistencias="snackbarAsistencia = snackbarAsistencia != null; datosAsistencia" />
                     </v-col>
                   </v-row>
                   <v-row v-for="posicion in competencia.posiciones" :key="posicion.id">
@@ -101,7 +101,7 @@
                                 <v-col v-else class="px-4">
                                   <EditarRendimiento :estadisticas="atleta.estadisticas" :id="$route.params.id"
                                   :id_deporte="$route.params.id_deporte" :id_categoria="$route.params.id_categoria"
-                                  :cedula="atleta.cedula" @rendimientoEditado="getDataCompetencia()"
+                                  :cedula="atleta.cedula" @rendimientoEditado="snackbarRendimiento = true; getDataCompetencia()"
                                   :id_posicion="posicion.id" />
                                 </v-col>
                               </v-expansion-panel-content>
@@ -151,7 +151,7 @@
                     <div v-if="inputs.cedula && radar.categorias.length">
                       <ApexChart type="bar" :height="radar.categorias.length === 1 ? 150 : radar.categorias.length * 100"
                       :options="{ 
-                        colors: ['#2196F3', '#8BC34A'],
+                        colors: ['#2196F3', '#4CAF50'],
                         xaxis: { 
                           categories: radar.categorias,
                           labels: {
@@ -206,6 +206,20 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-snackbar v-model="snackbarAsistencia" timeout="3000" shaped top>
+      <v-icon left color="secondary"> mdi-check-circle </v-icon>
+      <span class="success--text"> ¡Registro de asistencia guardado correctamente! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbarAsistencia = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="snackbarRendimiento" timeout="3000" shaped top>
+      <v-icon left color="secondary"> mdi-check-circle </v-icon>
+      <span class="success--text"> ¡El rendimiento fue editado con éxito! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbarRendimiento = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -234,6 +248,8 @@ export default {
       // UI handlers
       cargando: true,
       mensajeError: '',
+      snackbarAsistencia: null,
+      snackbarRendimiento: false,
 
       // Datos de la competencia
       competencia: {
