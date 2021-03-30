@@ -9,7 +9,7 @@
                     Regresar a deportes
                 </v-btn>
             </v-card-title>
-            <v-row justify="center" class="my-2" v-if="posiciones.length > 0">
+            <v-row justify="center" class="my-2" v-if="this.posicionesCheck">
                 <v-col cols="12" xl="6" lg="7" md="9" sm="11">
                     <v-list outlined>
                         <template v-for="(posicion, index) in posiciones">
@@ -148,6 +148,7 @@ export default {
             colores: ['indigo lighten-2', 'purple lighten-2', 'pink lighten-2', 'teal lighten-2', 'cyan lighten-2',
                       'green lighten-2', 'orange lighten-2', 'blue-grey lighten-2'],
             cargando: true,
+            posicionesCheck: true,
             crearPosicion: false,
             editarPosicion: false,
             eliminarPosicion: false,
@@ -163,6 +164,18 @@ export default {
         }
     },
     methods: {
+        async obtenerPosiciones () {
+            this.posicionesCheck= true;
+            axios.get(`${server_url}/posiciones/${this.$route.params.id_deporte}`, { withCredentials: true })
+            .then((res) => {
+                if (res.data.codigo === 200){
+                    this.posiciones = res.data.posiciones;
+                }
+                if (this.posiciones.length == 0) {
+                    this.posicionesCheck= false;
+                }
+            })
+        },
         abrir_crear () {
             this.posicionCrear = {};
             this.crearPosicion = true;
@@ -200,6 +213,7 @@ export default {
                     console.log(error);
                 }
             }
+            this.obtenerPosiciones();
         },
         async ver_Posicion (id, evento) {
             try {
@@ -252,6 +266,7 @@ export default {
                     console.log(error);
                 }
             }
+            this.obtenerPosiciones();
         },
         async eliminar_Posicion () {
             try {
@@ -260,6 +275,9 @@ export default {
                     if (res.data.codigo === 200){
                         const index = this.posiciones.findIndex(p => p.id == this.posicion.id);
                         this.posiciones.splice(index, 1);
+                        if (this.posiciones.length == 0) {
+                            this.posicionesCheck= false;
+                        }
                         this.display = {
                             show: true, 
                             mensaje: res.data.texto,
@@ -287,12 +305,7 @@ export default {
       .then((res) => {
         if (res.status === 200) {
             //en caso de que se pasen todas las validaciones se llaman a todas las posiciones del deporte
-            axios.get(`${server_url}/posiciones/${this.$route.params.id_deporte}`, { withCredentials: true })
-            .then((res) => {
-                if (res.data.codigo === 200){
-                    this.posiciones = res.data.posiciones;
-                }
-            })
+            this.obtenerPosiciones();
             //se busca la información del deporte
             axios.get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
             .then((res) => {

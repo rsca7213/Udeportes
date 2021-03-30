@@ -4,7 +4,7 @@
             <v-card-title class="grey--text text--darken-2"> 
                 Deportes 
             </v-card-title>
-            <v-row class="mt-5" v-if="deportes_Vacios() == false" dense>
+            <v-row class="mt-5" v-if="this.deportesCheck" dense>
                 <v-col v-for="(deporte, index) in deportes" :key="deporte.id" cols="12" sm="6" md="4" lg="3">
                     <v-card shaped class="ma-3" @click="ver_Deporte(deporte.id, 'config')" elevation="8">
                         <v-card :color="colores[index % 8]" height="150" elevation="0">
@@ -186,6 +186,7 @@ export default {
             colores: ['indigo lighten-2', 'purple lighten-2', 'pink lighten-2', 'teal lighten-2', 'cyan lighten-2',
                       'green lighten-2', 'orange lighten-2', 'blue-grey lighten-2'],
             cargando: true,
+            deportesCheck: true,
             crearDeporte: false,
             editarDeporte: false,
             configDeporte: false,
@@ -203,10 +204,14 @@ export default {
     },
     methods: {
         async obtenerDeportes () {
+            this.deportesCheck = true;
             axios.get(`${server_url}/deportes/`, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200){
                     this.deportes = res.data.deportes;
+                }
+                if (this.deportes.length == 0) {
+                    this.deportesCheck = false;
                 }
             })
         },
@@ -308,12 +313,16 @@ export default {
             this.editarDeporte = false;
         },
         async eliminar_Deporte () {
+            this.deportesCheck = true;
             try {
                 axios.delete(`${server_url}/deportes/${this.deporte.id}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200){
                         const index = this.deportes.findIndex(d => d.id == this.deporte.id);
                         this.deportes.splice(index, 1);
+                        if (this.deportes.length == 0) {
+                            this.deportesCheck = false;
+                        }
                         this.display = {
                             show: true, 
                             mensaje: res.data.texto,
@@ -331,13 +340,7 @@ export default {
             } catch (error) {
                 console.log(error);
             }
-            this.obtenerDeportes();
-        },
-        deportes_Vacios () {
-            if (this.deportes.length == 0) {
-                return true;
-            }
-            return false;
+            // this.obtenerDeportes();
         }
     },
     // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
