@@ -76,7 +76,7 @@ CREATE TABLE competencias(
   id_categoria NUMERIC(5, 0) NOT NULL,
   id_deporte NUMERIC(4, 0) NOT NULL,
   nombre VARCHAR(50) NOT NULL,
-  estatus CHAR(1),
+  estatus CHAR(1) NOT NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE,
 
