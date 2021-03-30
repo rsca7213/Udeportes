@@ -30,13 +30,17 @@
               <v-text-field clear-icon="mdi-close" clearable :label="estadistica.nombre" 
               prepend-icon="mdi-poll-box" validate-on-blur v-model.number="estadistica.valor" name="estadistica"
               :messages="
-                `${estadistica.min ? 'Min: ' + estadistica.min : ''} 
-                 ${estadistica.min ? estadistica.max ?  '─' : '' : '' }
-                 ${estadistica.max ? 'Max: ' + estadistica.max : ''}`
+                estadistica.min || estadistica.max ?
+                  `${estadistica.min ? 'Min: ' + estadistica.min : ''} 
+                   ${estadistica.min ? estadistica.max ?  '─' : '' : '' }
+                   ${estadistica.max ? 'Max: ' + estadistica.max : ''}`
+                  : null
               "
               :rules="
               [
                 v => v === null || typeof(v) === typeof(1) || 'Debe ser un numero',
+                v => v === null || v >= -99999999 || 'Debe tener un valor mínimo de -99999999',
+                v => v === null || v <= 99999999 || 'Debe tener un valor máximo  de 99999999',
                 v => estadistica.min === null || v === null || v >= estadistica.min || `Debe ser mayor o igual a ${estadistica.min}`,
                 v => estadistica.max === null || v === null || v <= estadistica.max || `Debe ser menor o igual a ${estadistica.max}`
               ]
