@@ -2,7 +2,7 @@
   <div class="">
     <v-dialog v-model="dialog_registro" max-width="950px" @click:outside="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
       <template v-slot:activator="{ on, attrs }">
-        <div class="d-flex justify-end">
+        <div class="d-flex justify-center justify-sm-end">
           <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
             <v-icon left> mdi-plus-circle </v-icon>
             Registrar Usuario
@@ -13,7 +13,7 @@
         <v-row class="" align="start">
           <v-col cols="12 px-0 py-0"> 
             <v-card rounded="md">
-              <v-card-title class="pl-8 pb-0 grey--text text--darken-2">
+              <v-card-title class="pl-8 pb-0">
                 <span class="d-none d-sm-flex"> {{ mensaje_form }} </span>
                 <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> {{ mensaje_form }} </b>
                 <v-spacer> </v-spacer>
@@ -48,16 +48,16 @@
                     </v-row>
                   </v-container>
                 </v-form>
-                <v-card-actions class="mt-4 d-flex justify-end">
+                <v-card-actions class="mt-4 d-flex justify-center justify-sm-end">
                   <v-btn class="mb-2" color="error" dark @click="cerrarForm({estatus_operacion: null, mensaje_exito: null})">
                     <v-icon left> mdi-close </v-icon>
                     Cerrar
                   </v-btn>
-                  <v-btn class="mr-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
+                  <v-btn class="mr-0 mr-sm-2 mb-2" v-if="!usuario.cedula" color="secondary" :disabled="!credencialesValidas" :loading="formCargando" @click="mostrarConfirmacion()">
                     <v-icon left> mdi-check-circle </v-icon>
                     Registrar
                   </v-btn>
-                  <v-btn v-else color="secondary" class="mr-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
+                  <v-btn v-else color="secondary" class="mr-0 mr-sm-2 mb-2" :disabled="!credencialesValidas" :loading="formCargando" @click="editarUsuario()">
                     <v-icon left> mdi-check-circle </v-icon>
                     Editar
                   </v-btn>

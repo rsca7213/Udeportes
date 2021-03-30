@@ -39,8 +39,10 @@
           :loading="tablaCargando"
           >
             <template v-slot:item.correo="{ item }"> 
-              <span class="grey--text" v-if="!item.correo"> No especificado  </span>
-              <span v-else v-text="item.correo"></span>
+              <span v-if="!item.correo" class="grey--text d-inline-block d-sm-none text-truncate mr-0 pt-1" style="max-width: 130px;"> No especificado  </span>
+              <span v-else class="d-inline-block d-sm-none text-truncate mr-0 pt-1" style="max-width: 130px;" v-text="item.correo"></span>
+              <span v-if="!item.correo" class="grey--text d-none d-sm-flex"> No especificado  </span>
+              <span v-else class="d-none d-sm-flex" v-text="item.correo"></span>
             </template>
             <template v-slot:item.educacion="{ item }"> 
               <span class="grey--text" v-if="!item.educacion"> No especificada </span>

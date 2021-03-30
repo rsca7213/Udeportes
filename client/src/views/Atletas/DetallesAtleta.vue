@@ -112,7 +112,7 @@
                 <v-col cols="12" md="4" class="px-1 px-sm-2">
                   <v-card shaped class="pa-3" color="#F5F5F5">
                     <v-card-title class="px-0">
-                      <v-col class="px-1 grey--text text--darken-2"> Categorias del Atleta </v-col>
+                      <v-col class="px-1 grey--text text--darken-2"> Categorías del Atleta </v-col>
                     </v-card-title>
                     <v-list two-line outlined v-if="atleta.categorias.length">
                       <v-list-item v-for="(categoria, index) in atleta.categorias" :key="index"
@@ -127,7 +127,7 @@
                       </v-list-item>
                     </v-list>
                     <div v-else class="ml-1 grey--text">
-                      Este atleta no tiene categorias.
+                      Este atleta no tiene categorías.
                     </div>
                   </v-card>
                 </v-col>

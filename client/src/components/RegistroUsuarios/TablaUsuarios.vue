@@ -18,6 +18,10 @@
         fixed-header
         :loading="tablaCargando"
       >
+        <template v-slot:item.correo="{ item }"> 
+          <span class="d-inline-block d-sm-none text-truncate mr-0 pt-1" style="max-width: 130px;" v-text="item.correo"> </span>
+          <span class="d-none d-sm-flex" v-text="item.correo"> </span>
+        </template>
         <template v-slot:item.fecha_nacimiento="{ item }"> 
           <span class="grey--text" v-if="!item.fecha_nacimiento"> N/A </span>
           <span v-else v-text="item.fecha_nacimiento"> </span>

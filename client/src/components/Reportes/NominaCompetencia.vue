@@ -7,7 +7,7 @@
         </v-select>
       </v-col>
     </v-row>
-    <v-container>     
+    <v-container class="px-0 px-sm-6">     
       <v-row class="justify-center" v-if="items_competencias.length">
         <v-col cols=12 v-if="items_competencias.length">
           <v-row v-if="!competencia">
@@ -52,7 +52,8 @@
                     <span :class="item.educacion_etapa==='No especificada'? 'grey--text' : ''" v-text="item.educacion_etapa"> </span>
                   </template>
                   <template v-slot:item.correo="{ item }"> 
-                    <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+                    <span :class="item.correo==='Sin correo'? 'grey--text' : ''" class="d-inline-block pt-1 d-sm-none text-truncate mr-0" style="max-width: 130px;" v-text="item.correo"> </span>
+                    <span :class="item.correo==='Sin correo'? 'grey--text' : ''" class="d-none d-sm-flex" v-text="item.correo"> </span>
                   </template>
                 </v-data-table>   
               </v-col>         

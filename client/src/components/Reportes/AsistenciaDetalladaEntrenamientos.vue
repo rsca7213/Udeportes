@@ -50,7 +50,8 @@
               :loading="tabla_cargando"
               >
                 <template v-slot:item.correo="{ item }"> 
-                  <span :class="item.correo==='Sin correo'? 'grey--text' : ''" v-text="item.correo"> </span>
+                  <span :class="item.correo==='Sin correo'? 'grey--text' : ''" class="d-inline-block pt-1 d-sm-none text-truncate mr-0" style="max-width: 130px;" v-text="item.correo"> </span>
+                  <span :class="item.correo==='Sin correo'? 'grey--text' : ''" class="d-none d-sm-flex" v-text="item.correo"> </span>
                 </template>
               </v-data-table> 
             </v-col>
