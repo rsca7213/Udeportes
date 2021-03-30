@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="indigo" dark v-bind="attrs" v-on="on"> 
         <v-icon left> mdi-school </v-icon>
-        Gestionar Niveles Educ<span class="show-xxs-inline">...</span><span class="hide-xxs">ativos</span>
+        Gestionar Niveles Ed<span class="show-xxs-inline">...</span><span class="hide-xxs">ucativos</span>
       </v-btn>
     </template>
     <v-card rounded="md" style="border: 0px">
