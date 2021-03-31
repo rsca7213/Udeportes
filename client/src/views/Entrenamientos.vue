@@ -1,5 +1,12 @@
 <template>
   <div class="entrenamientos">
+    <v-snackbar v-model="snackbar" timeout="3000" shaped top>
+      <v-icon left color="error"> mdi-cancel </v-icon>
+      <span class="error--text"> ¡Ha ocurrido un error inesperado, refresca la pagina! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbar = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
     <Cargador v-if="cargando" /> 
     <v-container v-else> 
       <v-row>
@@ -62,6 +69,7 @@ export default {
       // UI Handlers
       cargando: true,
       categoriaCargando: true,
+      snackbar: false,
       mensajeError: '',
       // Entrenamientos de una categoria
       entrenamientos: [],
@@ -205,10 +213,14 @@ export default {
           // Error de login
           if (err.response.status === 401) this.$router.push('/login');
           // Otros errores
-          else if (err.response.status) this.mensajeError = err.response.data;
+          else if (err.response.status) { 
+            this.snackbar = true;
+            this.mensajeError = err.response.data;
+          }
         }
         catch (error) {
           // Servidor no disponible
+          this.snackbar = true;
           this.mensajeError = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
           console.warn('Warning: No response status was found, is the server running? ');
         }
