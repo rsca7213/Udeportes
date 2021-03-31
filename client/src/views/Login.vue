@@ -134,11 +134,16 @@ export default {
             if (res.status === 200) this.$router.push('/');
           })
           .catch((error) => {
-            this.formCargando = false;
-            this.$refs.form.reset();
-            this.mensajeError = error.response.status === 500
-              ? 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'
-              : 'Correo electrónico o contraseña incorrecta.';
+            try {
+              this.formCargando = false;
+              this.$refs.form.reset();
+              this.mensajeError = error.response.status === 500
+                ? 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'
+                : 'Correo electrónico o contraseña incorrecta.';
+            }
+            catch {
+              this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+            }
           });
       }
     }
