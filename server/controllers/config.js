@@ -34,7 +34,7 @@ async function init (params) {
     // En caso de un error inesperado retornamos un codigo 500
     catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);
-        return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+        return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
     }
 }
 

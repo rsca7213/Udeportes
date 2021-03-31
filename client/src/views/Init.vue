@@ -14,6 +14,12 @@
                                 <span class="red--text">"*"</span> 
                                 son obligatorios</span> 
                             </v-card-subtitle>
+                            <v-row class="justify-center mx-2 my-2" v-if="mensajeError">
+                                <v-alert text color="error" dense>
+                                    <v-icon color="error"> mdi-alert </v-icon>
+                                    <span v-text="mensajeError" class="ml-1"> </span>
+                                </v-alert>
+                            </v-row>
                             <v-form ref="form" @submit.prevent="submit()" class="px-4">
                                 <v-text-field name="cedula" clear-icon="mdi-close" clearable counter="8" label="Cédula de Identidad *"
                                 type="text" :rules="reglasCedula" validate-on-blur v-model="inputs.cedula" prepend-icon="mdi-card-account-details"> </v-text-field>
@@ -142,14 +148,14 @@ export default {
                 await axios
                 .post(`${server_url}/init/`, this.inputs, { withCredentials: true })
                 .then((res) => {
+                    console.log(res.status);
                     if (res.status === 200) this.$router.push('/');
                 })
                 .catch((error) => {
                     this.formCargando = false;
-                    this.$refs.form.reset();
                     this.mensajeError = error.response.status === 400
                     ? '¡Oops! Parece que este sistema ya tiene un usuario administrador. Por favor intenta iniciar sesión'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
+                    : 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.';
                 });
             }
         }

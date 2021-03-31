@@ -13,12 +13,16 @@ const config = require('../controllers/config');
 */
 router.route('/')
     .post(async (req, res) => {
-        let check = await config.verifyInitAux();
-        if (!check) {
-            let check = await config.init(req.body);
-            res.status(check.codigo).send(check.texto);
+        try{
+            let check = await config.verifyInitAux();
+            if (!check) {
+                let check = await config.init(req.body);
+                res.status(check.codigo).send(check.texto);
+            }
+            else res.status(409).send('Ya hay una configuración inicial del sistema.');
+        }catch(err){
+            res.status(500).send('Ha ocurrido un error inesperado en el servidor, intente otra vez.');
         }
-        else res.status(409).send('Ya hay una configuración inicial del sistema.');
     });
 
 module.exports = router;
