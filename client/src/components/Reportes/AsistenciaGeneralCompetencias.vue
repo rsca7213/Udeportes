@@ -27,13 +27,13 @@
       <v-col class="grey--text text-center"> Selecciona un mes.
       </v-col>
     </v-row>
-    <v-row class="justify-center" v-if="mensaje_error">
+    <v-row class="justify-center mt-4 mx-2" v-if="mensaje_error">
       <v-alert text color="error" dense>
         <v-icon color="error"> mdi-alert </v-icon>
         <span v-text="mensaje_error" class="ml-1"> </span>
       </v-alert>
     </v-row>
-    <div class="mt-7" v-if="atletas.length">
+    <div class="mt-7" v-if="atletas.length && mensaje_error===''">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-row align="center">
@@ -82,11 +82,11 @@
         </v-col>
       </v-row>
     </div>
-    <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && competencias===false &&!tabla_cargando">
+    <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && competencias===false &&!tabla_cargando && mensaje_error===''">
       <v-col v-if="periodo==='t'" class="grey--text text-center"> Aún no hay competencias para esa categoría. </v-col>
       <v-col v-else class="grey--text text-center"> No hay competencias para esta categoría en la fecha especificada. </v-col>
     </v-row>
-    <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && !atletas.length  && !tabla_cargando">
+    <v-row v-else-if="(periodo === 't' || (periodo ==='m' && formato_fecha !=='')) && !atletas.length  && !tabla_cargando && mensaje_error===''">
       <v-col class="grey--text text-center"> No hay atletas que hayan asistido a las competencias en el período especificado. </v-col>
     </v-row>
   </div>
@@ -320,6 +320,7 @@ export default {
       this.atletas=[];
       this.periodo = 0;
       this.competencias = false;
+      this.mensaje_error='';
     },
     fecha(){
       this.atletas=[];
@@ -331,13 +332,14 @@ export default {
         param_fecha = this.fecha.split('-');
         if(this.periodo === 'm') this.getAtletas('mensual',param_fecha);
       }
+      this.mensaje_error='';
     },
     periodo(){
       this.fecha='';
       this.formato_fecha='';
       this.atletas=[];
       this.competencias = false;
-
+      this.mensaje_error='';
       if(this.periodo === 't')this.getAtletas('total');
       
     }
@@ -456,6 +458,7 @@ export default {
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas(periodo, fecha=null) {
       this.tabla_cargando = true;
+      this.mensaje_error= '';
       await axios.post(`${server_url}/reportes/asistencia/competencias/${this.categoria.id_deporte}/${this.categoria.id_categoria}`,{periodo, fecha}, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
@@ -483,10 +486,11 @@ export default {
             // errores
             // Error por parte del servidor
             console.log(error.response.status);
+            if (error.response.status) this.mensaje_error = error.response.data;
           }
           catch (error) {
             // Servidor no disponible
-            this.mensaje_error = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+            this.mensaje_error = 'No se ha podido conectar con el servidor, inténtalo de nuevo.';
             console.warn('Warning: No response status was found, is the server running? ');
           }
         });

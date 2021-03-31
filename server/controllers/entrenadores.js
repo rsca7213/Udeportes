@@ -10,7 +10,6 @@ const validador = require('./validador');
 async function insertarUsuario(datos_usuario){
 
   try {
-
     // Hacemos trim de los datos String para eliminar espacios innecesarios,
     // si el atributo es NULLABLE entonces se devuelve "" si esta vacio el input
     datos_usuario = {
@@ -63,7 +62,7 @@ async function insertarUsuario(datos_usuario){
     return insertar(datos_usuario);
   } catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -94,7 +93,7 @@ async function insertar(datos_usuario){
   }
   catch(error){
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -114,7 +113,7 @@ async function listarUsuarios(){
     }
   } catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -214,7 +213,7 @@ async function editarUsuario(datos_usuario, perfil=null){
 
   } catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -244,7 +243,7 @@ async function editarClaveUsuario(cedula_usuario, clave_usuario){
 
   } catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -276,7 +275,7 @@ async function eliminarUsuario (cedula) {
   }
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentelo de nuevo.'}; 
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtelo de nuevo.'}; 
   }
 }
 

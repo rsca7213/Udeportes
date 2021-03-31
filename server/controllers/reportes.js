@@ -51,7 +51,7 @@ async function nominaEquipo (id_categoria) {
   // En caso de error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -113,7 +113,7 @@ async function nominaCompetencia (id_deporte, id_categoria, id_competencia) {
   // En caso de error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 
@@ -223,7 +223,7 @@ async function asistenciaGeneralEntrenamientos (id_deporte, id_categoria, tipo_a
   // Error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'}; 
   }
 }
 
@@ -340,7 +340,7 @@ async function asistenciaGeneralCompetencias (id_deporte, id_categoria, tipo_asi
   // Error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'}; 
   }
 }
 
@@ -399,7 +399,7 @@ async function asistenciaDetalladaEntrenamientos (id_deporte, id_categoria, id_e
   // Error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'}; 
   }
 }
 
@@ -458,7 +458,7 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
   // Error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'}; 
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'}; 
   }
 }
 
@@ -471,7 +471,6 @@ async function asistenciaDetalladaCompetencias (id_deporte, id_categoria, id_com
 */
 async function atletasBeca () {
   try {
- 
     // Se buscan los atletas que poseen una beca
     let atletas = await bd.query(
       `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido,
@@ -510,7 +509,7 @@ async function atletasBeca () {
   // En caso de error inesperado
   catch (error) {
     if (process.env.NODE_ENV === 'development') console.error(error);
-    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.'};
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
   }
 }
 

@@ -75,6 +75,7 @@ export default {
   watch: {
     //Funcion encargada de observar si se ha cambiado la clave del usuario
    "inputs.clave"() {
+      this.mensaje_error='';
       //variable de control para saber si se cumplen las reglas de validacion
       let revisar = false;
 

@@ -16,21 +16,21 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-row class="justify-center" v-if="mensaje_error">
+    <v-row class="justify-center mt-3 mx-2" v-if="mensaje_error">
       <v-alert text color="error" dense>
         <v-icon color="error"> mdi-alert </v-icon>
         <span v-text="mensaje_error" class="ml-1"> </span>
       </v-alert>
     </v-row>
-    <v-row v-if="competencias_cargando"> 
+    <v-row v-if="competencias_cargando && mensaje_error===''"> 
       <v-col class="px-6 mx-5">
         <v-progress-linear indeterminate color="primary"> </v-progress-linear>
       </v-col>
     </v-row>
-    <v-row v-else-if="!competencias_cargando && !items_competencias.length">
+    <v-row v-else-if="!competencias_cargando && !items_competencias.length && mensaje_error===''">
       <v-col class="grey--text text-center"> No hay competencias para esta categoría. </v-col>
     </v-row>
-    <div v-if="competencia && atletas.length">
+    <div v-if="competencia && atletas.length && mensaje_error===''">
       <v-row no-gutters>
         <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-0 px-sm-6 rounded-lg">
           <v-row align="center">
@@ -83,7 +83,7 @@
         </v-col>
       </v-row>
     </div>
-    <v-row v-else-if="!atletas.length && competencia  && !tabla_cargando">
+    <v-row v-else-if="!atletas.length && competencia  && !tabla_cargando && mensaje_error===''">
       <v-col class="grey--text text-center my-1"> No hay atletas que hayan asistido a la competencia especificada. </v-col>
     </v-row>
   </div>
@@ -289,12 +289,14 @@ export default {
       this.ratioAsistencias = 0;
       this.ratioInasistencias = 0;
       this.competencia = false;
+      this.mensaje_error='';
       this.getCompetencias();
     },
     competencia(){
       this.atletas=[];
       this.ratioAsistencias = 0;
       this.ratioInasistencias = 0;
+      this.mensaje_error='';
       if(this.competencia && this.competencia.id_competencia) this.getAtletas();
     }
   },
@@ -380,6 +382,7 @@ export default {
       // Colocamos el loader
       this.competencias_cargando = true;
       this.items_competencias = [];
+      this.mensaje_error = '';
       // Request GET
       await axios.get(`${server_url}/competencias/${this.categoria.id_deporte}/${this.categoria.id_categoria}`, { withCredentials: true } )
         .then((res) => {
@@ -402,11 +405,11 @@ export default {
         .catch((err) => {
           try {
             // errores
-            if (err.response.status) this.mensajeError = err.response.data;
+            if (err.response.status) this.mensaje_error = 'No se han podido cargar las competencias debido a un error con el servidor, inténtalo de nuevo';
           }
           catch (error) {
             // Servidor no disponible
-            this.mensajeError = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+            this.mensaje_error = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
             console.warn('Warning: No response status was found, is the server running? ');
           }
         });
@@ -417,7 +420,7 @@ export default {
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas() {
       this.tabla_cargando = true;
-
+      this.mensaje_error = '';
       await axios.get(`${server_url}/reportes/asistencia/competencia/${this.categoria.id_deporte}/${this.categoria.id_categoria}/${this.competencia.id_competencia}`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
@@ -426,15 +429,16 @@ export default {
             this.calcularRatios();
           }
         })
-        .catch((error) => {
+        .catch((err) => {
           try {
             // errores
             // Error por parte del servidor
-            console.log(error.response.status);
+            console.log(err.response.status);
+            this.mensaje_error = err.response.data;
           }
           catch (error) {
             // Servidor no disponible
-            this.mensaje_error = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+            this.mensaje_error = 'No se ha podido conectar con el servidor, inténtalo de nuevo.';
             console.warn('Warning: No response status was found, is the server running? ');
           }
         });

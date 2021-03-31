@@ -79,7 +79,8 @@ export default {
    "inputs.clave"() {
       //variable de control para saber si se cumplen las reglas de validacion
       let revisar = false;
-
+      //en caso de que haya habido un error en el servidor se elimina el mensaje de error
+      this.mensaje_error = '';
       //se revisa si se cumplen las reglas de la clave
       this.reglasClave.forEach(claveValidator => {
         if(claveValidator(this.inputs.clave) !== true){
