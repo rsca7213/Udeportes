@@ -56,7 +56,13 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-  
+    <v-snackbar v-model="snackbar" timeout="3000" shaped top>
+      <v-icon left color="error"> mdi-cancel </v-icon>
+      <span class="error--text"> ¡Ha ocurrido un error, por favor intentalo de nuevo! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbar = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
   </nav>
 </template>
 
@@ -71,6 +77,7 @@ export default {
 
   data() {
     return {
+      snackbar: false,
       // abrir o cerrar sidebar
       menu: false,
       // ruta actual
@@ -158,7 +165,9 @@ export default {
             this.$router.push('/login');
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          this.snackbar = true;
+        });
       }
       else {
         this.$router.push(item.ruta).catch(() => {});
