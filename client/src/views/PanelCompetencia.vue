@@ -61,7 +61,7 @@
                     <v-col class="pt-1 pt-sm-2">
                       <AsistenciaCompetencia :id_deporte="$route.params.id_deporte" 
                       :id_categoria="$route.params.id_categoria" :id="$route.params.id"
-                      @updateAsistencias="snackbarAsistencia = snackbarAsistencia != null; datosAsistencia" />
+                      @updateAsistencias="data => { datosAsistencia(data); snackbarAsistencia = snackbarAsistencia != null }" />
                     </v-col>
                   </v-row>
                   <v-row v-for="posicion in competencia.posiciones" :key="posicion.id">

@@ -1,6 +1,14 @@
 <template>
   <v-container>
-    <v-row no-gutters>
+    <v-row v-if="mensajeError">
+      <v-col>
+        <v-alert text color="error" dense v-if="mensajeError">
+          <v-icon color="error"> mdi-alert </v-icon>
+          <span v-text="mensajeError" class="ml-1"> </span>
+        </v-alert>
+      </v-col>
+    </v-row>
+    <v-row no-gutters v-else>
       <v-col cols="12" lg="9" xl="8" class="elevation-4 py-4 px-6 rounded-lg">
         <v-row align="center">
           <v-col cols="12" class="px-1">
@@ -128,6 +136,7 @@ export default {
       tablaCargando: false,
       snackbarEliminar: false,
       snackbarEditar: false,
+      mensajeError: '',
       show: false,
       // Input del search bar
       busquedaCompetencia: '',

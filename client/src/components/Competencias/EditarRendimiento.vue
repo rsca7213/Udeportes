@@ -30,10 +30,10 @@
               <v-text-field clear-icon="mdi-close" clearable :label="estadistica.nombre" 
               prepend-icon="mdi-poll-box" validate-on-blur v-model.number="estadistica.valor" name="estadistica"
               :messages="
-                estadistica.min || estadistica.max ?
-                  `${estadistica.min ? 'Min: ' + estadistica.min : ''} 
-                   ${estadistica.min ? estadistica.max ?  '─' : '' : '' }
-                   ${estadistica.max ? 'Max: ' + estadistica.max : ''}`
+                estadistica.min != null || estadistica.max != null ?
+                  `${estadistica.min != null ? 'Min: ' + estadistica.min : ''} 
+                   ${estadistica.min != null ? estadistica.max ?  '─' : '' : '' }
+                   ${estadistica.max != null ? 'Max: ' + estadistica.max : ''}`
                   : null
               "
               :rules="
