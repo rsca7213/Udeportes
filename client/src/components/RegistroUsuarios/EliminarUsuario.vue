@@ -13,7 +13,7 @@
           <v-spacer> </v-spacer>
           <v-btn icon @click="dialog_eliminar_usuario = false"><v-icon> mdi-close </v-icon></v-btn>
         </v-card-title> 
-        <v-alert text color="error" dense v-if="mensaje_error">
+        <v-alert text color="error" class="mx-2" dense v-if="mensaje_error">
           <v-icon color="error"> mdi-alert </v-icon>
           <span v-text="mensaje_error" class="ml-1"> </span>
         </v-alert>

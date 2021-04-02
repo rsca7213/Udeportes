@@ -168,7 +168,15 @@ async function editarUsuario(datos_usuario, perfil=null){
     if (check_uniques.correo.rows[0].existe) return { codigo: 400, texto: 'Ya existe un usuario con el correo electrónico introducido' }
     if (check_uniques.telefono.rows[0].existe) return { codigo: 400, texto: 'Ya existe un usuario con el teléfono introducido' }
 
-    //actualizar
+    
+    // Verificamos la existencia del usuario
+    let verify = await bd.query(
+    `SELECT EXISTS (SELECT cedula FROM usuarios WHERE cedula = $1) AS existe`,
+    [datos_usuario.cedula]
+    );
+    if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este usuario no existe.' }
+
+
     // Si no hay ningun usuario con datos únicos ya tomados, realizamos el UPDATE de los datos
     // para los valores NULLABLE se insertara el valor (si existe) o NULL en caso de que no se hayan colocado
     //si se va a editar el perfil del usuario no se agrega el rol al update
@@ -227,6 +235,13 @@ async function editarClaveUsuario(cedula_usuario, clave_usuario){
     let check = validador.validarClave(clave_usuario);
     if (!check.estado) return { codigo: 422, texto: check.texto }
 
+    // Verificamos la existencia del usuario
+    let verify = await bd.query(
+    `SELECT EXISTS (SELECT cedula FROM usuarios WHERE cedula = $1) AS existe`,
+    [cedula_usuario]
+    );
+    if (!verify.rows[0].existe) return { codigo: 400, texto: 'Este usuario no existe.' }
+
     let salt = bcrypt.genSaltSync(10);
     let hash_clave = bcrypt.hashSync(clave_usuario, salt);
 
@@ -261,8 +276,8 @@ async function eliminarUsuario (cedula) {
     if (!check.estado) return { codigo: 422, texto: check.texto }
     
     // validamos la existencia del usuario en el sistema
-    let query = await bd.query(`SELECT EXISTS (SELECT u.cedula FROM usuarios u WHERE u.cedula = $1) AS "existe"`, [cedula]);
-    if (!query.rowCount) return { codigo: 404, texto: 'Este usuario no está registrado en el sistema.' }
+    let verify = await bd.query(`SELECT EXISTS (SELECT u.cedula FROM usuarios u WHERE u.cedula = $1) AS existe`, [cedula]);
+    if (!verify.rows[0].existe) return { codigo: 404, texto: 'Este usuario no está registrado en el sistema.' }
     
     // Si la cédula es válida y el usuario existe
     else {

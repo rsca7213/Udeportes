@@ -13,7 +13,7 @@
         <v-row class="" align="start">
           <v-col cols="12 px-0 py-0"> 
             <v-card rounded="md">
-              <v-card-title class="pl-8 pb-0">
+              <v-card-title class="pl-4 pl-sm-8 pb-0">
                 <span class="d-none d-sm-flex"> {{ mensaje_form }} </span>
                 <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> {{ mensaje_form }} </b>
                 <v-spacer> </v-spacer>
@@ -64,10 +64,10 @@
                 </v-card-actions>
               </div>
               <div v-show="confirmar_registro">
-                <v-card-text class="pb-0 pt-4 text-subtitle-1">
+                <v-card-text class="pb-0 pt-4 text-subtitle-1 px-0 px-sm-4">
                   <v-container>
                     <v-row class="px-1">
-                      <v-col  cols=12 sm=6 lg=4 class="py-1" v-for="dato in datosUsuario" :key="dato.nombre" v-show="inputs[dato.variable_asociada] != ''">
+                      <v-col cols=12 sm=6 lg=6 class="py-1" v-for="dato in datosUsuario" :key="dato.nombre" v-show="inputs[dato.variable_asociada] != ''">
                         <b><span class="my-0 grey--text text--darken-2">{{dato.nombre+": "}}</span></b>
                         <span class="my-0 grey--text text--darken-2">{{(dato.variable_asociada == 'rol')? ((inputs[dato.variable_asociada] == 'a')? 'Administrador':'Entrenador'): inputs[dato.variable_asociada]}}</span>  
                       </v-col>
