@@ -241,14 +241,13 @@ export default {
                         this.$refs.crearForm.reset();
                         this.crearDeporte = false;
                     })
-                    .catch((error) => {
-                        this.$refs.crearForm.reset();
-                        this.mensajeError = error.response.status === 400
-                        ? 'Ha ocurrido un error a la hora de crear el deporte'
-                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                    });
                 } catch (error) {
-                    console.log(error);
+                    this.crearDeporte = false;
+                    this.display = {
+                        show: true, 
+                        mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                        type: 'error',
+                    }
                 }
             }
             this.obtenerDeportes();
@@ -298,14 +297,13 @@ export default {
                             this.$refs.editForm.reset();
                             this.editarDeporte = false;
                         })
-                        .catch((error) => {
-                            this.$refs.editForm.reset();
-                            this.mensajeError = error.response.status === 400
-                            ? 'Ha ocurrido un error a la hora de editar el deporte'
-                            : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                        });
                     } catch (error) {
-                        console.log(error);
+                        this.editarDeporte = false;
+                        this.display = {
+                            show: true, 
+                            mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                            type: 'error',
+                        }
                     }
                 }
                 this.obtenerDeportes();
@@ -315,7 +313,7 @@ export default {
         async eliminar_Deporte () {
             this.deportesCheck = true;
             try {
-                axios.delete(`${server_url}/deportes/${this.deporte.id}`, { withCredentials: true })
+                await axios.delete(`${server_url}/deportes/${this.deporte.id}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200){
                         const index = this.deportes.findIndex(d => d.id == this.deporte.id);
@@ -338,27 +336,41 @@ export default {
                     this.eliminarDeporte = false;
                 })
             } catch (error) {
-                console.log(error);
+                this.eliminarDeporte = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
-            // this.obtenerDeportes();
         }
     },
     // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
     // en caso positivo, se redirecciona a Deportes, sino se muestra el componente para iniciar sesión
     async mounted() {
-        await axios
-        .get(`${server_url}/auth/admin`, { withCredentials: true })
-        .then((res) => {
-            if (res.status === 200) {
-                //en caso de que se pasen todas las validaciones se llaman a todos los deportes del sistema
-                this.obtenerDeportes();
-                this.cargando = false;
+        try {
+            await axios
+            .get(`${server_url}/auth/admin`, { withCredentials: true })
+            .then((res) => {
+                if (res.status === 200) {
+                    //en caso de que se pasen todas las validaciones se llaman a todos los deportes del sistema
+                    this.obtenerDeportes();
+                    this.cargando = false;
+                }
+            })
+            .catch((error) => {
+                if (error.response.status === 428) this.$router.push('/init');
+                else this.$router.push('/login');
+            }); 
+        } catch (error) {
+            this.deportesCheck = false;
+            this.cargando = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
             }
-        })
-        .catch((error) => {
-            if (error.response.status === 428) this.$router.push('/init');
-            else this.$router.push('/login');
-        });
+        }
     }
 }
 </script>

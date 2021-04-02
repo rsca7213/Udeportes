@@ -29,29 +29,38 @@ export default {
     }
   },
   async mounted() {
-    await axios
-    .get(`${server_url}/auth/login`, { withCredentials: true })
-    .then((res) => {
-      // si el usuario ha iniciado sesión
-      if (res.status === 200) {
-        this.cargando = false;
-      }
-    })
-    .catch((err) => {
-      try {
-        // no hay config inicial
-        if (err.response.status === 428) this.$router.push('/init');
-        // usuario no ha iniciado sesión
-        else if (err.response.status === 401) this.$router.push('/login');
-        // si el usuario ha iniciado sesión pero no es admin
-        else {
-          this.$router.push('/');
+    try {
+      await axios
+      .get(`${server_url}/auth/login`, { withCredentials: true })
+      .then((res) => {
+        // si el usuario ha iniciado sesión
+        if (res.status === 200) {
+          this.cargando = false;
         }
-      }
-      catch { 
-        console.warn('Warning: No response status was found, is the server running? ');
-      }
-    })
+      })
+      .catch((err) => {
+        try {
+          // no hay config inicial
+          if (err.response.status === 428) this.$router.push('/init');
+          // usuario no ha iniciado sesión
+          else if (err.response.status === 401) this.$router.push('/login');
+          // si el usuario ha iniciado sesión pero no es admin
+          else {
+            this.$router.push('/');
+          }
+        }
+        catch { 
+          this.cargando = false;
+          this.display = {
+              show: true, 
+              mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+              type: 'error',
+          }
+        }
+      })
+    } catch (error) {
+      this.cargando = false;
+    }
   }
 }
 </script>

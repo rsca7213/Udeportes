@@ -4,7 +4,11 @@
             <v-card-title class="grey--text text--darken-2"> 
                 Inscripciones en {{deporte.nombre}}
                 <v-spacer class="d-none d-sm-flex"></v-spacer>
-                <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/deportes')">
+                <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/deportes')" v-if="this.usuario.admin">
+                    <v-icon left> mdi-arrow-left </v-icon>
+                    Volver a Deportes
+                </v-btn>
+                <v-btn text class="blue--text text--lighten-1 px-1 px-sm-3" @click="$router.push('/')" v-else>
                     <v-icon left> mdi-arrow-left </v-icon>
                     Volver
                 </v-btn>
@@ -101,7 +105,7 @@
 
                         <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoria" 
-                        no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
+                        no-data-text="No hay posiciones disponibles" disabled v-if="!this.validarCategoria">
                         </v-select>
                         <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoria" clearable
@@ -150,11 +154,11 @@
                         no-data-text="No hay categorias disponibles" @change="obtenerPosicionesCategoria()" v-else>
                         </v-select>
 
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
+                        <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaDis"
-                        no-data-text="No hay posiciones disponibles" disabled v-if="!this.validar">
+                        no-data-text="No hay posiciones disponibles" disabled v-if="!this.validarCategoria">
                         </v-select>
-                        <v-select v-model="posicion.id" label="Posición *" prepend-icon="mdi-source-pull"
+                        <v-select v-model="posicion.id" label="Posición" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posicionesCategoriaDis" clearable
                         no-data-text="No hay posiciones disponibles" v-else>
                         </v-select>
@@ -277,6 +281,7 @@ export default {
         eliminarInscripcion: false,
         confirmar: false,
         validar: null,
+        validarCategoria: null,
         display: false,
         tablaCargando: true,
         search: '',
@@ -429,6 +434,7 @@ export default {
     },
     async obtenerPosicionesCategoria() {
         this.posicion = {};
+        this.validarCategoria = false;
         try {
             await axios
             .get(`${server_url}/inscripciones/${this.$route.params.id_deporte}/categoria/${this.categoria.id.id_categoria}/${this.cedula}`, { withCredentials: true })
@@ -461,6 +467,7 @@ export default {
                             }
                         });
                     });
+                    this.validarCategoria = true;
                 }
             })
         } catch (error) {
@@ -472,6 +479,7 @@ export default {
         this.categoria = {};
         this.posicion = {};
         this.validar = null;
+        this.validarCategoria = null;
         if (evento == 'registrar') {
             this.registrarInscripcion = true;
         } else if (evento == 'editar') {
@@ -508,19 +516,20 @@ export default {
                     }
                     this.registrarInscripcion = false;
                 })
-                .catch((error) => {
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de crear la categoria'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
             }
         } catch (error) {
-            console.log(error);
+            this.registrarInscripcion = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.atleta = {};
         this.categoria = {};
         this.posicion = {};
         this.validar = null;
+        this.validarCategoria = null;
         this.obtenerInscripciones();
     },
     async editar_Inscripcion () {
@@ -551,19 +560,20 @@ export default {
                     }
                     this.editarInscripcion = false;
                 })
-                .catch((error) => {
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de crear la categoria'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
             }
         } catch (error) {
-            console.log(error);
+            this.editarInscripcion = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.atleta = {};
         this.categoria = {};
         this.posicion = {};
         this.validar = null;
+        this.validarCategoria = null;
         this.obtenerInscripciones();
     },
     async confimar_Eliminar() {
@@ -607,14 +617,15 @@ export default {
                     this.confirmar = false;
                     this.eliminarInscripcion = false;
                 })
-                .catch((error) => {
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de crear la categoria'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
             }
         } catch (error) {
-            console.log(error);
+            this.confirmar = false;
+            this.eliminarInscripcion = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.atleta = {};
         this.categoria = {};
@@ -643,18 +654,22 @@ export default {
           }
         }
         catch { 
-          console.warn('Warning: No response status was found, is the server running? ');
+          this.display = {
+              show: true, 
+              mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+              type: 'error',
+          }
           return false; 
         }
       }))
         await axios
         .get(`${server_url}/perfil?data=cedula`, { withCredentials: true })
         .then((res) => {
-          if (res.status === 200) 
-            this.usuario = {
-                deporte: this.$route.params.id_deporte,
-                admin: this.usuario.admin
-            };
+            if (res.status === 200) 
+                this.usuario = {
+                    deporte: this.$route.params.id_deporte,
+                    admin: this.usuario.admin
+                };
         })
         .catch(() => { });
 

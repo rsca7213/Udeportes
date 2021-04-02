@@ -492,15 +492,13 @@ export default {
                     this.$refs.crearForm.reset();
                     this.crearCategoria = false;
                 })
-                .catch((error) => {
-                    this.$refs.crearForm.reset();
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de crear la categoria'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
-                
             } catch (error) {
-                console.log(error);
+                this.crearCategoria = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
         }
         this.obtenerCategorias();
@@ -550,21 +548,20 @@ export default {
                     this.$refs.editForm.reset();
                     this.editarCategoria = false;
                 })
-                .catch((error) => {
-                    this.$refs.editForm.reset();
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de editar el deporte'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
             } catch (error) {
-                console.log(error);
+                this.editarCategoria = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
         }
         this.obtenerCategorias();
     },
     async eliminar_Categoria () {
         try {
-            axios.delete(`${server_url}/categorias/${this.$route.params.id_deporte}/${this.categoria.id}`, { withCredentials: true })
+            await axios.delete(`${server_url}/categorias/${this.$route.params.id_deporte}/${this.categoria.id}`, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200){
                     const index = this.categorias.findIndex(c => c.id == this.categoria.id);
@@ -584,7 +581,12 @@ export default {
                 this.eliminarCategoria = false;
             })
         } catch (error) {
-            console.log(error);
+            this.eliminarCategoria = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
     },
     abrir (evento) {
@@ -619,13 +621,13 @@ export default {
                 }
                 this.asignacion = false;
             })
-            .catch((error) => {
-                this.mensajeError = error.response.status === 400
-                ? 'Ha ocurrido un error a la hora de crear la categoria'
-                : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-            });
         } catch (error) {
-            console.log(error);
+            this.asignacion = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.obtenerCategorias();
         this.obtenerEntrenadores();
@@ -652,13 +654,13 @@ export default {
                 }
                 this.destitucion = false;
             })
-            .catch((error) => {
-                this.mensajeError = error.response.status === 400
-                ? 'Ha ocurrido un error a la hora de crear la categoria'
-                : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-            });
         } catch (error) {
-            console.log(error);
+            this.destitucion = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.obtenerCategorias();
         this.obtenerEntrenadores();
@@ -667,15 +669,22 @@ export default {
     }
   },
   async mounted(){
-    //se obtienen todas las categorias del deporte
-    this.obtenerCategorias();
-    // this.obtenerEntrenadores();
-    //se obtienen los datos del deporte
-    await axios
-    .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
-    .then((res) => {
-        if (res.data.codigo === 200) this.deporte = res.data.deporte;
-    })
+    try {
+        //se obtienen todas las categorias del deporte
+        this.obtenerCategorias();
+        //se obtienen los datos del deporte
+        await axios
+        .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
+        .then((res) => {
+            if (res.data.codigo === 200) this.deporte = res.data.deporte;
+        })
+    } catch (error) {
+        this.display = {
+            show: true, 
+            mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+            type: 'error',
+        }
+    }
   }
 }
 </script>

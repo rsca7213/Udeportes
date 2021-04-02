@@ -268,15 +268,7 @@ export default {
         reglasNombre: [
             v => !!v || 'Este campo es obligatorio',
             v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
-        ],
-        // reglasMinimo: [
-        //     v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cifra válida',
-        //     v => v && v.length <= 8 || 'El valor no debe ser mayor a 8 caracteres',
-        // ],
-        // reglasMaximo: [
-        //     v => v && (/^\d{0,9}$/.test(v)) || 'Debe ser una cifra válida',
-        //     v => v && v.length <= 8 || 'El valor no debe ser mayor a 8 caracteres',
-        // ]
+        ]
     }
   },
   methods: {
@@ -353,14 +345,13 @@ export default {
                     this.$refs.crearForm.reset();
                     this.crearEstadistica = false;
                 })
-                .catch((error) => {
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de crear la categoria'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
-                
             } catch (error) {
-                console.log(error);
+                this.crearEstadistica = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
         }
         this.obtenerEstadisticas();
@@ -433,20 +424,20 @@ export default {
                     }
                     this.editarEstadistica = false;
                 })
-                .catch((error) => {
-                    this.mensajeError = error.response.status === 400
-                    ? 'Ha ocurrido un error a la hora de editar el deporte'
-                    : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                });
             } catch (error) {
-                console.log(error);
+                this.editarEstadistica = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
         }
         this.obtenerEstadisticas();
     },
     async eliminar_Estadistica () {
         try {
-            axios.delete(`${server_url}/estadisticas/${this.$route.params.id_deporte}/estadistica/${this.estadistica.id}`, { withCredentials: true })
+            await axios.delete(`${server_url}/estadisticas/${this.$route.params.id_deporte}/estadistica/${this.estadistica.id}`, { withCredentials: true })
             .then((res) => {
                 if (res.data.codigo === 200){
                     const index = this.estadisticas.findIndex(e => e.id == this.estadistica.id);
@@ -466,7 +457,12 @@ export default {
                 this.eliminarEstadistica = false;
             })
         } catch (error) {
-            console.log(error);
+            this.eliminarEstadistica = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
         this.obtenerEstadisticas();
     },
@@ -484,14 +480,22 @@ export default {
     }
   },
   async mounted(){
-    //se obtienen todas las categorias del deporte
-    this.obtenerEstadisticas();
-    //se obtienen los datos del deporte
-    await axios
-    .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
-    .then((res) => {
-        if (res.data.codigo === 200) this.deporte = res.data.deporte;
-    })
+    try {
+        //se obtienen todas las categorias del deporte
+        this.obtenerEstadisticas();
+        //se obtienen los datos del deporte
+        await axios
+        .get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
+        .then((res) => {
+            if (res.data.codigo === 200) this.deporte = res.data.deporte;
+        })
+    } catch (error) {
+        this.display = {
+            show: true, 
+            mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+            type: 'error',
+        }
+    }
   }
 }
 </script>

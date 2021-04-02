@@ -203,14 +203,13 @@ export default {
                         this.$refs.crearForm.reset();
                         this.crearPosicion = false;
                     })
-                    .catch((error) => {
-                        this.$refs.crearForm.reset();
-                        this.mensajeError = error.response.status === 400
-                        ? 'Ha ocurrido un error a la hora de crear la posición'
-                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                    });
                 } catch (error) {
-                    console.log(error);
+                    this.crearPosicion = false;
+                    this.display = {
+                        show: true, 
+                        mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                        type: 'error',
+                    }
                 }
             }
             this.obtenerPosiciones();
@@ -256,21 +255,20 @@ export default {
                         this.$refs.editForm.reset();
                         this.editarPosicion = false;
                     })
-                    .catch((error) => {
-                        this.$refs.editForm.reset();
-                        this.mensajeError = error.response.status === 400
-                        ? 'Ha ocurrido un error a la hora de editar la posición'
-                        : 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.';
-                    });
                 } catch (error) {
-                    console.log(error);
+                    this.editarPosicion = false;
+                    this.display = {
+                        show: true, 
+                        mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                        type: 'error',
+                    }
                 }
             }
             this.obtenerPosiciones();
         },
         async eliminar_Posicion () {
             try {
-                axios.delete(`${server_url}/posiciones/${this.$route.params.id_deporte}/${this.posicion.id}`, { withCredentials: true })
+                await axios.delete(`${server_url}/posiciones/${this.$route.params.id_deporte}/${this.posicion.id}`, { withCredentials: true })
                 .then((res) => {
                     if (res.data.codigo === 200){
                         const index = this.posiciones.findIndex(p => p.id == this.posicion.id);
@@ -293,33 +291,48 @@ export default {
                     this.eliminarPosicion = false;
                 })
             } catch (error) {
-                console.log(error);
+                this.eliminarPosicion = false;
+                this.display = {
+                    show: true, 
+                    mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                    type: 'error',
+                }
             }
         },
     },
     // al iniciar el componente se chequea que el usuario se encuentre iniciado sesión
     // en caso positivo, se redirecciona a Posiciones, sino se muestra el componente para iniciar sesión
     async mounted() {
-    await axios
-      .get(`${server_url}/auth/admin`, { withCredentials: true })
-      .then((res) => {
-        if (res.status === 200) {
-            //en caso de que se pasen todas las validaciones se llaman a todas las posiciones del deporte
-            this.obtenerPosiciones();
-            //se busca la información del deporte
-            axios.get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
+        try {
+            await axios
+            .get(`${server_url}/auth/admin`, { withCredentials: true })
             .then((res) => {
-                if (res.data.codigo === 200){
-                    this.deporte = res.data.deporte;
+                if (res.status === 200) {
+                    //en caso de que se pasen todas las validaciones se llaman a todas las posiciones del deporte
+                    this.obtenerPosiciones();
+                    //se busca la información del deporte
+                    axios.get(`${server_url}/deportes/${this.$route.params.id_deporte}`, { withCredentials: true })
+                    .then((res) => {
+                        if (res.data.codigo === 200){
+                            this.deporte = res.data.deporte;
+                        }
+                    })
+                    this.cargando = false;
                 }
             })
+            .catch((error) => {
+                if (error.response.status === 428) this.$router.push('/init');
+                else this.$router.push('/login');
+            });
+        } catch (error) {
+            this.posicionesCheck = false;
             this.cargando = false;
+            this.display = {
+                show: true, 
+                mensaje: 'Ha ocurrido un error inesperado en el servidor, por favor intentalo de nuevo.',
+                type: 'error',
+            }
         }
-      })
-      .catch((error) => {
-        if (error.response.status === 428) this.$router.push('/init');
-        else this.$router.push('/login');
-      });
   }
 }
 </script>
