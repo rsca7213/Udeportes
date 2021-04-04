@@ -3,7 +3,15 @@
     <v-card-title class="grey--text text--darken-2"> 
       Usuarios Registrados en el Sistema 
     </v-card-title>
-    <v-container>
+    <v-row v-if="mensaje_error" class="mx-1">
+      <v-col>
+        <v-alert text color="error" dense v-if="mensaje_error">
+          <v-icon color="error"> mdi-alert </v-icon>
+          <span v-text="mensaje_error" class="ml-1"> </span>
+        </v-alert>
+      </v-col>
+    </v-row>
+    <v-container v-else>
       <v-row align="center">
         <v-col cols="12" class="px-2">
           <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -71,6 +79,8 @@ export default {
       dialog_editar: false,
       // variable encargada de mostrar el dialog para eliminar usuarios
       dialogDelete: false,
+      //mensade de error que se muestra cuando hay algún error con el servidor
+      mensaje_error: '',
       // variable encargada de buscar lo que se inserte en el campo busqueda
       search: '',
       columnas_tabla: [
@@ -182,6 +192,7 @@ export default {
     */
     async obtenerEntrenadores() {
       this.tablaCargando = true;
+      this.mensaje_error = '';
       // request GET
       await axios.get(`${server_url}/entrenadores/`, { withCredentials: true })
       .then((res) => {
@@ -193,6 +204,9 @@ export default {
             //se agrega el nombre completo al usuario para visualizarlo en la tabla como un solo dato
             usuario['nombre_completo'] = `${usuario['primer_nombre']} ${(usuario['segundo_nombre'])? usuario['segundo_nombre']:''} ${usuario['primer_apellido']} ${usuario['segundo_apellido']}`
           });
+        }
+        else{
+          this.mensaje_error = res.data.texto;
         }
       })
       .catch((error) => {
