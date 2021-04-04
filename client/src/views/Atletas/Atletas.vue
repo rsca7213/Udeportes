@@ -1,5 +1,12 @@
 <template>
   <div class="atletas">
+    <v-snackbar v-model="snackbar" timeout="3000" shaped top>
+      <v-icon left color="error"> mdi-cancel </v-icon>
+      <span class="error--text"> ¡Ha ocurrido un error inesperado, refresca la pagina! </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color=¨white¨ text v-bind="attrs" @click="snackbar = false"> Cerrar </v-btn>
+      </template>
+    </v-snackbar>
     <Cargador v-if="cargando" /> 
     <v-container v-else> 
       <v-row>
@@ -28,7 +35,8 @@ export default {
 
   data() {
     return {
-      cargando: true
+      cargando: true,
+      snackbar: false
     }
   },
 
@@ -54,6 +62,7 @@ export default {
           }
         }
         catch { 
+          this.snackbar = true;
           console.warn('Warning: No response status was found, is the server running? ');
         }
       })

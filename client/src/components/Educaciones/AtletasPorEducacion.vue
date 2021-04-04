@@ -57,7 +57,7 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-        <div v-else class="text-center text--lighten-2 mt-6">
+        <div v-else-if="!mensajeError" class="text-center text--lighten-2 mt-6">
           No hay educaciones registradas en el sistema.
         </div>
       </v-card-text>
