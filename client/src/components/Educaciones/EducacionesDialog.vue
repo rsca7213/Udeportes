@@ -40,7 +40,7 @@
           <span v-text="mensajeSuccess" class="ml-1"> </span>
         </v-alert>
         <div v-if="step === 'R'"> 
-          <div class="text-right mb-3">
+          <div class="text-right mb-3" v-if="!mensajeError">
             <v-btn color="primary" @click="cambiarVista('C')"> 
               <v-icon left> mdi-plus-circle </v-icon>
               Agregar educación
@@ -72,7 +72,7 @@
               </div>
             </v-list-item>
           </v-list>
-          <div v-else class="text-center text--lighten-2 mt-6">
+          <div v-else-if="!mensajeError" class="text-center text--lighten-2 mt-6">
             No hay educaciones registradas en el sistema.
           </div>
         </div>
@@ -264,11 +264,15 @@ export default {
       .catch((error) => {
         try {
           // Error por parte del servidor
-          console.log(error.response.status);
+          if (error.response.status) this.mensajeError = 'Ha ocurrido un error inesperado en el servidor, intentalo de nuevo.';
         }
         catch {
           // Servidor inalcanzable
+          this.mensajeError = 'El servidor no responde, intentalo de nuevo.';
           console.warn('Warning: No response status was found, is the server running? ');
+        }
+        finally {
+          this.educacionCargando = false;
         }
       });
     },
