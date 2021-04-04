@@ -217,9 +217,10 @@ async function editarAtleta (cedula, atleta) {
       let check_uniques = {
         correo: await bd.query(`SELECT EXISTS (SELECT 1 FROM atletas WHERE correo = $1 AND cedula != $2) AS "existe"`, [atleta.correo, cedula]),
         telefono: await bd.query(`SELECT EXISTS (SELECT 1 FROM atletas WHERE telefono = $1 AND cedula != $2) AS "existe"`, [atleta.telefono, cedula]),
+        atleta: await bd.query(`SELECT EXISTS (SELECT a.cedula FROM atletas a WHERE a.cedula = $1) AS "existe"`, [cedula])
       }
-
       // En caso de que ya exista un atleta con algun dato unico
+      if (!check_uniques.atleta.rows[0].existe) return { codigo: 404, texto: 'El atleta no existe' }
       if (check_uniques.correo.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el correo electrónico introducido' }
       if (check_uniques.telefono.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el teléfono introducido' }
 
