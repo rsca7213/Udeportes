@@ -9,7 +9,15 @@
                     Regresar a deportes
                 </v-btn>
             </v-card-title>
-            <v-container class="px-2">
+            <v-row v-if="mensaje_error" class="mx-1">
+                <v-col>
+                    <v-alert text color="error" dense v-if="mensaje_error">
+                    <v-icon color="error"> mdi-alert </v-icon>
+                    <span v-text="mensaje_error" class="ml-1"> </span>
+                    </v-alert>
+                </v-col>
+            </v-row>
+            <v-container v-else class="px-2">
                 <v-row align="center">
                     <v-col cols="12">
                     <v-text-field clear-icon="mdi-close" clearable label="Buscar" 
@@ -319,6 +327,7 @@ export default {
         display: false,
         tablaCargando: true,
         search: '',
+        mensaje_error: '',
         categoriaCrear: {
             genero: 'm',
         },
@@ -405,6 +414,9 @@ export default {
                         }
                     });
                 });
+            }
+            else if(res.data.codigo === 500){
+                this.mensaje_error = res.data.texto;
             }
             this.categorias.forEach(categoria => {
                 if (categoria.entrenador == null) {
