@@ -131,7 +131,7 @@
                 <v-card-text class="text-subtitle-1">
                     <b class="error--text"> ¿Está seguro que desea eliminar este deporte? </b>
                     <br>
-                    <span class="error--text"> Al eliminar el deporte se eliminarán todos sus datos del sistema, como sus categorias y posiciones. </span>
+                    <span class="error--text"> Al eliminar el deporte se eliminarán todos sus datos del sistema, como sus categorías y posiciones. </span>
                     <br>
                     <b> Nombre del deporte: </b> {{deporte.nombre}}
                 </v-card-text>

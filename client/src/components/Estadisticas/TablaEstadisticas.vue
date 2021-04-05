@@ -117,7 +117,7 @@
                 </v-card-subtitle>
                 <v-form ref="editForm" @submit.prevent="editar_Estadistica()">
                     <v-container class="px-md-4">
-                        <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre de la Estadística"
+                        <v-text-field clear-icon="mdi-close" clearable counter="50" label="Nombre de la Estadística *"
                         prepend-icon="mdi-chart-line" type="text" :rules="reglasNombre"
                         validate-on-blur v-model="estadistica.nombre" name="nombre"> </v-text-field>
 
@@ -132,7 +132,7 @@
                         prepend-icon="mdi-arrow-up" type="text" v-else
                         validate-on-blur v-model.number="estadistica.maximo" name="maximo"> </v-text-field>
                         
-                        <v-select v-model="posicionDef" label="Posición" prepend-icon="mdi-source-pull"
+                        <v-select v-model="posicionDef" label="Posición *" prepend-icon="mdi-source-pull"
                         clear-icon="mdi-close" name="posicion" :items="posiciones" clearable
                         no-data-text="No hay posiciones disponibles">
                         </v-select>
@@ -161,7 +161,7 @@
                 <v-card-text class="text-subtitle-1">
                     <b class="error--text"> ¿Está seguro que desea eliminar esta estadística? </b>
                     <br>
-                    <span class="error--text"> Al eliminar la estadística se eliminarán todos los datos del sistema. </span>
+                    <span class="error--text"> Al eliminar la estadística se eliminarán todos sus datos del sistema. </span>
                     <br>
                     <b> Nombre del deporte: </b> {{deporte.nombre}}
                     <br>
