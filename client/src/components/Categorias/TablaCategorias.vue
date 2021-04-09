@@ -600,6 +600,7 @@ export default {
                 type: 'error',
             }
         }
+        this.obtenerCategorias();
     },
     abrir (evento) {
         this.categoria = {};
