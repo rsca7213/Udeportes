@@ -95,7 +95,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import ApexChart from 'vue-apexcharts';
 import axios from 'axios';
-const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+const server_url = sessionStorage.getItem('SERVER_URL');
 export default {
   name: 'AsistenciaDetalladaEntrenamientos',
   components: {

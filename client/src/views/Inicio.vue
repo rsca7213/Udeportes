@@ -96,7 +96,7 @@ import imagenCompetencias from '../assets/inicio/competencias.png';
 import imagenEntrenamientos from '../assets/inicio/entrenamientos.png';
 import imagenReportes from '../assets/inicio/reportes.png';
 
-const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+const server_url = sessionStorage.getItem('SERVER_URL');
 
 export default {
 

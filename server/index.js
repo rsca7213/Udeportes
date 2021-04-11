@@ -1,14 +1,19 @@
 // Librerias requeridas
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
+
 
 // Configuración inicial del servidor
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 dotenv.config();
-app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
+
+if (process.env.NODE_ENV !== 'production') {
+  const cors = require('cors');
+  app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
+}
+
 // Inicializar enrutador de express
 const routerAuth = require('./routes/routerAuth.js');
 app.use('/api/auth', routerAuth);
@@ -54,5 +59,5 @@ if (process.env.NODE_ENV === 'production') {
 // Iniciar servidor
 app.listen(process.env.SERVER_PORT, async () => {
   console.log(`Servidor ejecutandose en: ${process.env.SERVER_URL}:${process.env.SERVER_PORT}`);
-  console.log('Ruta del cliente: ', process.env.CLIENT_LINK);
+  console.log('Ruta del cliente: ', process.env.NODE_ENV === 'production' ? 'Producción' : process.env.CLIENT_LINK);
 });

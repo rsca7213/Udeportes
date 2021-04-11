@@ -15,7 +15,7 @@
 import Cargador from '../components/Cargador';
 import MenuReportes from '../components/Reportes/MenuReportes';
 import axios from 'axios';
-const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+const server_url = sessionStorage.getItem('SERVER_URL');
 export default {
   name: 'Reportes',
   components: {

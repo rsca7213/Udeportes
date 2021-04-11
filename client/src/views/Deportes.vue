@@ -171,7 +171,7 @@
 import axios from 'axios';
 import Cargador from '../components/Cargador';
 
-const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+const server_url = sessionStorage.getItem('SERVER_URL');
 
 export default {
 

@@ -54,7 +54,7 @@ import ExitoDialog from './ExitoDialog';
 import EditarClave from './EditarClave';
 import EliminarUsuario from './EliminarUsuario';
 import axios from 'axios';
-const server_url = `${sessionStorage.getItem('SERVER_URL')}:${sessionStorage.getItem('SERVER_PORT')}`;
+const server_url = sessionStorage.getItem('SERVER_URL');
 export default {
   name: 'TablaUsuarios',
   components: {
