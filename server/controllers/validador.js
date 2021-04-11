@@ -116,7 +116,7 @@ const reglasEstatusCompetencia = [
 ];
 
 const reglasEstadisticas = [
-  v => v <= 99999999 || 'El valor no debe ser mayor a 8 caracteres',
+  v => v <= 99999999 || 'El valor no debe ser mayor a 8 dígitos',
   v => (/^\d{0,9}$/.test(v)) || 'Debe ser una cifra válida',
 ];
 
