@@ -3,6 +3,7 @@ tutoriales.json
 server/package-lock.json
 server/node_modules
 server/.env
+server/public
 
 client/.DS_Store
 client/node_modules
