@@ -603,7 +603,7 @@ async function actualizarRendimiento (id_deporte, id_categoria, id, cedula, id_p
     if (!check) return { codigo: 400, texto: 'Las estadisticas no existen.'}
 
     // Realizamos la actualizacion de la tabla rendimientos con los datos
-    estadisticas.forEach(async e => {
+    for (e of estadisticas) {
       // Si el valor es nulo, significa que se deberia borrar el registro de la base de datos
       if (e.valor === null) {
         await bd.query(
@@ -621,7 +621,7 @@ async function actualizarRendimiento (id_deporte, id_categoria, id, cedula, id_p
           [cedula, e.id, id_posicion, id_deporte, id, id_categoria, id_deporte, e.valor, e.valor]
         );
       }
-    });
+    }
 
     return { codigo: 200, texto: 'Rendimiento guardado correctamente.' }
   }

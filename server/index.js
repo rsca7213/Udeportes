@@ -59,5 +59,5 @@ if (process.env.NODE_ENV === 'production') {
 // Iniciar servidor
 app.listen(process.env.SERVER_PORT, async () => {
   console.log(`Servidor ejecutandose en: ${process.env.SERVER_URL}:${process.env.SERVER_PORT}`);
-  console.log('Ruta del cliente: ', process.env.NODE_ENV === 'production' ? 'Producción' : process.env.CLIENT_LINK);
+  console.log('Ruta del cliente: ', process.env.NODE_ENV === 'production' ? 'Produccion' : process.env.CLIENT_LINK);
 });
