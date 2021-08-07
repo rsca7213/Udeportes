@@ -158,3 +158,25 @@ CREATE TABLE participaciones(
 
   CONSTRAINT participaciones_pk PRIMARY KEY(id, cedula_atleta, id_categoria, id_deporte)
 );
+
+CREATE TABLE historico_atletas(
+  fecha DATE NOT NULL,
+  cedula_atleta NUMERIC(8, 0) NOT NULL,
+  numero_etapa NUMERIC(2, 0),
+  tipo_etapa VARCHAR(50),
+  nombre_educacion VARCHAR(200),
+
+  CONSTRAINT historico_atletas_pk PRIMARY KEY(fecha, cedula_atleta)
+);
+
+CREATE TABLE historico_inscripciones(
+  fecha DATE NOT NULL,
+  fecha_educacion DATE NOT NULL,
+  cedula_atleta NUMERIC(8, 0) NOT NULL,
+  nombre_deporte VARCHAR(50) NOT NULL,
+  nombre_categoria VARCHAR(50) NOT NULL,
+  genero_categoria VARCHAR(15) NOT NULL,
+  nombre_posicion VARCHAR(50) NOT NULL,
+
+  CONSTRAINT historico_inscripciones_pk PRIMARY KEY(fecha, fecha_educacion, cedula_atleta)
+);
