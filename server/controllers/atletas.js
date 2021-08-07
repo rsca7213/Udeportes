@@ -2,6 +2,7 @@
 const bd = require('../conexion');
 const validador = require('../controllers/validador');
 const helper_edad = require('../helpers/edad');
+const controlador_historico_atletas = require('./historico_atletas')
 
 /*
   Función que obtiene todos los datos basicos de atletas registrados en el sistema
@@ -159,6 +160,8 @@ async function registrarAtleta (atleta) {
         ]
       );
 
+      await controlador_historico_atletas.registrarNuevaEducacionAtleta(atleta.cedula)
+
       // Luego del insert retornamos un codigo de exito 200
       return { codigo: 200 }
     }
@@ -224,6 +227,13 @@ async function editarAtleta (cedula, atleta) {
       if (check_uniques.correo.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el correo electrónico introducido' }
       if (check_uniques.telefono.rows[0].existe) return { codigo: 400, texto: 'Ya existe un atleta con el teléfono introducido' }
 
+      // Previo a la actualización de los datos, obtenemos los datos de educación antiguos para observar si los mismos
+      // cambiaron con la edición del atleta
+      let educacion = await bd.query(
+        `SELECT a.id_educacion, a.numero_etapa FROM atletas a WHERE a.cedula = $1`,
+        [cedula]
+      )
+
       // Si no hay ningun atleta con datos unicos ya tomados, realizamos el UPDATE de los datos
       // para los valores NULLABLE se insertara el valor (si existe) o NULL en caso de que no se hayan colocado
       await bd.query(
@@ -246,6 +256,14 @@ async function editarAtleta (cedula, atleta) {
           cedula
         ]
       );
+
+      // Luego de la actualización, si los datos de la educación cambian, se actualiza el historico
+      if (educacion.rowCount > 0) {
+        educacion = educacion.rows[0]
+
+        if (educacion.id_educacion != atleta.id_educacion || educacion.numero_etapa != atleta.numero_etapa)
+          await controlador_historico_atletas.registrarNuevaEducacionAtleta(cedula)
+      }
 
       // Luego del insert retornamos un codigo de exito 200
       return { codigo: 200 }
@@ -277,6 +295,8 @@ async function eliminarAtleta (cedula) {
     // Si la cedula es valida y el atleta existe
     else {
       // Eliminamos de las tablas correspondientes y retornamos un codigo 200 de exito
+      await bd.query(`DELETE FROM historico_inscripciones WHERE cedula_atleta = $1`, [cedula]);
+      await bd.query(`DELETE FROM historico_atletas WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM participaciones WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM inscripciones WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM rendimientos WHERE cedula_atleta = $1`, [cedula]);

@@ -160,7 +160,7 @@ CREATE TABLE participaciones(
 );
 
 CREATE TABLE historico_atletas(
-  fecha DATE NOT NULL,
+  fecha TIMESTAMP NOT NULL,
   cedula_atleta NUMERIC(8, 0) NOT NULL,
   numero_etapa NUMERIC(2, 0),
   tipo_etapa VARCHAR(50),
@@ -170,7 +170,7 @@ CREATE TABLE historico_atletas(
 );
 
 CREATE TABLE historico_inscripciones(
-  fecha DATE NOT NULL,
+  fecha TIMESTAMP NOT NULL,
   fecha_educacion DATE NOT NULL,
   cedula_atleta NUMERIC(8, 0) NOT NULL,
   nombre_deporte VARCHAR(50) NOT NULL,
