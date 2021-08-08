@@ -296,7 +296,7 @@ async function eliminarAtleta (cedula) {
     else {
       // Eliminamos de las tablas correspondientes y retornamos un codigo 200 de exito
       await bd.query(`DELETE FROM historico_inscripciones WHERE cedula_atleta = $1`, [cedula]);
-      await bd.query(`DELETE FROM historico_atletas WHERE cedula_atleta = $1`, [cedula]);
+      await bd.query(`DELETE FROM historico_etapas_educativas WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM participaciones WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM inscripciones WHERE cedula_atleta = $1`, [cedula]);
       await bd.query(`DELETE FROM rendimientos WHERE cedula_atleta = $1`, [cedula]);

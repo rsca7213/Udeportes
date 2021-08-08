@@ -23,3 +23,9 @@ DROP SEQUENCE participaciones_id_seq;
 
 /*TABLA educaciones*/
 DROP SEQUENCE educaciones_id_seq;
+
+/*TABLA Historico Etapas*/
+DROP SEQUENCE historico_etapas_educativas_id_seq;
+
+/*TABLA Historico Inscripciones*/
+DROP SEQUENCE historico_inscripciones_id_seq;

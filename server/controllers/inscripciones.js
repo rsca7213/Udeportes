@@ -1,6 +1,7 @@
 // Instanciamos la conexión a la BD y el validador
 const bd = require('../conexion');
 const validador = require('./validador');
+const controlador_historico_atletas = require('./historico_atletas')
 
 async function crearInscripcion (datos) {
     let checkInscripcion = await bd.query(
@@ -43,6 +44,8 @@ async function crearInscripcion (datos) {
             [datos.cedula, datos.categoria, datos.deporte, datos.registro, datos.posicion, datos.deporte_pos]
         );
 
+        await controlador_historico_atletas.registrarNuevaInscripcion(datos)
+
         let inscripcion = await bd.query(
             `SELECT cedula_atleta, id_categoria, id_deporte, TO_CHAR(fecha_registro, 'DD/MM/YYYY'), id_posicion, id_deporte_pos 
             FROM inscripciones 
@@ -52,6 +55,7 @@ async function crearInscripcion (datos) {
         ); 
 
         inscripcion = inscripcion.rows;
+
         return { codigo: 200, texto: 'Se ha registrado la inscripción del atleta correctamente', inscripcion}
     } catch (error) {
         if (process.env.NODE_ENV === 'development') console.error(error);

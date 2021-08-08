@@ -78,10 +78,10 @@ ALTER TABLE participaciones ADD CONSTRAINT participacion_entrenamiento_fk
 FOREIGN KEY (id_entrenamiento, id_categoria_ent, id_deporte_ent)
 REFERENCES entrenamientos (id, id_categoria, id_deporte);
 
-/* Tabla historico atletas */
-ALTER TABLE historico_atletas ADD CONSTRAINT atleta_historico_atletas_fk
+/* Tabla historico etapas educativas */
+ALTER TABLE historico_etapas_educativas ADD CONSTRAINT atleta_historico_etapas_fk
 FOREIGN KEY (cedula_atleta) REFERENCES atletas (cedula);
 
 /* Tabla historico inscripciones */
 ALTER TABLE historico_inscripciones ADD CONSTRAINT etapa_historico_inscripciones_fk
-FOREIGN KEY (cedula_atleta, fecha_educacion) REFERENCES historico_atletas (cedula_atleta, fecha);
+FOREIGN KEY (id_etapa, cedula_atleta) REFERENCES historico_etapas_educativas (id, cedula_atleta);

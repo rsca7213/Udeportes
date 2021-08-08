@@ -1,7 +1,7 @@
 /* SCRIPT donde se eliminan todas las tablas de la base de datos*/
 
 DROP TABLE historico_inscripciones;
-DROP TABLE historico_atletas;
+DROP TABLE historico_etapas_educativas;
 DROP TABLE rendimientos;
 DROP TABLE estadisticas;
 DROP TABLE participaciones;
