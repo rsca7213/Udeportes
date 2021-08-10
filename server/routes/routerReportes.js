@@ -107,12 +107,43 @@ router.route('/atletas/beca')
     res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
   })
 
+  router.route('/atletas')
+  /*
+    Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
+    y los retorna con un codigo 200 en formato
+    Array[] o retorna un error con un codigo 500
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await reportes.obtenerAtletas();
+    res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
+  })
+
+  router.route('/atletas/deporte')
+  /*
+    Ruta GET que obtiene los datos basicos de todos los atletas registrados en el sistema
+    y los retorna con un codigo 200 en formato
+    Array[] o retorna un error con un codigo 500
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await reportes.obtenerAtletasConDeporte();
+    res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
+  })
+
   router.route('/atletas/historico/academico/:cedula')
   /*
     Ruta GET que obtiene los datos del historico academico del atleta con la cedula especificada
   */
   .get(mw_token, mw_rol, async (req, res) => {
     let data = await reportes.atletasHistoricoAcademico(req.params.cedula);
+    res.status(data.codigo).send(data.codigo === 200 ? data.historico : data.texto);
+  })
+
+  router.route('/atletas/historico/deportivo/:cedula')
+  /*
+    Ruta GET que obtiene los datos del historico deportivo del atleta con la cedula especificada
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await reportes.atletasHistoricoDeportivo(req.params.cedula);
     res.status(data.codigo).send(data.codigo === 200 ? data.historico : data.texto);
   })
 

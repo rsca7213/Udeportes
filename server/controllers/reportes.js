@@ -513,6 +513,91 @@ async function atletasBeca () {
   }
 }
 
+async function obtenerAtletas () {
+  try {
+    // Se buscan los atletas que poseen una beca
+    let atletas = await bd.query(
+      `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, e.nombre AS educacion, 
+       CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
+       THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
+       FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
+       ORDER BY a.cedula`, 
+    );
+
+    atletas = atletas.rows;
+
+    // Transformamos la data a la requerida
+    atletas = atletas.map((atleta) => {
+      let nombres = [
+        atleta.primer_nombre,
+        atleta.segundo_nombre || '',
+        atleta.primer_apellido,
+        atleta.segundo_apellido
+      ];
+      return {
+        cedula: atleta.cedula,
+        nombre_completo: nombres.join(' ').replace(/ +/g, " "),
+        educacion: atleta.educacion || 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada' 
+      }
+    });
+
+    // si existen los atletas se retornan en forma de array con un HTTP 200
+    return { codigo: 200, atletas }
+    
+
+  }
+  // En caso de error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
+  }
+}
+
+async function obtenerAtletasConDeporte () {
+  try {
+    // Se buscan los atletas que poseen una beca
+    let atletas = await bd.query(
+      `SELECT a.cedula, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, e.nombre AS educacion, 
+       CASE WHEN e.tipo_etapa = 'm' THEN 'Mes' WHEN e.tipo_etapa = 't'
+       THEN 'Trimestre' WHEN e.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa, a.numero_etapa
+       FROM atletas a LEFT OUTER JOIN educaciones e ON a.id_educacion =  e.id
+       INNER JOIN historico_inscripciones h ON a.cedula = h.cedula_atleta
+       GROUP BY a.cedula, e.id
+       ORDER BY a.cedula`, 
+    );
+
+    atletas = atletas.rows;
+
+    // Transformamos la data a la requerida
+    atletas = atletas.map((atleta) => {
+      let nombres = [
+        atleta.primer_nombre,
+        atleta.segundo_nombre || '',
+        atleta.primer_apellido,
+        atleta.segundo_apellido
+      ];
+      return {
+        cedula: atleta.cedula,
+        nombre_completo: nombres.join(' ').replace(/ +/g, " "),
+        educacion: atleta.educacion || 'No especificada',
+        educacion_etapa: atleta.educacion ? `${atleta.educacion} (${atleta.tipo_etapa} #${atleta.numero_etapa})` : 'No especificada' 
+      }
+    });
+
+    // si existen los atletas se retornan en forma de array con un HTTP 200
+    return { codigo: 200, atletas }
+    
+
+  }
+  // En caso de error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
+  }
+}
+
+
 async function atletasHistoricoAcademico (cedula_atleta) {
   try {
     // Se busca el historico academico del atleta especificado
@@ -550,6 +635,44 @@ async function atletasHistoricoAcademico (cedula_atleta) {
   }
 }
 
+async function atletasHistoricoDeportivo (cedula_atleta) {
+  try {
+    // Se busca el historico deportivo del atleta especificado
+    let historico = await bd.query(
+      `SELECT h.nombre_deporte, h.nombre_categoria, h.nombre_posicion,
+       TO_CHAR(h.fecha, 'DD/MM/YYYY') as fecha,
+       CASE WHEN h.genero_categoria = 'm' THEN 'Masculino' WHEN h.genero_categoria = 'f'
+       THEN 'Femenino' ELSE 'Unisex' END AS genero_categoria
+       FROM historico_inscripciones h
+       WHERE h.cedula_atleta = $1`, [cedula_atleta] 
+    );
+
+    historico = historico.rows;
+
+    // Transformamos la data a la requerida
+    historico = historico.map((hist) => {
+
+      return {
+        fecha: hist.fecha,
+        posicion: hist.nombre_posicion? `${hist.nombre_posicion}` : 'No especificada',
+        nombre_deporte: hist.nombre_deporte,
+        nombre_categoria: hist.nombre_categoria,
+        genero_categoria: hist.genero_categoria
+      }
+    });
+
+    // si existen los atletas se retornan en forma de array con un HTTP 200
+    return { codigo: 200, historico }
+    
+
+  }
+  // En caso de error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
+  }
+}
+
 
 
 module.exports = {
@@ -560,5 +683,8 @@ module.exports = {
   asistenciaDetalladaEntrenamientos,
   asistenciaDetalladaCompetencias,
   atletasBeca,
-  atletasHistoricoAcademico
+  atletasHistoricoAcademico,
+  atletasHistoricoDeportivo,
+  obtenerAtletas,
+  obtenerAtletasConDeporte,
 }

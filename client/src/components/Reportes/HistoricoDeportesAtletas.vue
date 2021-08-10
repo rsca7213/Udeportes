@@ -38,7 +38,7 @@
       </v-row>
     </v-container>
     <v-row v-else-if="!atletas.length && !tabla_cargando && mensaje_error===''">
-      <v-col class="grey--text text-center"> No hay atletas registrados en el sistema. </v-col>
+      <v-col class="grey--text text-center"> No hay atletas inscritos en algun deporte en el sistema. </v-col>
     </v-row>
   </div>
 </template>
@@ -117,7 +117,7 @@ export default {
             ],
             
           },  
-          {text: [{text:`Histórico Académico`, bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 5 ]},
+          {text: [{text:`Histórico Deportivo`, bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 5 ]},
           {text: [{text:`Atleta: `, bold:true, color: '#2196F3'},{text:`${atleta.nombre_completo}`}], fontSize: 12, margin: [ 0, 5, 0, 0 ]},
           {text: [{text:'Cédula: ', bold:true, color: '#2196F3'},{text:`${atleta.cedula}`}], fontSize: 12, margin: [ 0, 5, 0, 20 ]},
           {
@@ -125,7 +125,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [100, 190, 90, '*' ],
+              widths: [90, 100, 80, 100, '*' ],
               body: this.datos_reporte(historico)
             }
           },
@@ -136,7 +136,7 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Histórico Académico - ${atleta.nombre_completo}`);
+      pdfMake.createPdf(docDefinition).download(`Histórico Deportivo - ${atleta.nombre_completo}`);
     },
     //datos que contendrá el reporte
     datos_reporte(historico){
@@ -145,9 +145,10 @@ export default {
 
       reporte_body.push([
          { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
-         { text: 'Educación', bold: true, color:'#2196F3', fontSize: 10 },
-         { text: 'Tipo de Período', bold: true, color:'#2196F3', fontSize: 10 },
-         { text: 'Período', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right' },
+         { text: 'Deporte', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Categoría', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Género de Categoría', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Posición', bold: true, color:'#2196F3', fontSize: 10 }
       ]);
 
       historico.forEach((hist) => {
@@ -156,16 +157,17 @@ export default {
             text: `${hist.fecha}`, alignment: 'right'
           },
           {
-            text: `${hist.nombre_educacion}`,
-            color: `${hist.nombre_educacion==='No especificada'? '#9e9e9e' :''}`
+            text: `${hist.nombre_deporte}`,
           },
           {
-            text: `${hist.tipo_etapa}`,
-            color: `${hist.tipo_etapa==='No especificada'? '#9e9e9e' :''}`
+            text: `${hist.nombre_categoria}`,
           },
           {
-            text: `${hist.numero_etapa}`, alignment: 'right',
-            color: `${hist.numero_etapa==='No especificada'? '#9e9e9e' :''}`
+            text: `${hist.genero_categoria}`,
+          },
+          {
+            text: `${hist.posicion}`,
+            color: `${hist.posicion === 'No especificada'? '#9e9e9e' :''}`
           },
         ])
       })
@@ -174,7 +176,7 @@ export default {
     },
     async verHistorico(atleta){
  
-        await axios.get(`${server_url}/reportes/atletas/historico/academico/${atleta.cedula}`, { withCredentials: true } )
+        await axios.get(`${server_url}/reportes/atletas/historico/deportivo/${atleta.cedula}`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
           if (res.status === 200) {
@@ -201,7 +203,7 @@ export default {
     async getAtletas() {
       this.tabla_cargando = true;
       this.mensaje_error = '';
-      await axios.get(`${server_url}/reportes/atletas`, { withCredentials: true } )
+      await axios.get(`${server_url}/reportes/atletas/deporte`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
           if (res.status === 200) {

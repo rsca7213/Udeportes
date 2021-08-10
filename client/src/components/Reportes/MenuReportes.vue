@@ -123,6 +123,7 @@
                   <AsistenciaDetalladaEntrenamientos v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Entrenamientos en Detalle'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaDetalladaCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Competencias en Detalle'" :categoria="categoria" :equipo="equipo"/>
                   <HistoricoEducacionAtletas v-else-if="menu_reportes === 'Histórico de Educación de Atletas'"/>
+                  <HistoricoDeportesAtletas v-else-if="menu_reportes === 'Histórico de Deportes de Atletas'"/>
                   <AtletasConBeca v-else-if="menu_reportes === 'Reporte de Atletas con Beca'"/>
                 </div>
               </v-container>
@@ -143,6 +144,7 @@ import AsistenciaDetalladaCompetencias from './AsistenciaDetalladaCompetencias';
 import AsistenciaGeneralCompetencias from './AsistenciaGeneralCompetencias';
 import AtletasConBeca from './AtletasConBeca';
 import HistoricoEducacionAtletas from './HistoricoEducacionAtletas';
+import HistoricoDeportesAtletas from './HistoricoDeportesAtletas';
 import axios from 'axios';
 
 const server_url = sessionStorage.getItem('SERVER_URL');
@@ -158,6 +160,7 @@ export default {
     AsistenciaDetalladaCompetencias,
     AtletasConBeca,
     HistoricoEducacionAtletas,
+    HistoricoDeportesAtletas
   },
   data() {
     return {
@@ -217,6 +220,10 @@ export default {
         {
           nombre: 'Histórico de Educación de Atletas',
           descripcion: 'Consulta el histórico académico de un atleta'
+        },
+        {
+          nombre: 'Histórico de Deportes de Atletas',
+          descripcion: 'Consulta el histórico deportivo de un atleta'
         }
       ]
     }
