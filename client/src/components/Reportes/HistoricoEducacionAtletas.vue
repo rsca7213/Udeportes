@@ -35,43 +35,6 @@
             </v-col>   
           </v-row>
         </v-col>
-        <!-- <v-row class=" mt-3 justify-center justify-sm-end" v-if="chartData.length">
-          <v-dialog v-model="dialog" class="text-center" max-width="600">
-            <template v-slot:activator="{ on, attrs }"> 
-              <v-btn color="indigo" dark v-bind="attrs" v-on="on" @click="mostrarGrafica" class="mx-0 mr-2 mt-2 mt-sm-0"> 
-                <v-icon left> mdi-chart-arc </v-icon>
-                Atletas por Educación
-              </v-btn>        
-            </template>
-            <v-card rounded="md" style="border: 0px">
-              <v-card-title>
-                <span class="d-none d-sm-flex"> Atletas por Educación </span>
-                <b class="d-flex d-sm-none text-subtitle-1 font-weight-bold"> Atletas por Educación </b>
-                <v-spacer> </v-spacer>
-                <v-btn icon @click="dialog = false"><v-icon> mdi-close </v-icon></v-btn>
-              </v-card-title>
-              <v-card-text v-if="!dialog_chart" class="mt-2"> 
-                <v-progress-linear indeterminate color="primary"> </v-progress-linear>
-              </v-card-text>
-              <v-card-text v-else>
-                <div class="d-flex justify-center mt-2">
-                  <ApexChart width="550" type="donut" :options="chartOptions" :series="chartData" class="elevation-4 p-4 rounded-lg grey lighten-4" /> 
-                </div>
-              </v-card-text>
-              <v-card-actions> 
-                <v-spacer></v-spacer>
-                <v-btn color="grey darken-1" dark @click="dialog = false">
-                  <v-icon left> mdi-close </v-icon>
-                  Cerrar
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>               
-          <v-btn color="primary mt-2 mt-sm-0 mr-sm-3" @click="getReporte" :disabled="atletas.length? false : true">
-            <v-icon left>mdi-download</v-icon>
-              Generar Reporte
-          </v-btn>
-        </v-row> -->
       </v-row>
     </v-container>
     <v-row v-else-if="!atletas.length && !tabla_cargando && mensaje_error===''">
@@ -121,14 +84,6 @@ export default {
           value: 'nombre_completo',
           class: 'primary--text font-weight-bold'
         },
-        // {
-        //   text: 'Beca',
-        //   align: 'start',
-        //   sortable: true,
-        //   filterable: true,
-        //   value: 'beca',
-        //   class: 'primary--text font-weight-bold'
-        // },
         {
           text: 'Educación (Etapa)',
           align: 'start',
@@ -144,153 +99,8 @@ export default {
           class: 'primary--text font-weight-bold'
         },
       ],
-    //   chartOptions: {
-    //     type: 'donut',
-    //     fill: {
-    //       opacity: '0.85'
-    //     },
-    //     animations: {
-    //       speed: 1600
-    //     },
-    //     responsive: [
-    //       {
-    //         breakpoint: 350,
-    //         options: {
-    //           chart: {
-    //             size: 100,
-    //             width: 200,
-    //             height: 800
-    //           },
-    //           plotOptions: {
-    //             donut: {
-    //               labels: {
-    //                 show: false
-    //               }
-    //             }
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 375,
-    //         options: {
-    //           chart: {
-    //             size: 100,
-    //             width: 260,
-    //             height: 900
-    //           },
-    //           plotOptions: {
-    //             donut: {
-    //               labels: {
-    //                 show: false
-    //               }
-    //             }
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 410,
-    //         options: {
-    //           chart: {
-    //             size: 100,
-    //             width: 300,
-    //             height: 1000
-    //           },
-    //           plotOptions: {
-    //             donut: {
-    //               labels: {
-    //                 show: false
-    //               }
-    //             }
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 430,
-    //         options: {
-    //           chart: {
-    //             width: 350,
-    //             height: 1000
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 470,
-    //         options: {
-    //           chart: {
-    //             width: 370,
-    //             height: 1000
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 500,
-    //         options: {
-    //           chart: {
-    //             width: 400
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 550,
-    //         options: {
-    //           chart: {
-    //             width: 420
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 600,
-    //         options: {
-    //           chart: {
-    //             width: 470
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       },
-    //       {
-    //         breakpoint: 630,
-    //         options: {
-    //           chart: {
-    //             width: 500
-    //           },
-    //           legend: {
-    //             position: 'bottom'
-    //           }
-    //         }
-    //       }
-    //     ]
-    //   },
-    //   chartData: [],
     }
   },
-//   watch: {
-//     dialog(){
-//       if(!this.dialog) setTimeout(() => this.dialog_chart = false, 170);
-//     }
-//   },
   methods: {
     //método que genera el reporte
     getReporte(atleta, historico){
