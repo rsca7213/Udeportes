@@ -513,6 +513,43 @@ async function atletasBeca () {
   }
 }
 
+async function atletasHistoricoAcademico (cedula_atleta) {
+  try {
+    // Se busca el historico academico del atleta especificado
+    let historico = await bd.query(
+      `SELECT h.numero_etapa, h.nombre_educacion,
+       TO_CHAR(h.fecha, 'DD/MM/YYYY') as fecha,
+       CASE WHEN h.tipo_etapa = 'm' THEN 'Mes' WHEN h.tipo_etapa = 't'
+       THEN 'Trimestre' WHEN h.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa
+       FROM historico_etapas_educativas h
+       WHERE h.cedula_atleta = $1`, [cedula_atleta] 
+    );
+
+    historico = historico.rows;
+
+    // Transformamos la data a la requerida
+    historico = historico.map((hist) => {
+
+      return {
+        fecha: hist.fecha,
+        tipo_etapa: hist.nombre_educacion? `${hist.tipo_etapa}` : 'No especificada',
+        nombre_educacion: hist.nombre_educacion || 'No especificada',
+        numero_etapa: hist.nombre_educacion ? `${hist.numero_etapa}` : 'No especificada' 
+      }
+    });
+
+    // si existen los atletas se retornan en forma de array con un HTTP 200
+    return { codigo: 200, historico }
+    
+
+  }
+  // En caso de error inesperado
+  catch (error) {
+    if (process.env.NODE_ENV === 'development') console.error(error);
+    return { codigo: 500, texto: 'Ha ocurrido un error inesperado en el servidor, por favor inténtalo de nuevo.'};
+  }
+}
+
 
 
 module.exports = {
@@ -522,5 +559,6 @@ module.exports = {
   asistenciaGeneralCompetencias,
   asistenciaDetalladaEntrenamientos,
   asistenciaDetalladaCompetencias,
-  atletasBeca
+  atletasBeca,
+  atletasHistoricoAcademico
 }

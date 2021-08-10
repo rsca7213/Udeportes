@@ -28,11 +28,14 @@
                 <template v-slot:[`item.educacion_etapa`]="{ item }"> 
                   <span :class="item.educacion_etapa==='No especificada'? 'grey--text' : ''" v-text="item.educacion_etapa"> </span>
                 </template>
+                <template v-slot:[`item.reporte`]="{ item }"> 
+                    <v-icon dense color="primary" @click="verHistorico(item)"> mdi-file-chart </v-icon>
+                </template>
               </v-data-table>
             </v-col>   
           </v-row>
         </v-col>
-        <v-row class=" mt-3 justify-center justify-sm-end" v-if="chartData.length">
+        <!-- <v-row class=" mt-3 justify-center justify-sm-end" v-if="chartData.length">
           <v-dialog v-model="dialog" class="text-center" max-width="600">
             <template v-slot:activator="{ on, attrs }"> 
               <v-btn color="indigo" dark v-bind="attrs" v-on="on" @click="mostrarGrafica" class="mx-0 mr-2 mt-2 mt-sm-0"> 
@@ -68,7 +71,7 @@
             <v-icon left>mdi-download</v-icon>
               Generar Reporte
           </v-btn>
-        </v-row>
+        </v-row> -->
       </v-row>
     </v-container>
     <v-row v-else-if="!atletas.length && !tabla_cargando && mensaje_error===''">
@@ -81,13 +84,13 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import ApexChart from 'vue-apexcharts';
+// import ApexChart from 'vue-apexcharts';
 import axios from 'axios';
 const server_url = sessionStorage.getItem('SERVER_URL');
 export default {
   name: 'AtletasConBeca',
   components: {
-    ApexChart
+    // ApexChart
   },
   data() {
     return {
@@ -118,14 +121,14 @@ export default {
           value: 'nombre_completo',
           class: 'primary--text font-weight-bold'
         },
-        {
-          text: 'Beca',
-          align: 'start',
-          sortable: true,
-          filterable: true,
-          value: 'beca',
-          class: 'primary--text font-weight-bold'
-        },
+        // {
+        //   text: 'Beca',
+        //   align: 'start',
+        //   sortable: true,
+        //   filterable: true,
+        //   value: 'beca',
+        //   class: 'primary--text font-weight-bold'
+        // },
         {
           text: 'Educación (Etapa)',
           align: 'start',
@@ -134,157 +137,163 @@ export default {
           value: 'educacion_etapa',
           class: 'primary--text font-weight-bold'
         },
+        {
+          text: 'Histórico del atleta',
+          align: 'center',
+          value: 'reporte',
+          class: 'primary--text font-weight-bold'
+        },
       ],
-      chartOptions: {
-        type: 'donut',
-        fill: {
-          opacity: '0.85'
-        },
-        animations: {
-          speed: 1600
-        },
-        responsive: [
-          {
-            breakpoint: 350,
-            options: {
-              chart: {
-                size: 100,
-                width: 200,
-                height: 800
-              },
-              plotOptions: {
-                donut: {
-                  labels: {
-                    show: false
-                  }
-                }
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 375,
-            options: {
-              chart: {
-                size: 100,
-                width: 260,
-                height: 900
-              },
-              plotOptions: {
-                donut: {
-                  labels: {
-                    show: false
-                  }
-                }
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 410,
-            options: {
-              chart: {
-                size: 100,
-                width: 300,
-                height: 1000
-              },
-              plotOptions: {
-                donut: {
-                  labels: {
-                    show: false
-                  }
-                }
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 430,
-            options: {
-              chart: {
-                width: 350,
-                height: 1000
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 470,
-            options: {
-              chart: {
-                width: 370,
-                height: 1000
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 500,
-            options: {
-              chart: {
-                width: 400
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 550,
-            options: {
-              chart: {
-                width: 420
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 600,
-            options: {
-              chart: {
-                width: 470
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          },
-          {
-            breakpoint: 630,
-            options: {
-              chart: {
-                width: 500
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        ]
-      },
-      chartData: [],
+    //   chartOptions: {
+    //     type: 'donut',
+    //     fill: {
+    //       opacity: '0.85'
+    //     },
+    //     animations: {
+    //       speed: 1600
+    //     },
+    //     responsive: [
+    //       {
+    //         breakpoint: 350,
+    //         options: {
+    //           chart: {
+    //             size: 100,
+    //             width: 200,
+    //             height: 800
+    //           },
+    //           plotOptions: {
+    //             donut: {
+    //               labels: {
+    //                 show: false
+    //               }
+    //             }
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 375,
+    //         options: {
+    //           chart: {
+    //             size: 100,
+    //             width: 260,
+    //             height: 900
+    //           },
+    //           plotOptions: {
+    //             donut: {
+    //               labels: {
+    //                 show: false
+    //               }
+    //             }
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 410,
+    //         options: {
+    //           chart: {
+    //             size: 100,
+    //             width: 300,
+    //             height: 1000
+    //           },
+    //           plotOptions: {
+    //             donut: {
+    //               labels: {
+    //                 show: false
+    //               }
+    //             }
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 430,
+    //         options: {
+    //           chart: {
+    //             width: 350,
+    //             height: 1000
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 470,
+    //         options: {
+    //           chart: {
+    //             width: 370,
+    //             height: 1000
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 500,
+    //         options: {
+    //           chart: {
+    //             width: 400
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 550,
+    //         options: {
+    //           chart: {
+    //             width: 420
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 600,
+    //         options: {
+    //           chart: {
+    //             width: 470
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       },
+    //       {
+    //         breakpoint: 630,
+    //         options: {
+    //           chart: {
+    //             width: 500
+    //           },
+    //           legend: {
+    //             position: 'bottom'
+    //           }
+    //         }
+    //       }
+    //     ]
+    //   },
+    //   chartData: [],
     }
   },
-  watch: {
-    dialog(){
-      if(!this.dialog) setTimeout(() => this.dialog_chart = false, 170);
-    }
-  },
+//   watch: {
+//     dialog(){
+//       if(!this.dialog) setTimeout(() => this.dialog_chart = false, 170);
+//     }
+//   },
   methods: {
     //método que genera el reporte
-    getReporte(){
+    getReporte(atleta, historico){
       var docDefinition = {
         content: [
           {
@@ -300,14 +309,16 @@ export default {
             ],
             
           },  
-          {text: [{text:'Reporte de Atletas con Beca', bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 20 ]},
+          {text: [{text:`Histórico Académico`, bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 5 ]},
+          {text: [{text:`Atleta: `, bold:true, color: '#2196F3'},{text:`${atleta.nombre_completo}`}], fontSize: 12, margin: [ 0, 5, 0, 0 ]},
+          {text: [{text:'Cédula: ', bold:true, color: '#2196F3'},{text:`${atleta.cedula}`}], fontSize: 12, margin: [ 0, 5, 0, 20 ]},
           {
             layout: 'lightHorizontalLines',
         
             table: {
               headerRows:1,
-              widths: [70, 130, 110, '*' ],
-              body: this.datos_reporte()
+              widths: [100, 190, 90, '*' ],
+              body: this.datos_reporte(historico)
             }
           },
         ],
@@ -317,33 +328,67 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte de Atletas con Beca`);
+      pdfMake.createPdf(docDefinition).download(`Histórico Académico - ${atleta.nombre_completo}`);
     },
     //datos que contendrá el reporte
-    datos_reporte(){
+    datos_reporte(historico){
+
       let reporte_body = [];
+
       reporte_body.push([
-         { text: 'Nro Cédula', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
-         { text: 'Nombre Completo', bold: true, color:'#2196F3', fontSize: 10 },
-         { text: 'Beca', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
          { text: 'Educación', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Tipo de Período', bold: true, color:'#2196F3', fontSize: 10 },
+         { text: 'Período', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right' },
       ]);
 
-      //todos los atletas del reporte
-      this.atletas.forEach((atleta) =>{
+      historico.forEach((hist) => {
         reporte_body.push([
-          { text: `${atleta.cedula}`, alignment: 'right'},
-          { text: `${atleta.nombre_completo}`},
-          { text: `${atleta.beca}`},
-          { text: `${atleta.educacion_etapa}`, color: `${atleta.educacion_etapa==='No especificada'? '#9e9e9e' :''}`},
-        ]);
-      });
+          {
+            text: `${hist.fecha}`, alignment: 'right'
+          },
+          {
+            text: `${hist.nombre_educacion}`,
+            color: `${hist.nombre_educacion==='No especificada'? '#9e9e9e' :''}`
+          },
+          {
+            text: `${hist.tipo_etapa}`,
+            color: `${hist.tipo_etapa==='No especificada'? '#9e9e9e' :''}`
+          },
+          {
+            text: `${hist.numero_etapa}`, alignment: 'right',
+            color: `${hist.numero_etapa==='No especificada'? '#9e9e9e' :''}`
+          },
+        ])
+      })
       
       return reporte_body;
     },
-    //método encargado de permitir que se muestre la gráfica con un tamaño acorde a la resolución
-    mostrarGrafica(){
-      setTimeout(()=>{this.dialog_chart=true},200);
+    async verHistorico(atleta){
+ 
+        await axios.get(`${server_url}/reportes/atletas/historico/academico/${atleta.cedula}`, { withCredentials: true } )
+        .then((res) => {
+          // En caso de exito
+          if (res.status === 200) {
+            console.log("HISTORICO RECIBIDO", res.data)
+            this.getReporte(atleta, res.data)
+          }
+        })
+        .catch((error) => {
+          try {
+            // errores
+            // Error por parte del servidor
+            console.log(error.response.status);
+            this.mensaje_error = error.response.data;
+          }
+          catch (error) {
+            // Servidor no disponible
+            this.mensaje_error = 'No se ha podido conectar con el servidor, intentalo de nuevo.';
+            console.warn('Warning: No response status was found, is the server running? ');
+          }
+        });
+
+        
     },
     //método que se encarga de obtener todos los atletas pertenecientes a un equipo en específico
     async getAtletas() {
@@ -354,24 +399,6 @@ export default {
           // En caso de exito
           if (res.status === 200) {
             this.atletas = res.data;
-
-            //si existen atletas se busca la educación de todos los atletas y la cantidad de atletas en cada una de esas educaciones para agregar esos datos a la gráfica de atletas por educación del equipo
-            if(this.atletas.length !==0){
-              this.chartOptions.labels = [];
-              this.atletas.forEach(atleta =>{
-
-                //se agrega la educación de los atletas en caso de que la educación no se haya agregado anteriormente a la gráfica
-                if(!this.chartOptions.labels.includes(atleta.educacion)){
-
-                  this.chartOptions.labels.push(atleta.educacion);
-                  
-                  this.chartData.push(this.atletas.filter(atl =>{
-                    return atl.educacion === atleta.educacion;
-                  }).length);
-                  
-                }
-              });      
-            }
           }
         })
         .catch((error) => {

@@ -122,7 +122,8 @@
                   <AsistenciaGeneralCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia General a Competencias'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaDetalladaEntrenamientos v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Entrenamientos en Detalle'" :categoria="categoria" :equipo="equipo"/>
                   <AsistenciaDetalladaCompetencias v-else-if="categoria!==null && categoria.id_categoria && menu_reportes==='Asistencia a Competencias en Detalle'" :categoria="categoria" :equipo="equipo"/>
-                  <AtletasConBeca v-if="menu_reportes === 'Reporte de Atletas con Beca'"/>
+                  <HistoricoEducacionAtletas v-else-if="menu_reportes === 'Histórico de Educación de Atletas'"/>
+                  <AtletasConBeca v-else-if="menu_reportes === 'Reporte de Atletas con Beca'"/>
                 </div>
               </v-container>
             </div>
@@ -141,8 +142,11 @@ import AsistenciaDetalladaEntrenamientos from './AsistenciaDetalladaEntrenamient
 import AsistenciaDetalladaCompetencias from './AsistenciaDetalladaCompetencias';
 import AsistenciaGeneralCompetencias from './AsistenciaGeneralCompetencias';
 import AtletasConBeca from './AtletasConBeca';
+import HistoricoEducacionAtletas from './HistoricoEducacionAtletas';
 import axios from 'axios';
+
 const server_url = sessionStorage.getItem('SERVER_URL');
+
 export default {
   name: 'MenuReportes',
   components: {
@@ -152,7 +156,8 @@ export default {
     AsistenciaGeneralCompetencias,
     AsistenciaDetalladaEntrenamientos,
     AsistenciaDetalladaCompetencias,
-    AtletasConBeca
+    AtletasConBeca,
+    HistoricoEducacionAtletas,
   },
   data() {
     return {
@@ -208,6 +213,10 @@ export default {
         {
           nombre: 'Reporte de Atletas con Beca',
           descripcion: 'Consulta todos los atletas que poseen una beca'
+        },
+        {
+          nombre: 'Histórico de Educación de Atletas',
+          descripcion: 'Consulta el histórico académico de un atleta'
         }
       ]
     }
@@ -221,10 +230,13 @@ export default {
   methods: {
     //método encargado de cambiar la vista de los reportes
     cambiarVista(titulo){
-      this.categoria={
+
+      this.categoria = {
         id_categoria:0,
       }
+
       this.card_title = titulo;
+
       (titulo === 'Reportes')? this.menu_reportes = 'menu': this.menu_reportes = titulo;
       
     },
@@ -241,6 +253,7 @@ export default {
     },
   },
   async mounted() {
+
     this.categoria_cargando = true;
     // se obtiene el rol del usuario para mostrar los reportes que pueda generar
     await axios

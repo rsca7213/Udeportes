@@ -107,4 +107,13 @@ router.route('/atletas/beca')
     res.status(data.codigo).send(data.codigo === 200 ? data.atletas : data.texto);
   })
 
+  router.route('/atletas/historico/academico/:cedula')
+  /*
+    Ruta GET que obtiene los datos del historico academico del atleta con la cedula especificada
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    let data = await reportes.atletasHistoricoAcademico(req.params.cedula);
+    res.status(data.codigo).send(data.codigo === 200 ? data.historico : data.texto);
+  })
+
 module.exports = router;
