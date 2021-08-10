@@ -178,7 +178,7 @@ CREATE TABLE historico_inscripciones(
   nombre_deporte VARCHAR(50) NOT NULL,
   nombre_categoria VARCHAR(50) NOT NULL,
   genero_categoria VARCHAR(15) NOT NULL,
-  nombre_posicion VARCHAR(50) NOT NULL,
+  nombre_posicion VARCHAR(50),
   fecha_registro DATE NOT NULL,
 
   CONSTRAINT historico_inscripciones_pk PRIMARY KEY(id, id_etapa, cedula_atleta)

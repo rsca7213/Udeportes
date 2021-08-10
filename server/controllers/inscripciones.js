@@ -182,6 +182,8 @@ async function editarInscripcion (datos) {
             [datos.cedula, datos.categoria, datos.deporte]
         ); 
 
+        await controlador_historico_atletas.registrarNuevaInscripcion(datos)
+
         inscripcion = inscripcion.rows;
         return { codigo: 200, texto: 'Se han guardado los cambios correctamente.', inscripcion};
     } catch (error) {

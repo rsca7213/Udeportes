@@ -88,7 +88,7 @@ async function registrarNuevaInscripcion(inscripcion) {
       `SELECT d.nombre AS nombre_deporte, c.nombre AS nombre_categoria, c.genero AS genero_categoria,
        p.nombre AS nombre_posicion, i.fecha_registro AS fecha_registro, i.cedula_atleta AS cedula
        FROM inscripciones i INNER JOIN categorias c ON c.id = i.id_categoria
-       INNER JOIN posiciones p ON p.id = i.id_posicion INNER JOIN deportes d ON d.id = p.id_deporte
+       LEFT JOIN posiciones p ON p.id = i.id_posicion INNER JOIN deportes d ON d.id = c.id_deporte
        WHERE i.cedula_atleta = $1 AND i.id_deporte = $2 AND i.id_categoria = $3`,
       [inscripcion.cedula, inscripcion.deporte, inscripcion.categoria]
     )
