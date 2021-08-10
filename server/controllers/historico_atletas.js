@@ -48,7 +48,7 @@ async function registrarInscripcionesActivas(cedula) {
       `SELECT d.nombre AS nombre_deporte, c.nombre AS nombre_categoria, c.genero AS genero_categoria,
        p.nombre AS nombre_posicion, i.fecha_registro AS fecha_registro
        FROM inscripciones i INNER JOIN categorias c ON c.id = i.id_categoria
-       INNER JOIN posiciones p ON p.id = i.id_posicion INNER JOIN deportes d ON d.id = p.id_deporte
+       LEFT JOIN posiciones p ON p.id = i.id_posicion INNER JOIN deportes d ON d.id = c.id_deporte
        WHERE i.cedula_atleta = $1 ORDER BY i.fecha_registro DESC`,
        [cedula]
     )
