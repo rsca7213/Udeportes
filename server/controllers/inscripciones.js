@@ -170,10 +170,14 @@ async function editarInscripcion (datos) {
             `DELETE FROM rendimientos WHERE cedula_atleta=$1 AND id_categoria=$2 AND id_posicion=$3`,
             [datos.cedula, datos.categoria, inscripcion.id_posicion]
         );
+        let id_posicion_deporte = null
+        if (datos.posicion != null) {
+            id_posicion_deporte = datos.deporte
+        }
         await bd.query(
-            `UPDATE inscripciones SET id_posicion=$1, id_deporte_pos=$4
+            `UPDATE inscripciones SET id_posicion=$1, id_deporte_pos=$5
             WHERE cedula_atleta=$2 AND id_categoria=$3 AND id_deporte=$4`,
-            [datos.posicion, datos.cedula, datos.categoria, datos.deporte]
+            [datos.posicion, datos.cedula, datos.categoria, datos.deporte, id_posicion_deporte]
         ); 
         inscripcion = await bd.query(
             `SELECT cedula_atleta, id_categoria, id_deporte, TO_CHAR(fecha_registro, 'DD/MM/YYYY'), id_posicion, id_deporte_pos 

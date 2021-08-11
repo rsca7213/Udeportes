@@ -137,6 +137,40 @@
                       Este atleta no tiene categorías.
                     </div>
                   </v-card>
+                  <v-card shaped class="pa-3 mt-4" color="#F5F5F5">
+                    <v-card-title class="px-0">
+                      <v-col class="px-1 grey--text text--darken-2"> Historiales de {{atleta.nombre_completo}} </v-col>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-expansion-panels accordion>
+                        <v-expansion-panel :disabled="false">
+                          <v-expansion-panel-header> 
+                            <span class="d-flex justify-start">
+                              <v-icon color="indigo" left> mdi-clipboard-text </v-icon>
+                              <span class="subtitle-1">Historiales del Atleta</span>
+                            </span>
+                          </v-expansion-panel-header>
+                          <v-expansion-panel-content>
+                            <v-list-item-group color="indigo">
+                              <v-list dense>
+                                <v-list-item two-line v-for="(item, index) in historiales" :key="index" @click="$router.push(`/atletas/${atleta.cedula}/historial/${item.tipo}`)"> 
+                                  <v-list-item-content class="text-caption">
+                                    <v-list-item-title class="text-wrap d-flex justify-start"> 
+                                      <v-icon color="indigo" left> mdi-clipboard-text-outline </v-icon>
+                                      <span class="subtitle-2" v-text="item.nombre"></span>
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle class="pl-8 text-wrap"> 
+                                      <span v-text="item.descripcion"></span>
+                                    </v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-list-item-group>
+                          </v-expansion-panel-content>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
                 <v-col cols="12" md="4" class="px-1 px-sm-2">
                   <v-card shaped class="pa-3" color="#F5F5F5">
@@ -328,8 +362,18 @@ export default {
         }
 
       },
-          
-          
+      historiales: [
+        {
+          nombre: 'Historial Académico',
+          descripcion: 'Consulta el historial académico del atleta',
+          tipo: 'academico'
+        },
+        {
+          nombre: 'Historial Deportivo',
+          descripcion: 'Consulta el historial deportivo del atleta',
+          tipo: 'deportivo'
+        }
+      ],    
     }
   },
 

@@ -1,6 +1,7 @@
 /* instanciamos al router de express, al modulo de atletas y middleware */
 const router = require('express').Router();
 const atletas = require('../controllers/atletas');
+const historicos = require('../controllers/historico_atletas')
 const mw_token = require('../middleware/token');
 const mw_rol = require('../middleware/rol');
 
@@ -59,5 +60,24 @@ router.route('/:cedula')
     let data = await atletas.eliminarAtleta(req.params.cedula);
     res.status(data.codigo).send(data.texto);
   });
+
+router.route('/:cedula/historico')
+  /*
+    Ruta GET que tiene dos opciones, data = academico (retornando el historial académico del atleta)
+    o data = deportivo (retornando el historial deportivo del atleta)
+  */
+  .get(mw_token, mw_rol, async (req, res) => {
+    if (req.query.data === 'academico') {
+      let result = await historicos.obtenerHistorialAcademico(req.params.cedula);
+      res.send(result);
+    }
+    else if (req.query.data === 'deportivo') {
+      let result = await historicos.obtenerHistorialDeportivo(req.params.cedula);
+      res.send(result);
+    }
+    else {
+      res.status(400).send('Data debe ser academico o deportivo');
+    }
+  })
 
 module.exports = router;

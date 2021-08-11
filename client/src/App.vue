@@ -35,7 +35,9 @@ export default {
         'Entrenamientos', 
         'Reportes',
         'Competencias',
-        'PanelCompetencia'
+        'PanelCompetencia',
+        'HistorialAcademicoAtleta',
+        'HistorialDeportivoAtleta'
       ]
     }
   }

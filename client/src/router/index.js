@@ -85,6 +85,16 @@ const routes = [
     component: () => import('../views/PanelCompetencia.vue')
   },
   {
+    path: '/atletas/:cedula/historial/academico',
+    name: 'HistorialAcademicoAtleta',
+    component: () => import('../views/Atletas/HistorialAcademicoAtleta.vue')
+  },
+  {
+    path: '/atletas/:cedula/historial/deportivo',
+    name: 'HistorialDeportivoAtleta',
+    component: () => import('../views/Atletas/HistorialDeportivoAtleta.vue')
+  },
+  {
     path: '/:catchAll(.*)',
     name: '404',
     component: () => import('../views/404')
