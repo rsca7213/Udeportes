@@ -94,7 +94,9 @@ export default {
           text: 'Histórico del atleta',
           align: 'center',
           value: 'reporte',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sortable: false,
+          filterable: false
         },
       ],
     }
@@ -102,6 +104,7 @@ export default {
   methods: {
     //método que genera el reporte
     getReporte(atleta, historico){
+ 
       var docDefinition = {
         content: [
           {
@@ -119,16 +122,10 @@ export default {
           },  
           {text: [{text:`Histórico Deportivo`, bold:true, color: '#2196F3'}], fontSize: 14, margin: [ 0, 10, 0, 5 ]},
           {text: [{text:`Atleta: `, bold:true, color: '#2196F3'},{text:`${atleta.nombre_completo}`}], fontSize: 12, margin: [ 0, 5, 0, 0 ]},
-          {text: [{text:'Cédula: ', bold:true, color: '#2196F3'},{text:`${atleta.cedula}`}], fontSize: 12, margin: [ 0, 5, 0, 20 ]},
-          {
-            layout: 'lightHorizontalLines',
-        
-            table: {
-              headerRows:1,
-              widths: [90, 100, 80, 100, '*' ],
-              body: this.datos_reporte(historico)
-            }
-          },
+          {text: [{text:'Cédula: ', bold:true, color: '#2196F3'},{text:`${atleta.cedula}`}], fontSize: 12, margin: [ 0, 5, 0, 10 ]},
+
+
+          this.tablas(historico),
         ],
         
         footer: function(currentPage, pageCount) { return {text:`Página ${currentPage.toString()} de ${pageCount}`,fontSize: 10, margin:[40,0,0,0]};}
@@ -144,7 +141,7 @@ export default {
       let reporte_body = [];
 
       reporte_body.push([
-         { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
+         { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'center'},
          { text: 'Deporte', bold: true, color:'#2196F3', fontSize: 10 },
          { text: 'Categoría', bold: true, color:'#2196F3', fontSize: 10 },
          { text: 'Género de Categoría', bold: true, color:'#2196F3', fontSize: 10 },
@@ -154,7 +151,7 @@ export default {
       historico.forEach((hist) => {
         reporte_body.push([
           {
-            text: `${hist.fecha}`, alignment: 'right'
+            text: `${hist.fecha}`, alignment: 'center'
           },
           {
             text: `${hist.nombre_deporte}`,
@@ -174,12 +171,39 @@ export default {
       
       return reporte_body;
     },
+
+    tablas(historico){
+
+      let reporte = []
+
+      historico.historicoAcademico.forEach(histA => {
+
+        reporte.push({ text: `Educación: ${histA.educacion}`, bold: true, color: '#8BC34A', fontSize: 12, margin: [0,20,0,10]})
+
+        let historicoDeportivo = historico.historicoDeportivo.filter(histD => histD.id_etapa == histA.id)
+
+        reporte.push(
+            {
+              layout: 'lightHorizontalLines',
+
+              table: {
+                headerRows:1,
+                widths: [70, 90, 80, 100, '*' ],
+                body: this.datos_reporte(historicoDeportivo)
+              }
+            }
+          )
+      })
+
+      return reporte
+    },
     async verHistorico(atleta){
  
         await axios.get(`${server_url}/reportes/atletas/historico/deportivo/${atleta.cedula}`, { withCredentials: true } )
         .then((res) => {
           // En caso de exito
           if (res.status === 200) {
+          
             this.getReporte(atleta, res.data)
           }
         })

@@ -604,8 +604,8 @@ async function atletasHistoricoAcademico (cedula_atleta) {
     let historico = await bd.query(
       `SELECT h.numero_etapa, h.nombre_educacion,
        TO_CHAR(h.fecha, 'DD/MM/YYYY') as fecha,
-       CASE WHEN h.tipo_etapa = 'm' THEN 'Mes' WHEN h.tipo_etapa = 't'
-       THEN 'Trimestre' WHEN h.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa
+       CASE WHEN h.tipo_etapa = 'm' THEN 'Mensual' WHEN h.tipo_etapa = 't'
+       THEN 'Trimestral' WHEN h.tipo_etapa = 's' THEN 'Semestral' ELSE 'Anual' END AS tipo_etapa
        FROM historico_etapas_educativas h
        WHERE h.cedula_atleta = $1`, [cedula_atleta] 
     );
@@ -637,9 +637,29 @@ async function atletasHistoricoAcademico (cedula_atleta) {
 
 async function atletasHistoricoDeportivo (cedula_atleta) {
   try {
+
+    let historicoAcademico = await bd.query(
+      `SELECT h.numero_etapa, h.nombre_educacion, h.id,
+       CASE WHEN h.tipo_etapa = 'm' THEN 'Mes' WHEN h.tipo_etapa = 't'
+       THEN 'Trimestre' WHEN h.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa
+       FROM historico_etapas_educativas h
+       WHERE h.cedula_atleta = $1`, [cedula_atleta] 
+    );
+
+    historicoAcademico = historicoAcademico.rows;
+
+    // Transformamos la data a la requerida
+    historicoAcademico = historicoAcademico.map((hist) => {
+
+      return {
+        id : hist.id,
+        educacion: hist.nombre_educacion? `${hist.nombre_educacion} - ${hist.tipo_etapa} #${hist.numero_etapa}`: 'No especificada'
+      }
+    });
+
     // Se busca el historico deportivo del atleta especificado
-    let historico = await bd.query(
-      `SELECT h.nombre_deporte, h.nombre_categoria, h.nombre_posicion,
+    let historicoDeportivo = await bd.query(
+      `SELECT h.nombre_deporte, h.nombre_categoria, h.nombre_posicion, h.id_etapa,
        TO_CHAR(h.fecha, 'DD/MM/YYYY') as fecha,
        CASE WHEN h.genero_categoria = 'm' THEN 'Masculino' WHEN h.genero_categoria = 'f'
        THEN 'Femenino' ELSE 'Unisex' END AS genero_categoria
@@ -647,12 +667,13 @@ async function atletasHistoricoDeportivo (cedula_atleta) {
        WHERE h.cedula_atleta = $1`, [cedula_atleta] 
     );
 
-    historico = historico.rows;
+    historicoDeportivo = historicoDeportivo.rows;
 
     // Transformamos la data a la requerida
-    historico = historico.map((hist) => {
+    historicoDeportivo = historicoDeportivo.map((hist) => {
 
       return {
+        id_etapa: hist.id_etapa,
         fecha: hist.fecha,
         posicion: hist.nombre_posicion? `${hist.nombre_posicion}` : 'No especificada',
         nombre_deporte: hist.nombre_deporte,
@@ -661,6 +682,11 @@ async function atletasHistoricoDeportivo (cedula_atleta) {
       }
     });
 
+    historico = {
+      historicoAcademico,
+      historicoDeportivo
+    }
+  
     // si existen los atletas se retornan en forma de array con un HTTP 200
     return { codigo: 200, historico }
     

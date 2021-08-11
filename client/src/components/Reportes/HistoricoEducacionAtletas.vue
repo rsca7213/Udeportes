@@ -94,7 +94,9 @@ export default {
           text: 'Histórico del atleta',
           align: 'center',
           value: 'reporte',
-          class: 'primary--text font-weight-bold'
+          class: 'primary--text font-weight-bold',
+          sortable: false,
+          filterable: false
         },
       ],
     }
@@ -125,7 +127,7 @@ export default {
         
             table: {
               headerRows:1,
-              widths: [100, 190, 90, '*' ],
+              widths: [100, 170, 110, '*' ],
               body: this.datos_reporte(historico)
             }
           },
@@ -144,7 +146,7 @@ export default {
       let reporte_body = [];
 
       reporte_body.push([
-         { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right'},
+         { text: 'Fecha', bold: true, color:'#2196F3', fontSize: 10, alignment: 'center'},
          { text: 'Educación', bold: true, color:'#2196F3', fontSize: 10 },
          { text: 'Tipo de Período', bold: true, color:'#2196F3', fontSize: 10 },
          { text: 'Período', bold: true, color:'#2196F3', fontSize: 10, alignment: 'right' },
@@ -153,7 +155,7 @@ export default {
       historico.forEach((hist) => {
         reporte_body.push([
           {
-            text: `${hist.fecha}`, alignment: 'right'
+            text: `${hist.fecha}`, alignment: 'center'
           },
           {
             text: `${hist.nombre_educacion}`,
