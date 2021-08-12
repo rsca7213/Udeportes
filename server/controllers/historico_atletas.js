@@ -160,7 +160,7 @@ async function obtenerHistorialDeportivo(cedula) {
       ORDER BY fecha DESC`, [cedula]
     )
     let historial_educativo = await bd.query(
-      `SELECT he.id, he.nombre_educacion,
+      `SELECT he.id, he.nombre_educacion, to_char(he.fecha,'dd/mm/yyyy') AS fecha,
       CASE WHEN he.numero_etapa='1' THEN '1er' WHEN he.numero_etapa='2' THEN '2do' WHEN he.numero_etapa='3' THEN '3er' WHEN he.numero_etapa='4' THEN '4to' WHEN he.numero_etapa='5' THEN '5to'
           WHEN he.numero_etapa='6' THEN '6to' WHEN he.numero_etapa='7' THEN '7mo' WHEN he.numero_etapa='8' THEN '8vo' WHEN he.numero_etapa='9' THEN '9no' WHEN he.numero_etapa='10' THEN '10mo' ELSE null END AS numero_etapa,
       CASE WHEN he.tipo_etapa='m' THEN 'mes' WHEN he.tipo_etapa='t' THEN 'trimestre' WHEN he.tipo_etapa='s' THEN 'semestre' WHEN he.tipo_etapa='a' THEN 'año' ELSE null END AS tipo_etapa

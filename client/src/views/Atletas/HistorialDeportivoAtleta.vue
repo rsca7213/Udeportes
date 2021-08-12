@@ -18,7 +18,6 @@
                 </v-row>
                 <v-data-table class="mt-5" :headers="columnas_tabla" :items="historial_deportivo" :search="search"
                     group-by="Educación"
-                    show-group-by
                     no-data-text="No se encontraron datos."
                     no-results-text="No hay resultados para esta búsqueda."
                     loading-text="Cargando datos..."
@@ -26,10 +25,10 @@
                     fixed-header
                     :loading="tablaCargando"
                 >
-                <template v-slot:group.header="{items, isOpen, toggle}">
-                  <th colspan="5">
-                    <v-icon @click="toggle"
-                      >{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
+                <template v-slot:group.header="{items, isOpen, toggle }">
+                  <th colspan="5" class="grey lighten-4">
+                    <v-icon @click="toggle">
+                      {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
                     </v-icon>
                     <span class="indigo--text font-weight-bold"> {{ items[0].Educación }} </span>
                   </th>
