@@ -666,7 +666,8 @@ async function atletasHistoricoDeportivo (cedula_atleta) {
        CASE WHEN h.genero_categoria = 'm' THEN 'Masculino' WHEN h.genero_categoria = 'f'
        THEN 'Femenino' ELSE 'Unisex' END AS genero_categoria
        FROM historico_inscripciones h
-       WHERE h.cedula_atleta = $1`, [cedula_atleta] 
+       WHERE h.cedula_atleta = $1
+       ORDER BY h.fecha DESC, h.id DESC`, [cedula_atleta] 
     );
 
     historicoDeportivo = historicoDeportivo.rows;
