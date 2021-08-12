@@ -608,7 +608,7 @@ async function atletasHistoricoAcademico (cedula_atleta) {
        THEN 'Trimestral' WHEN h.tipo_etapa = 's' THEN 'Semestral' ELSE 'Anual' END AS tipo_etapa
        FROM historico_etapas_educativas h
        WHERE h.cedula_atleta = $1
-       ORDER BY fecha DESC`, [cedula_atleta] 
+       ORDER BY fecha DESC, id DESC`, [cedula_atleta] 
     );
 
     historico = historico.rows;
@@ -645,7 +645,7 @@ async function atletasHistoricoDeportivo (cedula_atleta) {
        THEN 'Trimestre' WHEN h.tipo_etapa = 's' THEN 'Semestre' ELSE 'Año' END AS tipo_etapa
        FROM historico_etapas_educativas h
        WHERE h.cedula_atleta = $1
-       ORDER BY fecha DESC`, [cedula_atleta] 
+       ORDER BY fecha DESC, id DESC`, [cedula_atleta] 
     );
 
     historicoAcademico = historicoAcademico.rows;
