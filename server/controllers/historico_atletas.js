@@ -131,7 +131,8 @@ async function obtenerHistorialAcademico(cedula) {
           WHEN he.numero_etapa='6' THEN '6to' WHEN he.numero_etapa='7' THEN '7mo' WHEN he.numero_etapa='8' THEN '8vo' WHEN he.numero_etapa='9' THEN '9no' WHEN he.numero_etapa='10' THEN '10mo' ELSE null END AS numero_etapa,
       CASE WHEN he.tipo_etapa='m' THEN 'Mensual' WHEN he.tipo_etapa='t' THEN 'Trimestral' WHEN he.tipo_etapa='s' THEN 'Semestral' WHEN he.tipo_etapa='a' THEN 'Anual' ELSE null END AS tipo_etapa
       FROM historico_etapas_educativas he
-      WHERE he.cedula_atleta=$1`, [cedula]
+      WHERE he.cedula_atleta=$1
+      ORDER BY fecha DESC`, [cedula]
     )
     let atleta = await bd.query(
       `SELECT a.cedula AS cedula, a.primer_nombre AS nombre, a.primer_apellido AS apellido 
@@ -152,10 +153,20 @@ async function obtenerHistorialAcademico(cedula) {
 async function obtenerHistorialDeportivo(cedula) {
   try {
     let historial_deportivo = await bd.query(
-      `SELECT to_char(hi.fecha,'dd/mm/yyyy') AS fecha, hi.nombre_deporte, hi.nombre_categoria, hi.nombre_posicion,
+      `SELECT to_char(hi.fecha,'dd/mm/yyyy') AS fecha, hi.nombre_deporte, hi.nombre_categoria, hi.nombre_posicion, hi.id_etapa,
       CASE WHEN hi.genero_categoria='m' THEN 'Masculino' WHEN hi.genero_categoria='f' THEN 'Femenino' ELSE 'Unisex' END AS genero_categoria
       FROM historico_inscripciones hi
-      WHERE hi.cedula_atleta=$1`, [cedula]
+      WHERE hi.cedula_atleta=$1
+      ORDER BY fecha DESC`, [cedula]
+    )
+    let historial_educativo = await bd.query(
+      `SELECT he.id, he.nombre_educacion,
+      CASE WHEN he.numero_etapa='1' THEN '1er' WHEN he.numero_etapa='2' THEN '2do' WHEN he.numero_etapa='3' THEN '3er' WHEN he.numero_etapa='4' THEN '4to' WHEN he.numero_etapa='5' THEN '5to'
+          WHEN he.numero_etapa='6' THEN '6to' WHEN he.numero_etapa='7' THEN '7mo' WHEN he.numero_etapa='8' THEN '8vo' WHEN he.numero_etapa='9' THEN '9no' WHEN he.numero_etapa='10' THEN '10mo' ELSE null END AS numero_etapa,
+      CASE WHEN he.tipo_etapa='m' THEN 'mes' WHEN he.tipo_etapa='t' THEN 'trimestre' WHEN he.tipo_etapa='s' THEN 'semestre' WHEN he.tipo_etapa='a' THEN 'año' ELSE null END AS tipo_etapa
+      FROM historico_etapas_educativas he
+      WHERE he.cedula_atleta=$1
+      ORDER BY fecha DESC`, [cedula]
     )
     let atleta = await bd.query(
       `SELECT a.cedula AS cedula, a.primer_nombre AS nombre, a.primer_apellido AS apellido 
@@ -164,8 +175,9 @@ async function obtenerHistorialDeportivo(cedula) {
       [cedula]
     );
     historial_deportivo = historial_deportivo.rows
+    historial_educativo = historial_educativo.rows
     atleta = atleta.rows[0]
-    return { codigo: 200, historial_deportivo, atleta}
+    return { codigo: 200, historial_deportivo, historial_educativo, atleta}
   }
   // Error inesperado
   catch (error) {

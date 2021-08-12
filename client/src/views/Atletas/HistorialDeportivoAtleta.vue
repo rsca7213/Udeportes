@@ -17,6 +17,8 @@
                     </v-col>
                 </v-row>
                 <v-data-table class="mt-5" :headers="columnas_tabla" :items="historial_deportivo" :search="search"
+                    group-by="Educación"
+                    show-group-by
                     no-data-text="No se encontraron datos."
                     no-results-text="No hay resultados para esta búsqueda."
                     loading-text="Cargando datos..."
@@ -24,9 +26,23 @@
                     fixed-header
                     :loading="tablaCargando"
                 >
-                <template v-slot:item.nombre_posicion="{ item }"> 
-                    <span class="grey--text" v-if="item.nombre_posicion === null"> N/A </span>
-                    <span v-else v-text="item.nombre_posicion"></span>
+                <template v-slot:group.header="{items, isOpen, toggle}">
+                  <th colspan="5">
+                    <v-icon @click="toggle"
+                      >{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
+                    </v-icon>
+                    <span class="indigo--text font-weight-bold"> {{ items[0].Educación }} </span>
+                  </th>
+                </template>
+                <template v-slot:item="{ item }">
+                  <tr>
+                    <td align="center">{{ item.fecha }}</td>
+                    <td align="center">{{ item.nombre_deporte }}</td>
+                    <td align="center">{{ item.nombre_categoria }}</td>
+                    <td align="center">{{ item.genero_categoria }}</td>
+                    <td align="center" class="grey--text" v-if="item.nombre_posicion === null">N/A</td>
+                    <td align="center" v-else>{{item.nombre_posicion}}</td>
+                  </tr>
                 </template>
                 </v-data-table>
             </v-container>
@@ -43,6 +59,7 @@ export default {
   data() {
     return {
         historial_deportivo: [],
+        educacion: [],
         atleta: {},
         cargando: true,
         tablaCargando: true,
@@ -55,7 +72,8 @@ export default {
                 filterable: true,
                 value: 'fecha',
                 class: 'primary--text font-weight-bold',
-                width: '100'
+                width: '100',
+                groupable: false
             },
             {
                 text: 'Deporte',
@@ -63,7 +81,8 @@ export default {
                 sortable: true,
                 filterable: true,
                 value: 'nombre_deporte',
-                class: 'primary--text font-weight-bold'
+                class: 'primary--text font-weight-bold',
+                groupable: false
             },
             {
                 text: 'Categoría',
@@ -71,7 +90,8 @@ export default {
                 sortable: true,
                 filterable: true,
                 value: 'nombre_categoria',
-                class: 'primary--text font-weight-bold'
+                class: 'primary--text font-weight-bold',
+                groupable: false
             },
             { 
                 text: 'Género Categoría',
@@ -79,7 +99,8 @@ export default {
                 sortable: true,
                 filterable: true,
                 value: 'genero_categoria',
-                class: 'primary--text font-weight-bold'
+                class: 'primary--text font-weight-bold',
+                groupable: false
             },
             { 
                 text: 'Posición',
@@ -87,8 +108,9 @@ export default {
                 sortable: true,
                 filterable: true,
                 value: 'nombre_posicion',
-                class: 'primary--text font-weight-bold'
-            }
+                class: 'primary--text font-weight-bold',
+                groupable: false
+            },
         ],
     }
   },
@@ -104,6 +126,23 @@ export default {
             res.data.historial_deportivo.forEach(historial => {
               this.historial_deportivo.push(historial)
             });
+            res.data.historial_educativo.forEach(historial => {
+              let nombre = 'Sin educación'
+              if (historial.nombre_educacion != null) {
+                nombre = historial.nombre_educacion + ': ' + historial.numero_etapa + ' ' + historial.tipo_etapa
+              }
+              this.educacion.push({
+                id: historial.id,
+                nombre: nombre
+              })
+            });
+            this.historial_deportivo.forEach(historial => {
+              this.educacion.forEach(educacion => {
+                if (historial.id_etapa === educacion.id) {
+                  historial.Educación = educacion.nombre
+                }
+              })
+            })
           }
         })
         .catch((err) => {
