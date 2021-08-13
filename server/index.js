@@ -1,17 +1,18 @@
 // Librerias requeridas
 const express = require('express');
-const dotenv = require('dotenv');
 
 
 // Configuración inicial del servidor
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-dotenv.config();
 
 if (process.env.NODE_ENV !== 'production') {
   const cors = require('cors');
   app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
+
+  const dotenv = require('dotenv');
+  dotenv.config();
 }
 
 // Inicializar enrutador de express
