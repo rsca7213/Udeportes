@@ -68,7 +68,7 @@
               <v-select v-model="inputs.estatus" label="Estatus *" prepend-icon="mdi-clock"
               clear-icon="mdi-close" name="educacion" clearable :rules="reglas.estatus"
               :items="[{text: 'No iniciada', value: 'n'}, {text: 'En curso', value: 'e'}, 
-              {text: 'Derrota', value: 'd'}, {text: 'Victoria', value: 'v'}]">
+              {text: 'Derrota', value: 'd'}, {text: 'Empate', value: 'i'}, {text: 'Victoria', value: 'v'}]">
               </v-select>
             </v-col>
           </v-row>
@@ -124,7 +124,7 @@ export default {
           v => v && v.length <= 50 || 'Este campo debe contener como máximo 50 caracteres',
         ],
         estatus: [
-          v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Este campo es obligatorio'
+          v => v && ['n', 'e', 'i', 'd', 'v'].includes(v) || 'Este campo es obligatorio'
         ]
       },
       // Validacion manual (fecha y valores dependientes de otros)

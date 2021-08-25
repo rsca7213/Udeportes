@@ -1,6 +1,6 @@
 
 /* funcion que toma un arreglo de reglas y un valor, compara el valor con todas las reglas */
-function  validar(reglas, valor) {
+function validar(reglas, valor) {
   for (let i = 0; i < reglas.length; i++) {
     if (reglas[i](valor) != true) return {
       estado: false,
@@ -38,7 +38,7 @@ const reglasCorreo = [
 
 const reglasClave = [
   v => v && v.length >= 8 || 'La contraseña debe contener como mínimo 8 caracteres.',
-  v => v && v.length <= 128 || 'La constraseña debe contener como máximo 128 caracteres.' 
+  v => v && v.length <= 128 || 'La constraseña debe contener como máximo 128 caracteres.'
 ];
 
 const reglasTelefono = [
@@ -47,7 +47,7 @@ const reglasTelefono = [
 ];
 
 const reglasFecha = [
-  v => (!v||(v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/)).test(v)) || 'Debe ser una fecha válida dd/mm/yyyy',
+  v => (!v || (v && (/^(0?[1-9]|[12][0-9]|3[01])[\/](0?[1-9]|1[012])[\/]\d{4}$/)).test(v)) || 'Debe ser una fecha válida dd/mm/yyyy',
   v => !v || v.length <= 10 || 'La fecha debe contener como máximo 10 caracteres.'
 ];
 
@@ -67,9 +67,9 @@ const reglasGenero = [
 
 const reglasEducacionAtleta = [
   // El valor "v"  tiene la siguiente forma: v = { id: Number, etapa: Number }
-  v => !v.id || v.id === '0' || typeof(parseInt(v.id)) === typeof(1) || 'La educación no es válida',
-  v => !v.id || v.id === '0' || v.id > 0  || 'La educación no es válida',
-  v => !v.id || v.id === '0' || typeof(v.etapa) === 'number' || 'La etapa debe ser un número',
+  v => !v.id || v.id === '0' || typeof (parseInt(v.id)) === typeof (1) || 'La educación no es válida',
+  v => !v.id || v.id === '0' || v.id > 0 || 'La educación no es válida',
+  v => !v.id || v.id === '0' || typeof (v.etapa) === 'number' || 'La etapa debe ser un número',
   v => !v.id || v.id === '0' || v.etapa > 0 || 'La etapa debe ser mayor o igual a 1',
   v => !v.id || v.id === '0' || v.etapa < 100 || 'La etapa debe ser menor o igual a 99'
 ];
@@ -83,7 +83,7 @@ const reglasCorreoOpcional = [
 const reglasBeca = [
   // El valor "v" tiene la siguiente forma: v = { nombre: String, porcentaje: String }
   v => !v.nombre || v.nombre.length === 0 || v.nombre.length <= 200 || 'El nombre de la beca debe contener como máximo 200 caracteres',
-  v => !v.nombre || v.nombre.length === 0 || typeof(v.porcentaje) === 'number' || 'El porcentaje de la beca debe ser un número',
+  v => !v.nombre || v.nombre.length === 0 || typeof (v.porcentaje) === 'number' || 'El porcentaje de la beca debe ser un número',
   v => !v.nombre || v.nombre.length === 0 || v.porcentaje >= 0 || 'El porcentaje de la beca debe ser mayor o igual a 0',
   v => !v.nombre || v.nombre.length === 0 || v.porcentaje <= 100 || 'El porcentaje de la beca debe ser menor o igual a 100'
 ];
@@ -98,7 +98,7 @@ const reglasEtapaEducacion = [
 ];
 
 const reglasId = [
-  v => v && typeof(v) === typeof(1) || 'La id no es un número'
+  v => v && typeof (v) === typeof (1) || 'La id no es un número'
 ];
 
 const reglasNombreEntrenamiento = [
@@ -112,7 +112,7 @@ const reglasNombreCompetencia = [
 
 const reglasEstatusCompetencia = [
   v => !!v || 'El estatus es obligatorio',
-  v => v && ['n', 'e', 'd', 'v'].includes(v) || 'Valor de estatus inválido'
+  v => v && ['n', 'e', , 'i', 'd', 'v'].includes(v) || 'Valor de estatus inválido'
 ];
 
 const reglasEstadisticas = [
