@@ -8,11 +8,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 if (process.env.NODE_ENV !== 'production') {
-  const cors = require('cors');
-  app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
 
   const dotenv = require('dotenv');
   dotenv.config();
+
+  const cors = require('cors');
+  app.use(cors({ origin: process.env.CLIENT_LINK , credentials :  true }));
+
 }
 
 // Inicializar enrutador de express
