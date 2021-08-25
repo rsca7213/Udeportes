@@ -95,7 +95,7 @@ export default {
       datos_usuario: [
         {nombre: 'Correo',  requerido:true, longitud: 256, icono: 'mdi-email', variable_asociada: 'correo', validacion: 'reglasCorreo'},
         {nombre: 'Cédula', requerido:true , longitud: 8, icono: 'mdi-card-account-details', variable_asociada: 'cedula', validacion: 'reglasCedula'},
-        {nombre: 'Teléfono', requerido:false, longitud: 13, icono: 'mdi-cellphone', variable_asociada: 'telefono', validacion: 'reglasTelefono', placeholder: '+584141234567'},
+        {nombre: 'Teléfono', requerido:false, longitud: 11, icono: 'mdi-cellphone', variable_asociada: 'telefono', validacion: 'reglasTelefono', placeholder: '04141234567'},
         {nombre: 'Primer Nombre', requerido:true, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'primer_nombre', validacion: 'reglasNombre'},
         {nombre: 'Segundo Nombre', requerido:false, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'segundo_nombre', validacion: 'reglasSegundoNombre'},
         {nombre: 'Primer Apellido', requerido:true, longitud: 50, icono: 'mdi-account-edit-outline', variable_asociada: 'primer_apellido', validacion: 'reglasNombre'},
@@ -149,8 +149,8 @@ export default {
           v => !v || (v.length <= 50) || 'Este campo debe contener como máximo 50 caracteres',
         ],
         reglasTelefono: [
-          v => ((v && v.length == 13) || !v) || 'El teléfono debe tener 13 caracteres.',
-          v => ((v && (/^[+]\d{1,12}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
+          v => ((v && v.length == 11) || !v) || 'El teléfono debe tener 11 caracteres.',
+          v => ((v && (/^\d{1,11}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
         ],
         reglasFecha: [
           v => !v || (v.length <= 10) || 'La fecha debe contener como máximo 10 caracteres.'

@@ -42,8 +42,8 @@ const reglasClave = [
 ];
 
 const reglasTelefono = [
-  v => ((v && v.length == 13) || !v) || 'El teléfono debe tener 13 caracteres.',
-  v => ((v && (/^[+]\d{1,12}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
+  v => ((v && v.length == 11) || !v) || 'El teléfono debe tener 11 caracteres.',
+  v => ((v && (/^\d{1,11}$/.test(v))) || !v) || 'Debe ser un teléfono válido.'
 ];
 
 const reglasFecha = [

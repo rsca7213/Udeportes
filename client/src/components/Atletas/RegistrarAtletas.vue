@@ -43,10 +43,10 @@
               validate-on-blur v-model.trim="inputs.cedula" name="cedula"> </v-text-field>
             </v-col>
             <v-col class="px-3" cols="12" sm="6">
-              <v-text-field clear-icon="mdi-close" clearable counter="13" label="Teléfono"
+              <v-text-field clear-icon="mdi-close" clearable counter="11" label="Teléfono"
               prepend-icon="mdi-cellphone" type="text" :rules="reglas.telefono"
               validate-on-blur v-model.trim="inputs.telefono" name="telefono"
-              placeholder="+584141574855"> </v-text-field>
+              placeholder="04141574855"> </v-text-field>
             </v-col>
           </v-row>
           <v-row>
@@ -216,8 +216,8 @@ export default {
           v => v === null || v.length === 0 || (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v)) || 'Debe ser un correo electrónico valido'
         ],
         telefono: [
-          v => v === null || v.length === 0 || (v && v.length == 13) || 'El teléfono debe tener 13 caracteres',
-          v => v === null || v.length === 0 || (v && (/^[+]\d{1,12}$/.test(v))) || 'Debe ser un teléfono válido'
+          v => v === null || v.length === 0 || (v && v.length == 11) || 'El teléfono debe tener 11 caracteres',
+          v => v === null || v.length === 0 || (v && (/^\d{1,11}$/.test(v))) || 'Debe ser un teléfono válido'
         ],
         nombre_beca: [
           v => v === null || v.length === 0 || v.length <= 200 || 'Este campo debe contener como máximo 200 caracteres',
