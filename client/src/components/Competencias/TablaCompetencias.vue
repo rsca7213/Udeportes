@@ -51,6 +51,10 @@
                   <v-icon color="error"> mdi-arrow-bottom-left-thick </v-icon>
                   <span class="error--text ml-1"> Derrota </span>
                 </span>
+                <span v-else-if="item.estatus === 'i'">
+                  <v-icon color="indigo"> mdi-arrow-top-right-bottom-left </v-icon>
+                  <span class="indigo--text ml-1"> Empate </span>
+                </span>
                 <span v-else>
                   <v-icon color="success"> mdi-arrow-top-right-thick </v-icon>
                   <span class="success--text ml-1"> Victoria </span>

@@ -29,10 +29,12 @@
                   <v-icon color="success" v-if="competencia.estatus === 'v'"> mdi-arrow-top-right-thick </v-icon>
                   <v-icon color="error" v-else-if="competencia.estatus === 'd'"> mdi-arrow-bottom-left-thick </v-icon>
                   <v-icon color="indigo" v-else-if="competencia.estatus === 'e'"> mdi-progress-clock </v-icon>
+                  <v-icon color="indigo" v-else-if="competencia.estatus === 'i'"> mdi-arrow-top-right-bottom-left </v-icon>
                   <v-icon color="grey darken-1" v-else> mdi-clock-outline </v-icon>
                   <span class="success--text" v-if="competencia.estatus === 'v'"> Victoria </span>
                   <span class="error--text" v-else-if="competencia.estatus === 'd'"> Derrota </span>
                   <span class="indigo--text" v-else-if="competencia.estatus === 'e'"> En curso </span>
+                  <span class="indigo--text" v-else-if="competencia.estatus === 'i'"> Empate </span>
                   <span class="grey--text text--darken-1" v-else> No iniciada </span>
                 </v-col>
               </v-row>

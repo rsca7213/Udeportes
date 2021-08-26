@@ -4,7 +4,7 @@
     <v-navigation-drawer v-model="menu" app color="primary" disable-resize-watcher>
       <v-container>
         <v-row class="pt-2 pl-2 pb-2">
-          <v-img src="../assets/logo-blanco.png" alt="logo" max-width="40"> </v-img>
+          <v-img src="../assets/logo-blanco.png" alt="logo" max-width="90"> </v-img>
           <span class="white--text text-button ml-3 mt-1"> Menú Principal </span>
         </v-row>
         <v-divider class="mt-5 white--text white"> </v-divider>

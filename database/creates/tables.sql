@@ -81,7 +81,7 @@ CREATE TABLE competencias(
   fecha_fin DATE,
 
   CONSTRAINT competencias_pk PRIMARY KEY(id, id_categoria, id_deporte),
-  CONSTRAINT competencias_estatus_check CHECK(estatus IN ('n', 'e', 'd', 'v'))
+  CONSTRAINT competencias_estatus_check CHECK(estatus IN ('n', 'e', 'i', 'd', 'v'))
 );
 
 CREATE TABLE rendimientos(
