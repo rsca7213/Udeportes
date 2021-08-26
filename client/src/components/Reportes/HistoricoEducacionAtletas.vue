@@ -135,7 +135,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Histórico Académico - ${atleta.nombre_completo}`);
+      pdfMake.createPdf(docDefinition).download(`Histórico Académico - ${atleta.nombre_completo}`.includes(".")?
+      `Histórico Académico - ${atleta.nombre_completo}.pdf`:
+      `Histórico Académico - ${atleta.nombre_completo}`);
     },
     //datos que contendrá el reporte
     datos_reporte(historico){

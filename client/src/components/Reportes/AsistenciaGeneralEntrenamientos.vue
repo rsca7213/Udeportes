@@ -399,7 +399,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte de Asistencia General a Entrenamientos ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte de Asistencia General a Entrenamientos ${this.equipo}`.includes(".")?
+      `Reporte de Asistencia General a Entrenamientos ${this.equipo}.pdf`:
+      `Reporte de Asistencia General a Entrenamientos ${this.equipo}`);
     },
     //datos que contendrá el reporte
     datosReporte(){

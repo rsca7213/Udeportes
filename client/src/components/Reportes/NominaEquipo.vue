@@ -344,7 +344,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Nómina Equipo ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Nómina Equipo ${this.equipo}`.includes(".")?
+      `Nómina Equipo ${this.equipo}.pdf`:
+      `Nómina Equipo ${this.equipo}`);
     },
     //datos que contendrá el reporte
     datos_reporte(){

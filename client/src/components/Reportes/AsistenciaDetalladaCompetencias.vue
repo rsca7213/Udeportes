@@ -335,7 +335,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Competencia: ${this.competencia.info_competencia}, Equipo ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Competencia: ${this.competencia.info_competencia}, Equipo ${this.equipo}`.includes(".")?
+      `Reporte Asistencia a Competencia: ${this.competencia.info_competencia}, Equipo ${this.equipo}.pdf`:
+      `Reporte Asistencia a Competencia: ${this.competencia.info_competencia}, Equipo ${this.equipo}` );
     },
     //datos que contendrá el reporte
     datosReporte(){

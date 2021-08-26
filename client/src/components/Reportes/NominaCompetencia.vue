@@ -385,7 +385,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Nómina Competencia ${this.equipo} ${this.competencia.info_competencia}`);
+      pdfMake.createPdf(docDefinition).download(`Nómina Competencia ${this.equipo} ${this.competencia.info_competencia}`.includes(".")?
+      `Nómina Competencia ${this.equipo} ${this.competencia.info_competencia}.pdf`:
+      `Nómina Competencia ${this.equipo} ${this.competencia.info_competencia}`);
     },
     //datos que contendrá el reporte
     datos_reporte(){

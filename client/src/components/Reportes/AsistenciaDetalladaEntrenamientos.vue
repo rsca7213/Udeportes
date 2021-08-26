@@ -335,7 +335,9 @@ export default {
         
       };
       
-      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Entrenamiento Detallado, ${this.entrenamiento.info_entrenamiento} ${this.equipo}`);
+      pdfMake.createPdf(docDefinition).download(`Reporte Asistencia a Entrenamiento Detallado, ${this.entrenamiento.info_entrenamiento} ${this.equipo}`.includes(".")?
+      `Reporte Asistencia a Entrenamiento Detallado, ${this.entrenamiento.info_entrenamiento} ${this.equipo}.pdf`:
+      `Reporte Asistencia a Entrenamiento Detallado, ${this.entrenamiento.info_entrenamiento} ${this.equipo}`)
     },
     //datos que contendrá el reporte
     datosReporte(){
