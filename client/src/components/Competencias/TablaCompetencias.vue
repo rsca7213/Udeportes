@@ -79,14 +79,21 @@
       </v-col>
       <v-col cols="12" lg="3" xl="4">
         <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="12" class="mt-6 mt-lg-0">
+          <v-col lg="10" sm="6" cols="12" class="mt-6 mt-lg-0">
             <ApexChart type="radialBar" :options="chartOptions" 
             :series="[ratioVictorias || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />
           </v-col>
         </v-row>
         <v-row class="justify-center" v-if="show">
-          <v-col lg="11" sm="6" cols="12">
+          <v-col lg="10" sm="6" cols="12">
+            <ApexChart type="radialBar" :options="chartOptions1" 
+            :series="[ratioEmpates || 0]"
+            class="elevation-4 p-4 rounded-lg grey lighten-4" />
+          </v-col>
+        </v-row>
+        <v-row class="justify-center" v-if="show">
+          <v-col lg="10" sm="6" cols="12">
             <ApexChart type="radialBar" :options="chartOptions2" 
             :series="[ratioDerrotas || 0]"
             class="elevation-4 p-4 rounded-lg grey lighten-4" />
@@ -147,6 +154,7 @@ export default {
       // Ratios de ambos charts
       ratioVictorias: 0,
       ratioDerrotas: 0,
+      ratioEmpates: 0,
       // headers de la tabla
       atributosTabla: [
         {
@@ -250,6 +258,69 @@ export default {
         }
 
       },
+
+      // Opciones chart1
+      chartOptions1: {
+        chart: {
+          type: 'radialBar',
+          offsetY: -10,
+          sparkline: {
+            enabled: true
+          }
+        },
+
+        colors: ['#3F51B5'],
+        
+        title: {
+          text: '% Empates',
+          align: 'center',
+          margin: 0,
+          offsetX: 0,
+          offsetY: 10,
+          floating: false,
+          style: {
+            fontSize:  '16px',
+            fontWeight:  '500',
+            fontFamily:  'Roboto',
+            color:  '#616161'
+          },
+        },
+        plotOptions: {
+          radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            track: {
+              background: "#e7e7e7",
+              strokeWidth: '97%',
+              margin: 5, // margin is in pixels
+              dropShadow: {
+                enabled: true,
+                top: 2,
+                left: 0,
+                color: '#616161',
+                opacity: 1,
+                blur: 2
+              }
+            },
+            dataLabels: {
+              name: {
+                show: false
+              },
+              value: {
+                offsetY: -2,
+                fontSize: '22px'
+              }
+            }
+          }
+        },
+        grid: {
+          padding: {
+            top: -10
+          }
+        }
+
+      },
+
       // Opciones chart2
       chartOptions2: {
         chart: {
@@ -323,9 +394,11 @@ export default {
       this.show = false;
       let victorias = this.competenciasData.filter(item => item.estatus === 'v').length;
       let derrotas = this.competenciasData.filter(item => item.estatus === 'd').length;
+      let empates = this.competenciasData.filter(item => item.estatus === 'i').length;
       // Calculamos los ratios
-      this.ratioVictorias = ((victorias/(victorias + derrotas))*100|| 0).toFixed(2);
-      this.ratioDerrotas = ((derrotas/(victorias + derrotas))*100|| 0).toFixed(2);
+      this.ratioVictorias = ((victorias/(victorias + derrotas + empates))*100|| 0).toFixed(2);
+      this.ratioEmpates = ((empates/(victorias + derrotas + empates))*100|| 0).toFixed(2);
+      this.ratioDerrotas = ((derrotas/(victorias + derrotas + empates))*100|| 0).toFixed(2);
       this.show = true;
     },
 
